@@ -1,151 +1,144 @@
 <template>
-  <div class="list-view product-checkout mt-0">
+  <div>
     <!-- <e-commerce-checkout-step-cart-products /> -->
     <!-- Products List -->
-    <b-row>
-      <b-col
-        cols="12"
-        md="8"
-      >
-        <!-- Left Form -->
-        <b-card>
-          <div>
-            <h6>
-              Keranjang
-            </h6>
-            <hr>
-          </div>
-          <b-card-body>
-            <!-- Full Name -->
-            <b-form-group
-              label="Nama / Kode Barang"
-              label-cols-md="3"
+    <b-form>
+      <b-row>
+        <b-col
+          cols="12"
+          class="mb-2"
+        >
+          <h5 class="mb-0">
+            Detail Konsumen
+          </h5>
+          <small class="text-muted">
+            Masukan Detail Konsumen.
+          </small>
+        </b-col>
+        <b-col>
+          <b-form-group
+            label="Nama / Kode Barang"
+            label-cols-md="3"
+          >
+            <v-select
+              placeholder="Nama / Kode Barang"
+              label="nama"
+              :filter-by="myFilter"
+              :reduce="dataBarang => dataBarang.id"
+              :options="loadDataBarang()"
+              @input="showModal"
             >
-              <v-select
-                placeholder="Nama / Kode Barang"
-                label="nama"
-                :filter-by="myFilter"
-                :reduce="dataBarang => dataBarang.id"
-                :options="loadDataBarang()"
-                @input="showModal"
-              >
-                <template v-slot:option="option">
-                  {{ option.kode_barang }} - <b>{{ option.nama }}</b>
-                </template>
-              </v-select>
-            </b-form-group>
-            <vue-good-table
-              :columns="columns"
-              :rows="rows"
-              :search-options="{
-                enabled: false,
-              }"
-              :pagination-options="{
-                enabled: false,
-              }"
-            >
-              <template
-                slot="table-row"
-                slot-scope="props"
-              >
-                <!-- Column: Action -->
-                <span v-if="props.column.field === 'action'">
-                  <div>
-                    <b-button
-                      v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                      variant="danger"
-                      class="btn-icon"
-                      @click="del(props.index, props.row.id)"
-                    >
-                      <feather-icon icon="TrashIcon" />
-                    </b-button>
-                  </div>
-                </span>
-                <!-- Column: Common -->
-                <span v-else>
-                  {{ props.formattedRow[props.column.field] }}
-                </span>
+              <template v-slot:option="option">
+                {{ option.kode_barang }} - <b>{{ option.nama }}</b>
               </template>
-            </vue-good-table>
-            <!-- Submit Button -->
-            <hr>
-          </b-card-body>
-        </b-card>
-      </b-col>
-      <!-- Checkout Options -->
+            </v-select>
+          </b-form-group>
+        </b-col>
+        <b-col
+          cols="12"
+          class="mb-2"
+        >
+          <vue-good-table
+            :columns="columns"
+            :rows="rows"
+            :search-options="{
+              enabled: false,
+            }"
+            :pagination-options="{
+              enabled: false,
+            }"
+          >
+            <template
+              slot="table-row"
+              slot-scope="props"
+            >
+              <!-- Column: Action -->
+              <span v-if="props.column.field === 'action'">
+                <div>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="danger"
+                    class="btn-icon"
+                    @click="del(props.index, props.row.id)"
+                  >
+                    <feather-icon icon="TrashIcon" />
+                  </b-button>
+                </div>
+              </span>
+              <!-- Column: Common -->
+              <span v-else>
+                {{ props.formattedRow[props.column.field] }}
+              </span>
+            </template>
+          </vue-good-table>
+        </b-col>
+        <b-col
+          cols="12"
+          md="6"
+        >
+          <div class="checkout-options">
+            <b-card>
+              <div class="price-details">
+                <h6 class="price-title">
+                  Detail Harga
+                </h6>
+                <hr>
+                <ul class="list-unstyled">
+                  <li class="price-detail">
+                    <div class="detail-title">
+                      Total
+                    </div>
+                    <div class="detail-amt">
+                      {{ detailHarga.total }}
+                    </div>
+                  </li>
+                  <li class="price-detail">
+                    <div class="detail-title">
+                      Diskon
+                    </div>
+                    <div class="detail-amt discount-amt text-danger">
+                      {{ detailHarga.diskon }}
+                    </div>
+                  </li>
+                  <li class="price-detail">
+                    <div class="detail-title">
+                      Pajak
+                    </div>
+                    <div class="detail-amt">
+                      {{ detailHarga.pajak }}
+                    </div>
+                  </li>
+                  <li class="price-detail">
+                    <div class="detail-title mt-1">
+                      Ongkos Kirim
+                    </div>
+                    <div class="detail-amt">
+                      <b-form-input
+                        v-model="detailHarga.ongkir"
+                        trim
+                        type="number"
+                      />
+                    </div>
+                  </li>
+                </ul>
+                <hr>
+                <ul class="list-unstyled">
+                  <li class="price-detail">
+                    <div class="detail-title detail-total">
+                      Grand Total
+                    </div>
+                    <div class="detail-amt font-weight-bolder">
+                      {{ Number(detailHarga.grandTotal).toLocaleString() }}
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </b-card>
+          </div>
+        </b-col>
+      </b-row>
+    </b-form>
 
-      <b-col
-        cols="12"
-        md="4"
-      >
-        <div class="checkout-options">
-          <b-card>
-            <div class="price-details">
-              <h6 class="price-title">
-                Detail Harga
-              </h6>
-              <hr>
-              <ul class="list-unstyled">
-                <li class="price-detail">
-                  <div class="detail-title">
-                    Total
-                  </div>
-                  <div class="detail-amt">
-                    {{ detailHarga.total }}
-                  </div>
-                </li>
-                <li class="price-detail">
-                  <div class="detail-title">
-                    Diskon
-                  </div>
-                  <div class="detail-amt discount-amt text-danger">
-                    {{ detailHarga.diskon }}
-                  </div>
-                </li>
-                <li class="price-detail">
-                  <div class="detail-title">
-                    Pajak
-                  </div>
-                  <div class="detail-amt">
-                    {{ detailHarga.pajak }}
-                  </div>
-                </li>
-                <li class="price-detail">
-                  <div class="detail-title mt-1">
-                    Ongkos Kirim
-                  </div>
-                  <div class="detail-amt">
-                    <b-form-input
-                      v-model="detailHarga.ongkir"
-                      trim
-                      type="number"
-                    />
-                  </div>
-                </li>
-              </ul>
-              <hr>
-              <ul class="list-unstyled">
-                <li class="price-detail">
-                  <div class="detail-title detail-total">
-                    Grand Total
-                  </div>
-                  <div class="detail-amt font-weight-bolder">
-                    {{ Number(detailHarga.grandTotal).toLocaleString() }}
-                  </div>
-                </li>
-              </ul>
-              <b-button
-                variant="primary"
-                block
-                @click="$emit('next-step')"
-              >
-                Place Order
-              </b-button>
-            </div>
-          </b-card>
-        </div>
-      </b-col>
-    </b-row>
     <b-modal
       id="modal-prevent-closing"
       ref="my-modal"
@@ -224,8 +217,6 @@ import {
   BRow,
   BCol,
   BButton,
-  BCard,
-  BCardBody,
   BModal,
   BFormGroup,
   // BInputGroup,
@@ -244,8 +235,6 @@ export default {
     BRow,
     BCol,
     BButton,
-    BCard,
-    BCardBody,
     vSelect,
     VueGoodTable,
     BFormInput,
@@ -407,6 +396,7 @@ export default {
   }
 }
 </style>
+
 <style lang="scss">
 $body-color: #6e6b7b !default;
 $font-weight-bolder: 600 !default;

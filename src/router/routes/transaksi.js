@@ -2,7 +2,7 @@ export default [
   {
     path: '/transaksi/penjualan',
     name: 'transaksi-penjualan',
-    component: () => import('@/views/transaksi/penjualan/Penjualan.vue'),
+    component: () => import('@/views/transaksi/penjualan2/Penjualan.vue'),
     meta: {
       pageTitle: 'Penjualan',
       breadcrumb: [

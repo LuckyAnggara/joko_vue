@@ -34,16 +34,12 @@
                       :options="option"
                     >
                       <template #list-header>
-                        <li
-                          class="add-new-data-header d-flex align-items-center my-50"
-                        >
+                        <li class="add-new-data-header d-flex align-items-center my-50">
                           <feather-icon
                             icon="PlusIcon"
                             size="16"
                           />
-                          <span
-                            class="align-middle ml-25"
-                          >Tambah Pelanggan</span>
+                          <span class="align-middle ml-25">Tambah Pelanggan</span>
                         </li>
                       </template>
                     </v-select>
@@ -71,7 +67,7 @@
                     >
                       <b-form-input
                         id="nama-pelanggan"
-                        v-model="alamatDetail.namaPelanggan"
+                        v-model="dataOrder.namaPelanggan"
                         :state="getValidationState(validationContext)"
                         trim
                       />
@@ -96,7 +92,7 @@
                     >
                       <b-form-textarea
                         id="alamat-pengiriman"
-                        v-model="alamatDetail.alamat"
+                        v-model="dataOrder.alamat"
                         rows="4"
                         :state="getValidationState(validationContext)"
                         trim
@@ -118,7 +114,7 @@
                   >
                     <b-form-input
                       id="nomor-telepon"
-                      v-model="alamatDetail.nomorTelepon"
+                      v-model="dataOrder.nomorTelepon"
                       trim
                     />
                   </b-form-group>
@@ -136,15 +132,15 @@
         >
           <!-- Right Col -->
           <div class="customer-card">
-            <b-card :title="alamatDetail.namaPelanggan">
+            <b-card :title="dataOrder.namaPelanggan">
               <b-card-text class="mb-1">
-                {{ alamatDetail.namaPelanggan }}
+                {{ dataOrder.namaPelanggan }}
               </b-card-text>
               <b-card-text style="white-space:pre-line;">
-                {{ alamatDetail.alamat }}
+                {{ dataOrder.alamat }}
               </b-card-text>
               <b-card-text class="mb-1">
-                {{ alamatDetail.nomorTelepon }}
+                {{ dataOrder.nomorTelepon }}
               </b-card-text>
               <b-col cols="6">
                 <b-button
@@ -182,6 +178,8 @@ import {
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import vSelect from 'vue-select'
+import store from '@/store'
+
 import { required, integer } from '@validations'
 import formValidation from '@core/comp-functions/forms/form-validation'
 
@@ -209,31 +207,28 @@ export default {
     // 3rd party
     vSelect,
   },
-  props: {
-    alamatDetail: {
-      type: Object,
-      required: true,
-    },
-  },
   data() {
     return {
       namaPelanggan: null,
-      option: [
-        { title: 'Square' },
-        { title: 'Rectangle' },
-        { title: 'Rombo' },
-        { title: 'Romboid' },
-      ],
+      dataOrder: {
+        nomor: 0,
+        namaPelanggan: '',
+        alamat: '',
+        nomorTelepon: '',
+      },
+      option: [{ title: 'Square' }, { title: 'Rectangle' }, { title: 'Rombo' }, { title: 'Romboid' }],
     }
   },
   setup(_, { emit }) {
-    const {
-      refFormObserver,
-      getValidationState,
-      resetForm,
-    } = formValidation(() => {})
+    const { refFormObserver, getValidationState, resetForm } = formValidation(() => {})
 
     const onSubmit = () => {
+      this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahOrder']) + parseFloat(1)
+
+      // store.commit('app-transaksi/SET_ORDER', this.dataOrder)
+
+      // console.info(store.getters['app-transaksi/getOrder'])
+      console.info(this.dataOrder.nomor)
       emit('next-step')
     }
 

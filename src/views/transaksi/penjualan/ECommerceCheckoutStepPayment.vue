@@ -1,6 +1,5 @@
 <template>
   <div class="list-view product-checkout">
-
     <!-- Left Card -->
     <b-card no-body>
       <b-card-header class="flex-column align-items-start">
@@ -32,7 +31,6 @@
             </label>
             <b-form-input
               id="cvv"
-              v-model="paymentDetails.cvv"
               class="mr-1 mb-1"
               trim
             />
@@ -91,7 +89,6 @@
     <!-- Right Card -->
     <div class="amount-payable checkout-options">
       <b-card title="Price Details">
-
         <ul class="list-unstyled price-details">
           <li class="price-detail">
             <div class="details-title">
@@ -121,7 +118,6 @@
             </div>
           </li>
         </ul>
-
       </b-card>
     </div>
   </div>
@@ -145,12 +141,12 @@ export default {
     BFormInput,
     BButton,
   },
-  props: {
-    paymentDetails: {
-      type: Object,
-      required: true,
-    },
-  },
+  // props: {
+  //   paymentDetails: {
+  //     type: Object,
+  //     required: true,
+  //   },
+  // },
 }
 </script>
 

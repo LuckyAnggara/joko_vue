@@ -10,24 +10,27 @@
     class="checkout-form-wizard steps-transparent"
   >
     <!-- address -->
-    <tab-content title="Pelanggan" icon="feather icon-user">
-      <e-commerce-checkout-step-address
-        :alamat-detail="checkoutDetails.alamat"
-        @next-step="formWizardNextStep"
-      />
+    <tab-content
+      title="Pelanggan"
+      icon="feather icon-user"
+    >
+      <e-commerce-checkout-step-address @next-step="formWizardNextStep" />
     </tab-content>
 
     <!-- account detail tab -->
-    <tab-content title="Pesanan" icon="feather icon-shopping-cart">
+    <tab-content
+      title="Pesanan"
+      icon="feather icon-shopping-cart"
+    >
       <e-commerce-checkout-step-cart @next-step="formWizardNextStep" />
     </tab-content>
 
     <!-- social link -->
-    <tab-content title="Pembayaran" icon="feather icon-credit-card">
-      <e-commerce-checkout-step-payment
-        :payment-details="checkoutDetails.payment"
-        @next-step="formWizardNextStep"
-      />
+    <tab-content
+      title="Pembayaran"
+      icon="feather icon-credit-card"
+    >
+      <e-commerce-checkout-step-payment @next-step="formWizardNextStep" />
     </tab-content>
   </form-wizard>
 </template>
@@ -49,6 +52,7 @@ export default {
     ECommerceCheckoutStepAddress,
     ECommerceCheckoutStepPayment,
   },
+
   setup() {
     const refFormWizard = ref(null)
     const formWizardNextStep = () => {
@@ -56,23 +60,23 @@ export default {
     }
 
     // ? This is just dummy details
-    const checkoutDetails = ref({
-      alamat: {
-        namaPelanggan: '',
-        alamat: '',
-        nomorTelepon: '',
-      },
-      payment: {
-        cvv: '',
-      },
-    })
+    // const checkoutDetails = ref({
+    //   alamat: {
+    //     namaPelanggan: '',
+    //     alamat: '',
+    //     nomorTelepon: '',
+    //   },
+    //   payment: {
+    //     cvv: '',
+    //   },
+    // })
 
     return {
       refFormWizard,
       formWizardNextStep,
 
       // Dummy Details
-      checkoutDetails,
+      // checkoutDetails,
     }
   },
 }
