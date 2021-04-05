@@ -10,10 +10,7 @@
     class="checkout-form-wizard steps-transparent"
   >
     <!-- address -->
-    <tab-content
-      title="Pelanggan"
-      icon="feather icon-user"
-    >
+    <tab-content title="Pelanggan" icon="feather icon-user">
       <e-commerce-checkout-step-address
         :alamat-detail="checkoutDetails.alamat"
         @next-step="formWizardNextStep"
@@ -21,18 +18,12 @@
     </tab-content>
 
     <!-- account detail tab -->
-    <tab-content
-      title="Pesanan"
-      icon="feather icon-shopping-cart"
-    >
+    <tab-content title="Pesanan" icon="feather icon-shopping-cart">
       <e-commerce-checkout-step-cart @next-step="formWizardNextStep" />
     </tab-content>
 
     <!-- social link -->
-    <tab-content
-      title="Pembayaran"
-      icon="feather icon-credit-card"
-    >
+    <tab-content title="Pembayaran" icon="feather icon-credit-card">
       <e-commerce-checkout-step-payment
         :payment-details="checkoutDetails.payment"
         @next-step="formWizardNextStep"
@@ -45,7 +36,7 @@
 import { FormWizard, TabContent } from 'vue-form-wizard'
 import { ref } from '@vue/composition-api'
 import ECommerceCheckoutStepPayment from './ECommerceCheckoutStepPayment.vue'
-import ECommerceCheckoutStepCart from './ECommerceCheckoutStepCart.vue'
+import ECommerceCheckoutStepCart from './PenjualanKeranjang.vue'
 import ECommerceCheckoutStepAddress from './PenjualanDetailKonsumen.vue'
 
 export default {

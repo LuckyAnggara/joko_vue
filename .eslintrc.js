@@ -11,13 +11,11 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'linebreak-style': ['error', 'windows'],
+    'operator-linebreak': [2, 'after'],
     semi: ['error', 'never'],
     'max-len': 'off',
 
-    camelcase: [
-      'error',
-      { properties: 'never', ignoreDestructuring: true, ignoreImports: true },
-    ],
+    camelcase: ['error', { properties: 'never', ignoreDestructuring: true, ignoreImports: true }],
     // 'arrow-parens': ['warn', 'always'],
     'arrow-parens': 'off',
     'vue/max-attributes-per-line': 1,
