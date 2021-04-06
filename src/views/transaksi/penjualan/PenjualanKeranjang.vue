@@ -3,24 +3,18 @@
     <!-- <e-commerce-checkout-step-cart-products /> -->
     <!-- Products List -->
     <b-row>
-      <b-col
-        cols="12"
-        md="8"
-      >
+      <b-col cols="12" md="8">
         <!-- Left Form -->
         <b-card>
           <div>
             <h6>
               Keranjang
             </h6>
-            <hr>
+            <hr />
           </div>
           <b-card-body>
             <!-- Full Name -->
-            <b-form-group
-              label="Nama / Kode Barang"
-              label-cols-md="3"
-            >
+            <b-form-group label="Nama / Kode Barang" label-cols-md="3">
               <v-select
                 placeholder="Nama / Kode Barang"
                 label="nama"
@@ -44,19 +38,11 @@
                 enabled: false,
               }"
             >
-              <template
-                slot="table-row"
-                slot-scope="props"
-              >
+              <template slot="table-row" slot-scope="props">
                 <!-- Column: Action -->
                 <span v-if="props.column.field === 'action'">
                   <div>
-                    <b-button
-                      v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                      variant="danger"
-                      class="btn-icon"
-                      @click="del(props.index, props.row.id)"
-                    >
+                    <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="danger" class="btn-icon" @click="del(props.index, props.row.id)">
                       <feather-icon icon="TrashIcon" />
                     </b-button>
                   </div>
@@ -68,23 +54,20 @@
               </template>
             </vue-good-table>
             <!-- Submit Button -->
-            <hr>
+            <hr />
           </b-card-body>
         </b-card>
       </b-col>
       <!-- Checkout Options -->
 
-      <b-col
-        cols="12"
-        md="4"
-      >
+      <b-col cols="12" md="4">
         <div class="checkout-options">
           <b-card>
             <div class="price-details">
               <h6 class="price-title">
                 Detail Harga
               </h6>
-              <hr>
+              <hr />
               <ul class="list-unstyled">
                 <li class="price-detail">
                   <div class="detail-title">
@@ -115,15 +98,11 @@
                     Ongkos Kirim
                   </div>
                   <div class="detail-amt">
-                    <b-form-input
-                      v-model="detailHarga.ongkir"
-                      trim
-                      type="number"
-                    />
+                    <b-form-input v-model="detailHarga.ongkir" trim type="number" />
                   </div>
                 </li>
               </ul>
-              <hr>
+              <hr />
               <ul class="list-unstyled">
                 <li class="price-detail">
                   <div class="detail-title detail-total">
@@ -134,11 +113,7 @@
                   </div>
                 </li>
               </ul>
-              <b-button
-                variant="primary"
-                block
-                @click="$emit('next-step')"
-              >
+              <b-button variant="primary" block @click="$emit('next-step')">
                 Place Order
               </b-button>
             </div>
@@ -159,24 +134,12 @@
       <!-- <b-modal id="modal-default" ref="my-modal" ok-only ok-title="Submit" centered :title="detailBarang.nama"> -->
       <b-card-body>
         <b-col cols="12">
-          <b-form-group
-            label="Quantity"
-            label-for="quantity"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="qty"
-              trim
-              type="number"
-            />
+          <b-form-group label="Quantity" label-for="quantity" class="mb-2">
+            <b-form-input v-model="qty" trim type="number" />
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group
-            label="Harga Satuan"
-            label-for="nama-pelanggan-lama"
-            class="mb-2"
-          >
+          <b-form-group label="Harga Satuan" label-for="nama-pelanggan-lama" class="mb-2">
             <v-select
               v-model="selectHarga"
               placeholder="Satuan"
@@ -189,29 +152,13 @@
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group
-            label="Harga Jual"
-            label-for="harga-jual"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="hargaJual"
-              trim
-              type="number"
-            />
+          <b-form-group label="Harga Jual" label-for="harga-jual" class="mb-2">
+            <b-form-input v-model="hargaJual" trim type="number" />
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group
-            label="Diskon"
-            label-for="diskon"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="diskon"
-              trim
-              type="number"
-            />
+          <b-form-group label="Diskon" label-for="diskon" class="mb-2">
+            <b-form-input v-model="diskon" trim type="number" />
           </b-form-group>
         </b-col>
       </b-card-body>

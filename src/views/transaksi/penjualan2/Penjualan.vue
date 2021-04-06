@@ -12,95 +12,8 @@
       @on-complete="formSubmitted"
     >
       <!-- account datails tab -->
-      <tab-content
-        title="Account Details"
-        :before-change="beforeTabSwitch"
-      >
+      <tab-content title="Account Details" :before-change="beforeTabSwitch">
         <detail-konsumen :data-order="dataOrder" />
-        <!-- <b-row>
-          <b-col
-            cols="12"
-            class="mb-2"
-          >
-            <h5 class="mb-0">
-              Detail Konsumen
-            </h5>
-            <small class="text-muted">
-              Masukan Detail Konsumen.
-            </small>
-          </b-col>
-          <b-col md="6">
-            <b-form-group
-              label="Pelanggan Lama"
-              label-for="nama-pelanggan-lama"
-              class="mb-2"
-            >
-              <v-select
-                v-model="namaPelanggan"
-                placeholder="Nama Pelanggan"
-                label="title"
-                :options="option"
-              >
-                <template #list-header>
-                  <li class="add-new-data-header d-flex align-items-center my-50">
-                    <feather-icon
-                      icon="PlusIcon"
-                      size="16"
-                    />
-                    <span class="align-middle ml-25">Tambah Pelanggan</span>
-                  </li>
-                </template>
-              </v-select>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col md="6">
-            <b-form-group
-              label="Nama Pelanggan"
-              label-for="nama-pelanggan"
-              class="mb-2"
-            >
-              <b-form-input
-                id="nama-pelanggan"
-                v-model="dataOrder.pelanggan.nama"
-                trim
-              />
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col md="6">
-            <b-form-group
-              label="Alamat Pelanggan"
-              label-for="alamat-pelanggan"
-              class="mb-2"
-            >
-              <b-form-textarea
-                id="alamat-pelanggan"
-                v-model="dataOrder.pelanggan.alamat"
-                rows="4"
-                trim
-              />
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col md="6">
-            <b-form-group
-              label="Nomor Telepon"
-              label-for="nomor-telepon"
-              class="mb-2"
-            >
-              <b-form-input
-                id="nomor-telepon"
-                v-model="dataOrder.pelanggan.nomorTelepon"
-                type="number"
-                trim
-              />
-            </b-form-group>
-          </b-col>
-        </b-row> -->
       </tab-content>
 
       <!-- personal info tab -->
@@ -111,57 +24,30 @@
       <!-- social link -->
       <tab-content title="Review Order">
         <b-row>
-          <b-col
-            cols="12"
-            class="mb-2"
-          >
+          <b-col cols="12" class="mb-2">
             <h5 class="mb-0">
               Social Links
             </h5>
             <small class="text-muted">Enter Your Social Links</small>
           </b-col>
           <b-col md="6">
-            <b-form-group
-              label="Twitter"
-              label-for="v-twitter"
-            >
-              <b-form-input
-                id="v-twitter"
-                placeholder="https://twitter.com/abc"
-              />
+            <b-form-group label="Twitter" label-for="v-twitter">
+              <b-form-input id="v-twitter" placeholder="https://twitter.com/abc" />
             </b-form-group>
           </b-col>
           <b-col md="6">
-            <b-form-group
-              label="Facebook"
-              label-for="v-facebook"
-            >
-              <b-form-input
-                id="v-facebook"
-                placeholder="https://facebook.com/abc"
-              />
+            <b-form-group label="Facebook" label-for="v-facebook">
+              <b-form-input id="v-facebook" placeholder="https://facebook.com/abc" />
             </b-form-group>
           </b-col>
           <b-col md="6">
-            <b-form-group
-              label="Google+"
-              label-for="v-google-plus"
-            >
-              <b-form-input
-                id="v-google-plus"
-                placeholder="https://plus.google.com/abc"
-              />
+            <b-form-group label="Google+" label-for="v-google-plus">
+              <b-form-input id="v-google-plus" placeholder="https://plus.google.com/abc" />
             </b-form-group>
           </b-col>
           <b-col md="6">
-            <b-form-group
-              label="LinkedIn"
-              label-for="v-linked-in"
-            >
-              <b-form-input
-                id="v-linked-in"
-                placeholder="https://linkedin.com/abc"
-              />
+            <b-form-group label="LinkedIn" label-for="v-linked-in">
+              <b-form-input id="v-linked-in" placeholder="https://linkedin.com/abc" />
             </b-form-group>
           </b-col>
         </b-row>
@@ -212,7 +98,7 @@ export default {
           alamat: '',
           nomorTelepon: '',
         },
-        order: {},
+        orders: {},
       },
       selectedContry: 'select_value',
       selectedLanguage: 'nothing_selected',
@@ -241,11 +127,12 @@ export default {
 
   methods: {
     beforeTabSwitch() {
-      this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahOrder']) + parseFloat(1)
+      this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
 
-      store.commit('app-transaksi/ADD_ORDER', this.dataOrder)
+      store.commit('app-transaksi/ADD_DATA_PENJUALAN', this.dataOrder)
+      store.commit('app-transaksi/SET_ACTIVE_ORDER', this.dataOrder.nomor)
 
-      console.info(store.getters['app-transaksi/getOrder'])
+      console.info(store.getters['app-transaksi/getPenjualan'])
       return true
     },
     formSubmitted() {

@@ -1,15 +1,24 @@
 export default {
   namespaced: true,
   state: {
-    order: [],
+    penjualan: [],
+    activeOrder: '',
   },
   getters: {
-    getJumlahOrder: state => state.order.length,
-    getOrder: state => state.order,
+    getJumlahPenjualan: state => state.penjualan.length,
+    getActiveOrder: state => state.activeOrder,
+    getPenjualan: state => state.penjualan,
   },
   mutations: {
-    ADD_ORDER(state, data) {
-      state.order.push(data)
+    SET_ACTIVE_ORDER(state, data) {
+      state.activeOrder = data
+    },
+    ADD_DATA_PENJUALAN(state, data) {
+      state.penjualan.push(data)
+    },
+    ADD_ORDER(state, id) {
+      console.info(id)
+      // state.penjualan[id].orders.push(data)
     },
   },
   actions: {},
