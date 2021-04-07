@@ -73,7 +73,7 @@
                     </div>
                   </li>
                   <li class="price-detail">
-                    <div class="detail-title">
+                    <div class="detail-title text-danger">
                       Diskon
                     </div>
                     <div class="detail-amt discount-amt text-danger">
@@ -82,9 +82,17 @@
                   </li>
                   <li class="price-detail">
                     <div class="detail-title">
-                      Pajak
+                      Sub Total
                     </div>
                     <div class="detail-amt">
+                      {{ formatRupiah(subTotal) }}
+                    </div>
+                  </li>
+                  <li class="price-detail">
+                    <div class="detail-title text-primary">
+                      Pajak
+                    </div>
+                    <div class="detail-amt text-primary">
                       {{ formatRupiah(invoice.pajak) }}
                     </div>
                   </li>
@@ -208,11 +216,13 @@ export default {
         harga: [],
       },
       invoice: {
-        total: 1000,
+        total: 0,
         diskon: 0,
         pajak: 0,
         ongkir: 0,
         grandTotal: 0,
+        kredit: false,
+        cod: false,
       },
       selectHarga: '',
       qty: 1,
@@ -257,12 +267,16 @@ export default {
       order: [],
     }
   },
+
   computed: {
     ongkir() {
       return this.invoice.ongkir
     },
     ongkir2() {
       return this.formatRupiah(this.invoice.ongkir)
+    },
+    subTotal() {
+      return parseFloat(this.invoice.total) - parseFloat(this.invoice.diskon)
     },
   },
   watch: {
@@ -272,6 +286,7 @@ export default {
       } else {
         this.invoice.grandTotal =
           parseFloat(this.invoice.total) - parseFloat(this.invoice.diskon) + parseFloat(this.invoice.pajak) + parseFloat(this.invoice.ongkir)
+        store.commit('app-transaksi/SET_INVOICE', this.invoice)
       }
     },
   },
@@ -280,8 +295,8 @@ export default {
   },
   methods: {
     resetModal() {
-      this.invoice.ongkir = 0
       this.detailBarang.qty = 1
+      this.diskon = 0
       this.selectHarga = ''
       this.hargaJual = 0
       this.qty = 1
@@ -307,7 +322,7 @@ export default {
     handleSubmit() {
       // Push the name to submitted names
       const nomor = this.order.length + 1
-      const total = this.qty * this.hargaJual - this.diskon
+      const grandTotal = this.qty * this.hargaJual - this.diskon
       const data = {
         id: nomor,
         kode_barang: this.detailBarang.kode_barang,
@@ -315,15 +330,23 @@ export default {
         jumlah: this.qty,
         harga_jual: this.hargaJual,
         diskon: this.diskon,
-        total,
+        total: grandTotal,
       }
       this.order.push(data)
-      this.invoice.total = parseFloat(this.invoice.total) + parseFloat(total)
-      store.commit('app-transaksi/ADD_ORDER', this.id)
+      store.commit('app-transaksi/ADD_ORDER_TO_ACTIVE_PENJUALAN', this.order)
+      this.calculateTotal(data)
       // Hide the modal manually
       this.$nextTick(() => {
         this.$refs['my-modal'].toggle('#toggle-btn')
       })
+    },
+    calculateTotal(order) {
+      this.invoice.total = parseFloat(this.invoice.total) + parseFloat(order.total)
+      this.invoice.diskon = parseFloat(order.diskon)
+      const totalBeforeTax = parseFloat(this.invoice.total) - parseFloat(this.invoice.diskon)
+      this.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
+      this.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.invoice.pajak) + parseFloat(this.invoice.ongkir)
+      store.commit('app-transaksi/SET_INVOICE', this.invoice)
     },
     showModal(id) {
       if (id !== null) {

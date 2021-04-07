@@ -20,37 +20,9 @@
       <tab-content title="Keranjang">
         <keranjang />
       </tab-content>
-
       <!-- social link -->
       <tab-content title="Review Order">
-        <b-row>
-          <b-col cols="12" class="mb-2">
-            <h5 class="mb-0">
-              Social Links
-            </h5>
-            <small class="text-muted">Enter Your Social Links</small>
-          </b-col>
-          <b-col md="6">
-            <b-form-group label="Twitter" label-for="v-twitter">
-              <b-form-input id="v-twitter" placeholder="https://twitter.com/abc" />
-            </b-form-group>
-          </b-col>
-          <b-col md="6">
-            <b-form-group label="Facebook" label-for="v-facebook">
-              <b-form-input id="v-facebook" placeholder="https://facebook.com/abc" />
-            </b-form-group>
-          </b-col>
-          <b-col md="6">
-            <b-form-group label="Google+" label-for="v-google-plus">
-              <b-form-input id="v-google-plus" placeholder="https://plus.google.com/abc" />
-            </b-form-group>
-          </b-col>
-          <b-col md="6">
-            <b-form-group label="LinkedIn" label-for="v-linked-in">
-              <b-form-input id="v-linked-in" placeholder="https://linkedin.com/abc" />
-            </b-form-group>
-          </b-col>
-        </b-row>
+        <review-order />
       </tab-content>
     </form-wizard>
   </div>
@@ -61,28 +33,21 @@ import { FormWizard, TabContent } from 'vue-form-wizard'
 // import vSelect from 'vue-select'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import store from '@/store'
-import {
-  BRow,
-  BCol,
-  BFormGroup,
-  BFormInput,
-  // BFormTextarea,
-} from 'bootstrap-vue'
+
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import DetailKonsumen from './DetailKonsumen.vue'
+import ReviewOrder from './ReviewOrder.vue'
 import Keranjang from './Keranjang.vue'
 
 export default {
   components: {
     FormWizard,
     DetailKonsumen,
+    ReviewOrder,
     TabContent,
     Keranjang,
     // BFormTextarea,
-    BRow,
-    BCol,
-    BFormGroup,
-    BFormInput,
+
     // vSelect,
     // eslint-disable-next-line vue/no-unused-components
     ToastificationContent,
@@ -92,12 +57,14 @@ export default {
       dataOrder: {
         startIndex: 0,
         nomor: 0,
+        status: false, // untuk Status Draft atau Proses
         pelanggan: {
           kodePelanggan: '',
           nama: '',
           alamat: '',
           nomorTelepon: '',
         },
+        invoice: '',
         orders: {},
       },
       selectedContry: 'select_value',
@@ -129,10 +96,8 @@ export default {
     beforeTabSwitch() {
       this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
 
-      store.commit('app-transaksi/ADD_DATA_PENJUALAN', this.dataOrder)
-      store.commit('app-transaksi/SET_ACTIVE_ORDER', this.dataOrder.nomor)
+      store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
 
-      console.info(store.getters['app-transaksi/getPenjualan'])
       return true
     },
     formSubmitted() {
