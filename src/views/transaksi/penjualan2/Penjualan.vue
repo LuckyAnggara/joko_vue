@@ -6,18 +6,19 @@
       :title="null"
       :subtitle="null"
       layout="vertical"
-      finish-button-text="Submit"
+      finish-button-text="Proses"
+      custom-buttons-right="assd"
       back-button-text="Previous"
       class="wizard-vertical mb-3"
       @on-complete="formSubmitted"
     >
       <!-- account datails tab -->
-      <tab-content title="Account Details" :before-change="beforeTabSwitch">
+      <tab-content title="Account Details" :before-change="beforeTabSwitch1">
         <detail-konsumen :data-order="dataOrder" />
       </tab-content>
 
       <!-- personal info tab -->
-      <tab-content title="Keranjang">
+      <tab-content title="Keranjang" :before-change="beforeTabSwitch2">
         <keranjang />
       </tab-content>
       <!-- social link -->
@@ -65,40 +66,48 @@ export default {
           nomorTelepon: '',
         },
         invoice: '',
+        pembayaran: {
+          bank: '',
+          jenisPembayaran: { title: 'Tunai', value: '0' },
+          kredit: false,
+          downPayment: 0,
+          tanggalJatuhTempo: '',
+          statusPembayaran: { title: 'Lunas', value: '0' },
+        },
         orders: {},
       },
-      selectedContry: 'select_value',
-      selectedLanguage: 'nothing_selected',
-      countryName: [
-        { value: 'select_value', text: 'Select Value' },
-        { value: 'Russia', text: 'Russia' },
-        { value: 'Canada', text: 'Canada' },
-        { value: 'China', text: 'China' },
-        { value: 'United States', text: 'United States' },
-        { value: 'Brazil', text: 'Brazil' },
-        { value: 'Australia', text: 'Australia' },
-        { value: 'India', text: 'India' },
-      ],
-      languageName: [
-        { value: 'nothing_selected', text: 'Nothing Selected' },
-        { value: 'English', text: 'English' },
-        { value: 'Chinese', text: 'Mandarin Chinese' },
-        { value: 'Hindi', text: 'Hindi' },
-        { value: 'Spanish', text: 'Spanish' },
-        { value: 'Arabic', text: 'Arabic' },
-        { value: 'Malay', text: 'Malay' },
-        { value: 'Russian', text: 'Russian' },
-      ],
     }
   },
 
   methods: {
-    beforeTabSwitch() {
-      this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
+    beforeTabSwitch1() {
+      if (this.dataOrder.pelanggan.nama !== '' || this.dataOrder.pelanggan.alamat !== '') {
+        this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
 
-      store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
-
-      return true
+        store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
+        return true
+      }
+      this.$swal({
+        icon: 'error',
+        title: 'Oopss Data Pelanggan Masih Kosong',
+        customClass: {
+          confirmButton: 'btn btn-success',
+        },
+      })
+      return false
+    },
+    beforeTabSwitch2() {
+      if (this.$store.state.['app-transaksi'].activePenjualan.orders.length > 0) {
+        return true
+      }
+      this.$swal({
+        icon: 'error',
+        title: 'Oopss Data Order Masih Kosong',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+        },
+      })
+      return false
     },
     formSubmitted() {
       this.$toast({

@@ -148,7 +148,7 @@
               label="nama_satuan"
               :options="select.harga"
               :reduce="harga => harga.id"
-              :value="select.harga.id"
+              :value="selectHarga.id"
               @input="setHarga"
             />
           </b-form-group>
@@ -224,7 +224,9 @@ export default {
         kredit: false,
         cod: false,
       },
-      selectHarga: '',
+      selectHarga: {
+        id: 0,
+      },
       qty: 1,
       diskon: 0,
       hargaJual: 0,
@@ -352,6 +354,9 @@ export default {
       if (id !== null) {
         this.detailBarang = this.select.barang.find(d => d.id === id)
         this.select.harga = this.detailBarang.harga
+        // console.info(this.detailBarang.harga[0])
+        this.selectHarga = this.detailBarang.harga['0']
+        console.info(this.selectHarga)
         this.$refs['my-modal'].show()
       } else {
         console.info('error id tidak ditemukan')

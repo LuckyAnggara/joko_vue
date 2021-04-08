@@ -109,62 +109,170 @@
         </div>
       </b-col>
     </b-row>
+    <hr />
     <b-row>
-      <b-col cols="12" md="6">
-        <b-form-group label="Pembayaran" label-for="nama-pelanggan-lama" class="mb-2" label-cols-md="5">
-          <v-select v-model="statusPembayaran" placeholder="Cara Pembayaran" label="title" :options="pembayaranOption" />
+      <b-col cols="12" md="8">
+        <b-form-group label="Metode Pembayaran" label-cols-md="4">
+          <v-select
+            v-model="data.pembayaran.statusPembayaran"
+            :value="data.pembayaran.statusPembayaran.value"
+            placeholder="Cara Pembayaran"
+            label="title"
+            :options="pembayaranOption"
+            @input="cekStatusPembayaran"
+            :clearable="false"
+          />
+        </b-form-group>
+        <hr />
+      </b-col>
+    </b-row>
+    <b-row v-show="data.pembayaran.kredit">
+      <b-col cols="12" md="8">
+        <b-form-group label="Tanggal Jatuh Tempo" label-for="tanggalJatuhTempo" label-cols-md="4">
+          <b-form-datepicker id="tanggalJatuhTempo" v-model="data.pembayaran.tanggalJatuhTempo" />
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row v-show="data.pembayaran.kredit">
+      <b-col cols="12" md="8">
+        <b-form-group label="Down Payment" label-for="down-payment" label-cols-md="4">
+          <b-form-input type="number" id="down-payment" @change="dpOnChange($event)" v-model="data.pembayaran.downPayment" />
         </b-form-group>
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="12" md="6">
-        <b-form-group label="Tanggal Jatuh Tempo" label-for="nama-pelanggan-lama" class="mb-2" label-cols-md="5">
-          <flat-pickr v-model="tanggalJatuhTempo" class="form-control" />
+      <b-col cols="12" md="8">
+        <b-form-group label="Jumlah Pembayaran" label-for="down-payment" label-cols-md="4">
+          <b-form-input type="number" id="jumlah-pembayaran" v-model="jumlahPembayaran" />
         </b-form-group>
       </b-col>
     </b-row>
+    <b-row>
+      <b-col cols="12" md="8">
+        <b-form-group label="Kembalian" label-for="down-payment" label-cols-md="4">
+          <b-form-input readonly type="text" id="kembalian" v-model="kembalian" />
+        </b-form-group>
+        <hr />
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" md="8">
+        <b-form-group label="Jumlah Pembayaran" label-for="down-payment" label-cols-md="4">
+          <v-select
+            v-model="data.pembayaran.jenisPembayaran"
+            :value="data.pembayaran.jenisPembayaran.value"
+            placeholder="Cara Pembayaran"
+            label="title"
+            :options="jenisPembayaranOption"
+            :clearable="false"
+            @input="cekJenisPembayaran"
+          />
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <b-row v-show="transfer">
+      <b-col cols="12" md="8">
+        <b-form-group label="Transfer ke" label-for="down-payment" label-cols-md="4">
+          <v-select placeholder="Nama Bank" v-model="data.pembayaran.bank" label="title" :clearable="false" :options="bankOption" />
+        </b-form-group>
+      </b-col>
+    </b-row>
+    <div class="d-flex justify-content-end">
+      <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="warning">
+        Simpan
+      </b-button>
+    </div>
   </b-form>
 </template>
 
 <script>
-import { BFormGroup, BCard, BForm, BRow, BCol } from 'bootstrap-vue'
-import flatPickr from 'vue-flatpickr-component'
+import { BButton, BFormDatepicker, BFormGroup, BCard, BForm, BFormInput, BRow, BCol } from 'bootstrap-vue'
+import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import store from '@/store'
 
 export default {
   components: {
     // BSV
+    BButton,
+    BFormDatepicker,
     BForm,
     BFormGroup,
     BRow,
     BCol,
     BCard,
-    flatPickr,
+    BFormInput,
     // 3rd party
     vSelect,
   },
+  directives: {
+    Ripple,
+  },
   data() {
     return {
-      tanggalJatuhTempo: '',
-      statusPembayaran: '',
+      jumlahPembayaran: 0,
+      transfer: false,
       pembayaranOption: [
         { title: 'Lunas', value: '0' },
-        { title: 'Kredit', value: '2' },
-        { title: 'Cash On Delivery (COD)', value: '3' },
-        { title: 'Transfer', value: '4' },
+        { title: 'Kredit', value: '1' },
+        { title: 'Cash On Delivery (COD)', value: '2' },
+      ],
+      jenisPembayaranOption: [
+        { title: 'Tunai', value: '0' },
+        { title: 'Transfer', value: '1' },
+      ],
+      bankOption: [
+        { title: 'BNI - 0542424', value: '0' },
+        { title: 'BRI - 0203203020302', value: '1' },
+        { title: 'BCA - asdasdasdasd', value: '1' },
       ],
     }
   },
+
   computed: {
     subTotal() {
       return parseFloat(this.data.invoice.total) - parseFloat(this.data.invoice.diskon)
+    },
+    kembalian() {
+      if (this.jumlahPembayaran === 0) {
+        return this.formatRupiah(0)
+      }
+      return this.formatRupiah(this.jumlahPembayaran - this.data.invoice.grandTotal)
     },
     data() {
       return store.getters['app-transaksi/getActivePenjualan']
     },
   },
   methods: {
+    dpOnChange(e) {
+      if (e >= this.data.invoice.grandTotal) {
+        this.data.pembayaran.downPayment = this.data.invoice.grandTotal
+      }
+    },
+    cekStatusPembayaran(id) {
+      if (id.value === '1') {
+        this.data.pembayaran.kredit = true
+      } else {
+        this.data.pembayaran.kredit = false
+      }
+      this.resetInput()
+
+      // console.info(id.value)
+    },
+    cekJenisPembayaran(id) {
+      console.info(id)
+      if (id.value === '1') {
+        this.transfer = true
+      } else {
+        this.transfer = false
+      }
+      // console.info(id.value)
+    },
+    resetInput() {
+      this.jumlahPembayaran = 0
+      this.data.pembayaran.downPayment = 0
+      this.data.pembayaran.tanggalJatuhTempo = ''
+    },
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
