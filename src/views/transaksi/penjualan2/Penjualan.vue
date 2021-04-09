@@ -97,7 +97,8 @@ export default {
       return false
     },
     beforeTabSwitch2() {
-      if (this.$store.state.['app-transaksi'].activePenjualan.orders.length > 0) {
+      const data = store.getters['app-transaksi/getActivePenjualan']
+      if (data.orders.length > 0) {
         return true
       }
       this.$swal({
@@ -110,13 +111,25 @@ export default {
       return false
     },
     formSubmitted() {
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: 'Form Submitted',
-          icon: 'EditIcon',
-          variant: 'success',
-        },
+      this.store()
+      // this.$toast({
+      //   component: ToastificationContent,
+      //   props: {
+      //     title: 'Form Submitted',
+      //     icon: 'EditIcon',
+      //     variant: 'success',
+      //   },
+      // })
+    },
+    store() {
+      store.dispatch('app-transaksi/addTransaksi', this.dataOrder).then(res => {
+        if (res.status === 200) {
+          console.info(res)
+          // store.commit('app-barang/UPDATE_LIST_BARANG', res.data)
+          // this.success()
+        } else {
+          // this.error()
+        }
       })
     },
   },

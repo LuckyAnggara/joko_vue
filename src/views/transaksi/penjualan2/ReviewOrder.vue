@@ -140,36 +140,40 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <b-row>
-      <b-col cols="12" md="8">
-        <b-form-group label="Jumlah Pembayaran" label-for="down-payment" label-cols-md="4">
-          <b-form-input type="number" id="jumlah-pembayaran" v-model="jumlahPembayaran" />
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="8">
-        <b-form-group label="Kembalian" label-for="down-payment" label-cols-md="4">
-          <b-form-input readonly type="text" id="kembalian" v-model="kembalian" />
-        </b-form-group>
-        <hr />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="8">
-        <b-form-group label="Jumlah Pembayaran" label-for="down-payment" label-cols-md="4">
-          <v-select
-            v-model="data.pembayaran.jenisPembayaran"
-            :value="data.pembayaran.jenisPembayaran.value"
-            placeholder="Cara Pembayaran"
-            label="title"
-            :options="jenisPembayaranOption"
-            :clearable="false"
-            @input="cekJenisPembayaran"
-          />
-        </b-form-group>
-      </b-col>
-    </b-row>
+    <section v-show="statusKembalian">
+      <b-row>
+        <b-col cols="12" md="8">
+          <b-form-group label="Jumlah Pembayaran" label-for="jumlah-pembayaran" label-cols-md="4">
+            <b-form-input type="number" id="jumlah-pembayaran" v-model="jumlahPembayaran" />
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="8">
+          <b-form-group label="Kembalian" label-for="kembalian" label-cols-md="4">
+            <b-form-input readonly type="text" id="kembalian" v-model="kembalian" />
+          </b-form-group>
+          <hr />
+        </b-col>
+      </b-row>
+    </section>
+    <section v-show="caraPembayaran">
+      <b-row>
+        <b-col cols="12" md="8">
+          <b-form-group label="Cara Pembayaran" label-for="down-payment" label-cols-md="4">
+            <v-select
+              v-model="data.pembayaran.jenisPembayaran"
+              :value="data.pembayaran.jenisPembayaran.value"
+              placeholder="Cara Pembayaran"
+              label="title"
+              :options="jenisPembayaranOption"
+              :clearable="false"
+              @input="cekJenisPembayaran"
+            />
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </section>
     <b-row v-show="transfer">
       <b-col cols="12" md="8">
         <b-form-group label="Transfer ke" label-for="down-payment" label-cols-md="4">
@@ -179,7 +183,7 @@
     </b-row>
     <div class="d-flex justify-content-end">
       <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="warning">
-        Simpan
+        Simpan Draft
       </b-button>
     </div>
   </b-form>
@@ -210,6 +214,8 @@ export default {
   },
   data() {
     return {
+      caraPembayaran: true,
+      statusKembalian: true,
       jumlahPembayaran: 0,
       transfer: false,
       pembayaranOption: [
@@ -251,9 +257,19 @@ export default {
     },
     cekStatusPembayaran(id) {
       if (id.value === '1') {
+        // Kredit
         this.data.pembayaran.kredit = true
-      } else {
+        this.statusKembalian = true
+        this.caraPembayaran = true
+      } else if (id.value === '2') {
+        // COD
         this.data.pembayaran.kredit = false
+        this.statusKembalian = false
+        this.caraPembayaran = false
+      } else if (id.value === '0') {
+        // Lunas
+        this.data.pembayaran.kredit = false
+        this.statusKembalian = true
       }
       this.resetInput()
 

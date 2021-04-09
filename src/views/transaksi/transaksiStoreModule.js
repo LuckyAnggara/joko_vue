@@ -1,3 +1,5 @@
+import axios from '@axios'
+
 export default {
   namespaced: true,
   state: {
@@ -32,5 +34,14 @@ export default {
       // state.penjualan[id].orders.push(data)
     },
   },
-  actions: {},
+  actions: {
+    addTransaksi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:8000/api/penjualan/store', data)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+  },
 }
