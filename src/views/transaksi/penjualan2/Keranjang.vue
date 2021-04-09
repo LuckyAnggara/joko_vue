@@ -221,8 +221,6 @@ export default {
         pajak: 0,
         ongkir: 0,
         grandTotal: 0,
-        kredit: false,
-        cod: false,
       },
       selectHarga: {
         id: 0,
