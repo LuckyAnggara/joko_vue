@@ -130,6 +130,7 @@ export default {
       dataOrder: {
         startIndex: 0,
         nomorTransaksi: '',
+        tanggalTransaksi: '',
         nomor: 0,
         status: false, // untuk Status Draft atau Proses
         pelanggan: {
@@ -170,8 +171,9 @@ export default {
         },
         buttonsStyling: false,
       })
+
       this.$router.push({
-        name: 'screen-barang',
+        name: 'transaksi-penjualan-invoice',
       })
     },
     error(error) {
@@ -191,7 +193,6 @@ export default {
     beforeTabSwitch1() {
       if (this.dataOrder.pelanggan.nama !== '' || this.dataOrder.pelanggan.alamat !== '') {
         this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
-
         store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
         return true
       }
@@ -221,8 +222,9 @@ export default {
     formSubmitted() {
       if (this.dataOrder.pembayaran.jenisPembayaran.value === '0') {
         this.showModal()
+      } else {
+        this.store()
       }
-      this.store()
     },
     resetModal() {
       this.jumlahPembayaran = 0
@@ -248,10 +250,10 @@ export default {
         .then(res => {
           if (res.status === 200) {
             loader.hide()
-            // this.success()
-            console.info(res)
-            this.dataOrder.nomorTransaksi = res.data
+            this.dataOrder.nomorTransaksi = res.data.nomor_transaksi
+            this.dataOrder.tanggalTransaksi = res.data.created_at
             store.commit('app-transaksi/SET_DATA_INVOICE', this.dataOrder)
+            this.success()
           } else {
             this.error()
           }

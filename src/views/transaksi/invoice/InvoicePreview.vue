@@ -60,20 +60,26 @@
                   <span class="invoice-number">#{{ dataInvoice.nomorTransaksi }}</span>
                 </h6>
                 <div class="invoice-date-wrapper">
-                  <p class="invoice-date-title">
-                    Tanggal Terbit:
-                  </p>
-                  <p class="invoice-date">
-                    xxxx
-                  </p>
-                </div>
-                <div class="invoice-date-wrapper">
-                  <p class="invoice-date-title">
-                    Tanggal Tempo:
-                  </p>
-                  <p class="invoice-date">
-                    {{ dataInvoice.pembayaran.tanggalJatuhTempo }}
-                  </p>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td class="pr-1">
+                          Tanggal Terbit:
+                        </td>
+                        <td>
+                          <span class="font-weight-bold"> {{ this.$moment(dataInvoice.tanggalTransaksi).format('DD MMMM YYYY') }}</span>
+                        </td>
+                      </tr>
+                      <tr v-show="dataInvoice.pembayaran.statusPembayaran.title === 'Lunas' ? false : true">
+                        <td class="pr-1">
+                          Tanggal Tempo:
+                        </td>
+                        <td>
+                          <span class="font-weight-bold"> {{ this.$moment(dataInvoice.pembayaran.tanggalJatuhTempo).format('DD MMMM YYYY') }}</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -100,9 +106,7 @@
                 <p class="card-text mb-25">
                   {{ dataInvoice.pelanggan.alamat }}
                 </p>
-                <p class="card-text mb-25">
-                  Jakartn Selatan, DKI Jakarta
-                </p>
+
                 <p class="card-text mb-25">
                   {{ dataInvoice.pelanggan.nomorTelepon }}
                 </p>
@@ -148,22 +152,24 @@
                           <b>{{ dataInvoice.pembayaran.statusPembayaran.title }}</b>
                         </td>
                       </tr>
-                      <tr>
-                        <td class="pr-1">
-                          Down Payment:
-                        </td>
-                        <td>
-                          {{ formatRupiah(dataInvoice.pembayaran.downPayment) }}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="pr-1">
-                          Sisa Tagihan:
-                        </td>
-                        <td>
-                          <b>{{ sisaTagihan }}</b>
-                        </td>
-                      </tr>
+                      <section v-show="dataInvoice.pembayaran.statusPembayaran.title === 'Lunas' ? false : true">
+                        <tr>
+                          <td class="pr-1">
+                            Down Payment:
+                          </td>
+                          <td>
+                            {{ formatRupiah(dataInvoice.pembayaran.downPayment) }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="pr-1">
+                            Sisa Tagihan:
+                          </td>
+                          <td>
+                            <b>{{ sisaTagihan }}</b>
+                          </td>
+                        </tr>
+                      </section>
                     </tbody>
                   </table>
                 </div>
