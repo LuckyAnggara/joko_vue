@@ -1,99 +1,279 @@
 <template>
-  <form-wizard
-    ref="refFormWizard"
-    color="#7367F0"
-    :title="null"
-    :subtitle="null"
-    finish-button-text="Submit"
-    back-button-text="Previous"
-    hide-buttons
-    class="checkout-form-wizard steps-transparent"
-  >
-    <!-- address -->
-    <tab-content
-      title="Pelanggan"
-      icon="feather icon-user"
+  <div ref="formContainer">
+    <form-wizard
+      color="#7367F0"
+      :start-index="dataOrder.startIndex"
+      :title="null"
+      :subtitle="null"
+      layout="vertical"
+      finish-button-text="Proses"
+      custom-buttons-right="assd"
+      back-button-text="Previous"
+      class="wizard-vertical mb-3"
+      @on-complete="formSubmitted"
     >
-      <e-commerce-checkout-step-address @next-step="formWizardNextStep" />
-    </tab-content>
+      <!-- account datails tab -->
+      <tab-content
+        title="Account Details"
+        :before-change="beforeTabSwitch1"
+      >
+        <detail-konsumen :data-order="dataOrder" />
+      </tab-content>
 
-    <!-- account detail tab -->
-    <tab-content
-      title="Pesanan"
-      icon="feather icon-shopping-cart"
-    >
-      <e-commerce-checkout-step-cart @next-step="formWizardNextStep" />
-    </tab-content>
-
-    <!-- social link -->
-    <tab-content
+      <!-- personal info tab -->
+      <tab-content
+        title="Keranjang"
+        :before-change="beforeTabSwitch2"
+      >
+        <keranjang />
+      </tab-content>
+      <!-- social link -->
+      <tab-content title="Review Order">
+        <review-order />
+      </tab-content>
+    </form-wizard>
+    <b-modal
+      id="modal-prevent-closing"
+      ref="my-modal"
       title="Pembayaran"
-      icon="feather icon-credit-card"
+      ok-title="Proses"
+      cancel-variant="outline-secondary"
+      @show="resetModal"
+      @hidden="resetModal"
+      @ok="store"
     >
-      <e-commerce-checkout-step-payment @next-step="formWizardNextStep" />
-    </tab-content>
-  </form-wizard>
+      <!-- <b-modal id="modal-default" ref="my-modal" ok-only ok-title="Submit" centered :title="detailBarang.nama"> -->
+      <b-card-body>
+        <section>
+          <b-row>
+            <b-col
+              cosl="12"
+              md="12"
+            >
+              <b-form-group
+                label="Uang diterima"
+                label-for="jumlah-pembayaran"
+                label-cols-md="5"
+              >
+                <b-form-input
+                  id="jumlah-pembayaran"
+                  v-model="jumlahPembayaran"
+                  placeholder="Jumlah Uang yang diterima"
+                  type="number"
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col
+              cols="12"
+              md="12"
+            >
+              <b-form-group
+                label="Kembalian"
+                label-for="kembalian"
+                label-cols-md="5"
+              >
+                <b-form-input
+                  id="kembalian"
+                  v-model="kembalian"
+                  readonly
+                  type="text"
+                />
+              </b-form-group>
+              <hr>
+            </b-col>
+          </b-row>
+        </section>
+      </b-card-body>
+    </b-modal>
+  </div>
 </template>
 
 <script>
 import { FormWizard, TabContent } from 'vue-form-wizard'
-import { ref } from '@vue/composition-api'
-import ECommerceCheckoutStepPayment from './ECommerceCheckoutStepPayment.vue'
-import ECommerceCheckoutStepCart from './PenjualanKeranjang.vue'
-import ECommerceCheckoutStepAddress from './PenjualanDetailKonsumen.vue'
+import {
+  BCol, BRow, BModal, BFormInput, BFormGroup, BCardBody,
+} from 'bootstrap-vue'
+// import vSelect from 'vue-select'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import store from '@/store'
+
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import DetailKonsumen from './DetailKonsumen.vue'
+import ReviewOrder from './ReviewOrder.vue'
+import Keranjang from './Keranjang.vue'
 
 export default {
   components: {
-    // 3rd Party
+    BCol,
+    BRow,
+
+    BCardBody,
+    BFormInput,
+    BFormGroup,
+    BModal,
     FormWizard,
+    DetailKonsumen,
+    ReviewOrder,
     TabContent,
-    // SFC
-    ECommerceCheckoutStepCart,
-    ECommerceCheckoutStepAddress,
-    ECommerceCheckoutStepPayment,
+    Keranjang,
+    // BFormTextarea,
+
+    // vSelect,
+    // eslint-disable-next-line vue/no-unused-components
+    ToastificationContent,
   },
-
-  setup() {
-    const refFormWizard = ref(null)
-    const formWizardNextStep = () => {
-      refFormWizard.value.nextTab()
-    }
-
-    // ? This is just dummy details
-    // const checkoutDetails = ref({
-    //   alamat: {
-    //     namaPelanggan: '',
-    //     alamat: '',
-    //     nomorTelepon: '',
-    //   },
-    //   payment: {
-    //     cvv: '',
-    //   },
-    // })
-
+  data() {
     return {
-      refFormWizard,
-      formWizardNextStep,
-
-      // Dummy Details
-      // checkoutDetails,
+      jumlahPembayaran: 0,
+      dataOrder: {
+        startIndex: 0,
+        nomorTransaksi: '',
+        nomor: 0,
+        status: false, // untuk Status Draft atau Proses
+        pelanggan: {
+          kodePelanggan: '',
+          nama: '',
+          alamat: '',
+          nomorTelepon: '',
+        },
+        invoice: '',
+        pembayaran: {
+          bank: '',
+          jenisPembayaran: { title: 'Tunai', value: '0' },
+          kredit: false,
+          downPayment: 0,
+          tanggalJatuhTempo: '',
+          statusPembayaran: { title: 'Lunas', value: '0' },
+        },
+        orders: {},
+      },
     }
+  },
+  computed: {
+    kembalian() {
+      if (this.jumlahPembayaran === 0) {
+        return this.formatRupiah(0)
+      }
+      return this.formatRupiah(this.jumlahPembayaran - this.dataOrder.invoice.grandTotal)
+    },
+  },
+  methods: {
+    success() {
+      this.$swal({
+        title: 'Success!',
+        text: 'Transaksi Sukses!!',
+        icon: 'success',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },
+        buttonsStyling: false,
+      })
+      this.$router.push({
+        name: 'screen-barang',
+      })
+    },
+    error(error) {
+      this.$swal({
+        title: 'Error!',
+        text: `Oopss ada Masalah!${error}`,
+        icon: 'error',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },
+        buttonsStyling: false,
+      })
+    },
+    formatRupiah(value) {
+      return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    },
+    beforeTabSwitch1() {
+      if (this.dataOrder.pelanggan.nama !== '' || this.dataOrder.pelanggan.alamat !== '') {
+        this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
+
+        store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
+        return true
+      }
+      this.$swal({
+        icon: 'error',
+        title: 'Oopss Data Pelanggan Masih Kosong',
+        customClass: {
+          confirmButton: 'btn btn-success',
+        },
+      })
+      return false
+    },
+    beforeTabSwitch2() {
+      const data = store.getters['app-transaksi/getActivePenjualan']
+      if (data.orders.length > 0) {
+        return true
+      }
+      this.$swal({
+        icon: 'error',
+        title: 'Oopss Data Order Masih Kosong',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+        },
+      })
+      return false
+    },
+    formSubmitted() {
+      if (this.dataOrder.pembayaran.jenisPembayaran.value === '0') {
+        this.showModal()
+      }
+      this.store()
+    },
+    resetModal() {
+      this.jumlahPembayaran = 0
+    },
+    showModal() {
+      this.$refs['my-modal'].show()
+    },
+    store() {
+      const loader = this.$loading.show({
+        // Optional parameters
+        container: this.$refs.formContainer,
+        canCancel: true,
+        color: '#000000',
+        loader: 'spinner',
+        width: 64,
+        height: 64,
+        backgroundColor: '#ffffff',
+        opacity: 0.5,
+        zIndex: 999,
+      })
+      store
+        .dispatch('app-transaksi/addTransaksi', this.dataOrder)
+        .then(res => {
+          if (res.status === 200) {
+            loader.hide()
+            // this.success()
+            console.info(res)
+            this.dataOrder.nomorTransaksi = res.data
+            store.commit('app-transaksi/SET_DATA_INVOICE', this.dataOrder)
+          } else {
+            this.error()
+          }
+        })
+        .catch(error => {
+          this.error(error)
+        })
+    },
   },
 }
 </script>
 
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-wizard.scss';
-// @import '~@core/scss/base/pages/app-ecommerce.scss';
-@import '~vue-form-wizard/dist/vue-form-wizard.min.css';
-</style>
+@import '@core/scss/vue/libs/vue-select.scss';
+@import '@core/scss/vue/libs/vue-select.scss';
+.add-new-data-header {
+  padding: $options-padding-y $options-padding-x;
+  color: $success;
 
-<style lang="scss" scoped>
-.checkout-form-wizard ::v-deep {
-  .wizard-tab-content {
-    box-shadow: none !important;
-    background: transparent !important;
-    padding: 0;
+  &:hover {
+    background-color: rgba($success, 0.12);
   }
 }
 </style>

@@ -5,12 +5,14 @@ export default {
   state: {
     penjualan: [],
     activePenjualan: '',
+    activeDataInvoice: '',
     activeOrder: '',
   },
   getters: {
     getJumlahPenjualan: state => state.penjualan.length,
     getActiveOrder: state => state.activeOrder,
     getActivePenjualan: state => state.activePenjualan,
+    getDataInvoice: state => state.activeDataInvoice,
     getPenjualan: state => state.penjualan,
   },
   mutations: {
@@ -19,6 +21,9 @@ export default {
     },
     SET_ACTIVE_PENJUALAN(state, data) {
       state.activePenjualan = data
+    },
+    SET_DATA_INVOICE(state, data) {
+      state.activeDataInvoice = data
     },
     SET_INVOICE(state, data) {
       state.activePenjualan.invoice = data

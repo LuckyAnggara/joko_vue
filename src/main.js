@@ -1,11 +1,14 @@
 import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
+import Loading from 'vue-loading-overlay'
 
 import i18n from '@/libs/i18n'
 import router from './router'
 import store from './store'
 import App from './App.vue'
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css'
 
 // Global Components
 import './global-components'
@@ -26,6 +29,10 @@ import '@/@fake-db/db'
 // BSV Plugin Registration
 Vue.use(ToastPlugin)
 Vue.use(ModalPlugin)
+Vue.use(Loading, {
+  // props
+  color: 'red',
+})
 
 // Composition API
 Vue.use(VueCompositionAPI)

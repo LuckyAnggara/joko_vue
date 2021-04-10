@@ -1,5 +1,15 @@
 export default [
   {
+    path: '/login',
+    name: 'auth-login',
+    component: () => import('@/views/pages/authentication/Login.vue'),
+    meta: {
+      layout: 'full',
+      resource: 'Auth',
+      redirectIfLoggedIn: true,
+    },
+  },
+  {
     path: '/screen/barang/tambah',
     name: 'screen-barang-tambah',
     component: () => import('@/views/screens/barang/Tambah/Tambah.vue'),
