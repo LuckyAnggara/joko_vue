@@ -25,7 +25,7 @@
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title mb-1">
-                      {{ data.pelanggan.nama }}
+                      {{ dataOrder.pelanggan.nama }}
                     </div>
                   </li>
                   <li class="price-detail">
@@ -33,12 +33,12 @@
                       class="detail-title mb-1"
                       style="white-space:pre-line;"
                     >
-                      {{ data.pelanggan.alamat }}
+                      {{ dataOrder.pelanggan.alamat }}
                     </div>
                   </li>
                   <li class="price-detail">
                     <div class="detail-title">
-                      {{ data.pelanggan.nomorTelepon }}
+                      {{ dataOrder.pelanggan.nomorTelepon }}
                     </div>
                   </li>
                 </ul>
@@ -63,7 +63,7 @@
                       Item
                     </div>
                     <div class="detail-amt">
-                      {{ data.orders.length }} item
+                      {{ dataOrder.orders.length }} item
                     </div>
                   </li>
                   <li class="price-detail">
@@ -71,7 +71,7 @@
                       Total
                     </div>
                     <div class="detail-amt">
-                      {{ formatRupiah(data.invoice.total) }}
+                      {{ formatRupiah(dataOrder.invoice.total) }}
                     </div>
                   </li>
                   <li class="price-detail">
@@ -79,7 +79,7 @@
                       Diskon
                     </div>
                     <div class="detail-amt discount-amt text-danger">
-                      {{ formatRupiah(data.invoice.diskon) }}
+                      {{ formatRupiah(dataOrder.invoice.diskon) }}
                     </div>
                   </li>
                   <hr>
@@ -96,7 +96,7 @@
                       Pajak
                     </div>
                     <div class="detail-amt text-primary">
-                      {{ formatRupiah(data.invoice.pajak) }}
+                      {{ formatRupiah(dataOrder.invoice.pajak) }}
                     </div>
                   </li>
                   <li class="price-detail">
@@ -104,7 +104,7 @@
                       Ongkos Kirim
                     </div>
                     <div class="detail-amt">
-                      {{ formatRupiah(data.invoice.ongkir) }}
+                      {{ formatRupiah(dataOrder.invoice.ongkir) }}
                     </div>
                   </li>
                 </ul>
@@ -115,7 +115,7 @@
                       Grand Total
                     </div>
                     <div class="detail-amt font-weight-bolder">
-                      {{ formatRupiah(data.invoice.grandTotal) }}
+                      {{ formatRupiah(dataOrder.invoice.grandTotal) }}
                     </div>
                   </li>
                 </ul>
@@ -135,8 +135,8 @@
             label-cols-md="4"
           >
             <v-select
-              v-model="data.pembayaran.statusPembayaran"
-              :value="data.pembayaran.statusPembayaran.value"
+              v-model="dataOrder.pembayaran.statusPembayaran"
+              :value="dataOrder.pembayaran.statusPembayaran.value"
               placeholder="Cara Pembayaran"
               label="title"
               :options="pembayaranOption"
@@ -147,7 +147,7 @@
           <hr>
         </b-col>
       </b-row>
-      <b-row v-show="data.pembayaran.kredit">
+      <b-row v-show="dataOrder.pembayaran.kredit">
         <b-col
           cols="12"
           md="8"
@@ -159,12 +159,12 @@
           >
             <b-form-datepicker
               id="tanggalJatuhTempo"
-              v-model="data.pembayaran.tanggalJatuhTempo"
+              v-model="dataOrder.pembayaran.tanggalJatuhTempo"
             />
           </b-form-group>
         </b-col>
       </b-row>
-      <b-row v-show="data.pembayaran.kredit">
+      <b-row v-show="dataOrder.pembayaran.kredit">
         <b-col
           cols="12"
           md="8"
@@ -176,7 +176,7 @@
           >
             <b-form-input
               id="down-payment"
-              v-model="data.pembayaran.downPayment"
+              v-model="dataOrder.pembayaran.downPayment"
               type="number"
               @change="dpOnChange($event)"
             />
@@ -196,8 +196,8 @@
               label-cols-md="4"
             >
               <v-select
-                v-model="data.pembayaran.jenisPembayaran"
-                :value="data.pembayaran.jenisPembayaran.value"
+                v-model="dataOrder.pembayaran.jenisPembayaran"
+                :value="dataOrder.pembayaran.jenisPembayaran.value"
                 placeholder="Cara Pembayaran"
                 label="title"
                 :options="jenisPembayaranOption"
@@ -219,7 +219,7 @@
             label-cols-md="4"
           >
             <v-select
-              v-model="data.pembayaran.bank"
+              v-model="dataOrder.pembayaran.bank"
               placeholder="Nama Bank"
               label="title"
               :clearable="false"
@@ -232,6 +232,7 @@
         <b-button
           v-ripple.400="'rgba(255, 255, 255, 0.15)'"
           variant="warning"
+          @click="storeDraft()"
         >
           Simpan Draft
         </b-button>
@@ -265,6 +266,12 @@ export default {
   directives: {
     Ripple,
   },
+  props: {
+    dataOrder: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       caraPembayaran: true,
@@ -286,36 +293,31 @@ export default {
       ],
     }
   },
-
   computed: {
     subTotal() {
-      return parseFloat(this.data.invoice.total) - parseFloat(this.data.invoice.diskon)
-    },
-
-    data() {
-      return store.getters['app-transaksi/getActivePenjualan']
+      return parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
     },
   },
   methods: {
     dpOnChange(e) {
-      if (e >= this.data.invoice.grandTotal) {
-        this.data.pembayaran.downPayment = this.data.invoice.grandTotal
+      if (e >= this.dataOrder.invoice.grandTotal) {
+        this.dataOrder.pembayaran.downPayment = this.dataOrder.invoice.grandTotal
       }
     },
     cekStatusPembayaran(id) {
       if (id.value === '1') {
         // Kredit
-        this.data.pembayaran.kredit = true
+        this.dataOrder.pembayaran.kredit = true
         this.statusKembalian = true
         this.caraPembayaran = true
       } else if (id.value === '2') {
         // COD
-        this.data.pembayaran.kredit = false
+        this.dataOrder.pembayaran.kredit = false
         this.statusKembalian = false
         this.caraPembayaran = false
       } else if (id.value === '0') {
         // Lunas
-        this.data.pembayaran.kredit = false
+        this.dataOrder.pembayaran.kredit = false
         this.statusKembalian = true
       }
       this.resetInput()
@@ -333,11 +335,33 @@ export default {
     },
     resetInput() {
       this.jumlahPembayaran = 0
-      this.data.pembayaran.downPayment = 0
-      this.data.pembayaran.tanggalJatuhTempo = ''
+      this.dataOrder.pembayaran.downPayment = 0
+      this.dataOrder.pembayaran.tanggalJatuhTempo = ''
     },
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    },
+    storeDraft() {
+      this.$swal({
+        title: 'Simpan ?',
+        text: 'Draft Penjualan akan di Simpan',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          this.dataOrder.startIndex = 2
+          store.commit('app-transaksi/ADD_DRAFT_PENJUALAN', this.dataOrder)
+          this.$router.push({
+            name: 'transaksi-penjualan-draft',
+          })
+        }
+      })
     },
   },
 }
