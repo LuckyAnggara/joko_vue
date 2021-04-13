@@ -1,7 +1,41 @@
 export default [
   {
-    path: '/transaksi/penjualan',
-    name: 'transaksi-penjualan',
+    path: '/transaksi/penjualan/daftar',
+    name: 'transaksi-penjualan-daftar',
+    component: () => import('@/views/transaksi/penjualan/Daftar.vue'),
+    meta: {
+      pageTitle: 'Transaksi',
+      breadcrumb: [
+        {
+          text: 'Penjualan',
+        },
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/transaksi/penjualan/draft',
+    name: 'transaksi-penjualan-draft',
+    component: () => import('@/views/transaksi/penjualan/DaftarDraft.vue'),
+    meta: {
+      pageTitle: 'Transaksi',
+      breadcrumb: [
+        {
+          text: 'Penjualan',
+        },
+        {
+          text: 'Draft',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/transaksi/penjualan/tambah',
+    name: 'transaksi-penjualan-tambah',
     component: () => import('@/views/transaksi/penjualan/Penjualan.vue'),
     meta: {
       pageTitle: 'Penjualan',

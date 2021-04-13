@@ -25,11 +25,11 @@
         title="Keranjang"
         :before-change="beforeTabSwitch2"
       >
-        <keranjang />
+        <keranjang :data-order="dataOrder" />
       </tab-content>
       <!-- social link -->
       <tab-content title="Review Order">
-        <review-order />
+        <review-order :data-order="dataOrder" />
       </tab-content>
     </form-wizard>
     <b-modal
@@ -97,6 +97,7 @@ import {
 } from 'bootstrap-vue'
 // import vSelect from 'vue-select'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import router from '@/router'
 import store from '@/store'
 
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -127,29 +128,6 @@ export default {
   data() {
     return {
       jumlahPembayaran: 0,
-      dataOrder: {
-        startIndex: 0,
-        nomorTransaksi: '',
-        tanggalTransaksi: '',
-        nomor: 0,
-        status: false, // untuk Status Draft atau Proses
-        pelanggan: {
-          kodePelanggan: '',
-          nama: '',
-          alamat: '',
-          nomorTelepon: '',
-        },
-        invoice: '',
-        pembayaran: {
-          bank: '',
-          jenisPembayaran: { title: 'Tunai', value: '0' },
-          kredit: false,
-          downPayment: 0,
-          tanggalJatuhTempo: '',
-          statusPembayaran: { title: 'Lunas', value: '0' },
-        },
-        orders: {},
-      },
     }
   },
   computed: {
@@ -160,6 +138,9 @@ export default {
       return this.formatRupiah(this.jumlahPembayaran - this.dataOrder.invoice.grandTotal)
     },
   },
+  // created() {
+  //   this.load()
+  // },
   methods: {
     success() {
       this.$swal({
@@ -193,7 +174,7 @@ export default {
     beforeTabSwitch1() {
       if (this.dataOrder.pelanggan.nama !== '' || this.dataOrder.pelanggan.alamat !== '') {
         this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
-        store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
+        // store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
         return true
       }
       this.$swal({
@@ -206,8 +187,7 @@ export default {
       return false
     },
     beforeTabSwitch2() {
-      const data = store.getters['app-transaksi/getActivePenjualan']
-      if (data.orders.length > 0) {
+      if (this.dataOrder.orders.length > 0) {
         return true
       }
       this.$swal({
@@ -220,7 +200,7 @@ export default {
       return false
     },
     formSubmitted() {
-      if (this.dataOrder.pembayaran.jenisPembayaran.value === '0') {
+      if (this.dataOrder.pembayaran.jenisPembayaran.value === '0' && this.dataOrder.pembayaran.statusPembayaran.value !== '2') {
         this.showModal()
       } else {
         this.store()
@@ -262,6 +242,48 @@ export default {
           this.error(error)
         })
     },
+    load() {
+      console.info(router.currentRoute.params.id)
+      if (router.currentRoute.params.id !== undefined) {
+        this.dataOrder = store.getters['app-transaksi/getDraftByID'](router.currentRoute.params.id)
+        console.info(this.dataOrder)
+      }
+    },
+  },
+  setup() {
+    const dataOrder = {
+      startIndex: 0,
+      nomorTransaksi: '',
+      tanggalTransaksi: '',
+      nomor: 0,
+      status: false, // untuk Status Draft atau Proses
+      pelanggan: {
+        kodePelanggan: '',
+        nama: '',
+        alamat: '',
+        nomorTelepon: '',
+      },
+      invoice: {
+        total: 0,
+        diskon: 0,
+        pajak: 0,
+        ongkir: 0,
+        grandTotal: 0,
+      },
+      pembayaran: {
+        bank: '',
+        jenisPembayaran: { title: 'Tunai', value: '0' },
+        kredit: false,
+        downPayment: 0,
+        tanggalJatuhTempo: '',
+        statusPembayaran: { title: 'Lunas', value: '0' },
+      },
+      orders: [],
+    }
+    console.info('load')
+    return {
+      dataOrder,
+    }
   },
 }
 </script>

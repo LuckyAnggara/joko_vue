@@ -40,7 +40,7 @@
         >
           <vue-good-table
             :columns="columns"
-            :rows="order"
+            :rows="this.dataOrder.orders"
             :search-options="{
               enabled: false,
             }"
@@ -89,7 +89,7 @@
                       Total
                     </div>
                     <div class="detail-amt">
-                      {{ formatRupiah(invoice.total) }}
+                      {{ formatRupiah(dataOrder.invoice.total) }}
                     </div>
                   </li>
                   <li class="price-detail">
@@ -97,7 +97,7 @@
                       Diskon
                     </div>
                     <div class="detail-amt discount-amt text-danger">
-                      {{ formatRupiah(invoice.diskon) }}
+                      {{ formatRupiah(dataOrder.invoice.diskon) }}
                     </div>
                   </li>
                   <li class="price-detail">
@@ -113,7 +113,7 @@
                       Pajak
                     </div>
                     <div class="detail-amt text-primary">
-                      {{ formatRupiah(invoice.pajak) }}
+                      {{ formatRupiah(dataOrder.invoice.pajak) }}
                     </div>
                   </li>
                   <li class="price-detail">
@@ -122,7 +122,7 @@
                     </div>
                     <div class="detail-amt">
                       <b-form-input
-                        v-model="invoice.ongkir"
+                        v-model="dataOrder.invoice.ongkir"
                         trim
                         type="number"
                       />
@@ -136,7 +136,7 @@
                       Grand Total
                     </div>
                     <div class="detail-amt font-weight-bolder">
-                      {{ formatRupiah(invoice.grandTotal) }}
+                      {{ formatRupiah(this.dataOrder.invoice.grandTotal) }}
                     </div>
                   </li>
                 </ul>
@@ -237,13 +237,9 @@ import {
 import { VueGoodTable } from 'vue-good-table'
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
-import store from '@/store'
-
-// import ECommerceCheckoutStepCartProducts from './ECommerceCheckoutStepCartProducts.vue'
 
 export default {
   components: {
-    // BSV
     BCard,
     BCardBody,
     BForm,
@@ -255,24 +251,21 @@ export default {
     BFormInput,
     BFormGroup,
     BModal,
-    // SFC
-    // ECommerceCheckoutStepCartProducts,
   },
   directives: {
     Ripple,
+  },
+  props: {
+    dataOrder: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       select: {
         barang: [],
         harga: [],
-      },
-      invoice: {
-        total: 0,
-        diskon: 0,
-        pajak: 0,
-        ongkir: 0,
-        grandTotal: 0,
       },
       selectHarga: {
         id: 0,
@@ -299,7 +292,7 @@ export default {
         },
         {
           label: 'Harga Jual',
-          field: 'harga_jual',
+          field: 'harga',
           formatFn: this.formatRupiah,
         },
         {
@@ -316,29 +309,28 @@ export default {
           field: 'action',
         },
       ],
-      order: [],
     }
   },
 
   computed: {
     ongkir() {
-      return this.invoice.ongkir
-    },
-    ongkir2() {
-      return this.formatRupiah(this.invoice.ongkir)
+      return this.dataOrder.invoice.ongkir
     },
     subTotal() {
-      return parseFloat(this.invoice.total) - parseFloat(this.invoice.diskon)
+      return parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
     },
   },
   watch: {
     ongkir() {
-      if (this.invoice.ongkir === '') {
-        this.invoice.ongkir = 0
+      if (this.dataOrder.invoice.ongkir === '') {
+        this.dataOrder.invoice.ongkir = 0
       } else {
-        this.invoice.grandTotal =
-          parseFloat(this.invoice.total) - parseFloat(this.invoice.diskon) + parseFloat(this.invoice.pajak) + parseFloat(this.invoice.ongkir)
-        store.commit('app-transaksi/SET_INVOICE', this.invoice)
+        this.dataOrder.invoice.grandTotal =
+          parseFloat(this.dataOrder.invoice.total) -
+          parseFloat(this.dataOrder.invoice.diskon) +
+          parseFloat(this.dataOrder.invoice.pajak) +
+          parseFloat(this.dataOrder.invoice.ongkir)
+        // store.commit('app-transaksi/SET_INVOICE', this.dataOrder.invoice)
       }
     },
   },
@@ -354,7 +346,7 @@ export default {
       this.qty = 1
     },
     handleInput(event) {
-      this.invoice.ongkir = this.formatRupiah(event)
+      this.dataOrder.invoice.ongkir = this.formatRupiah(event)
     },
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
@@ -373,20 +365,19 @@ export default {
     },
     handleSubmit() {
       // Push the name to submitted names
-      const nomor = this.order.length + 1
       const grandTotal = this.qty * this.hargaJual - this.diskon
       const data = {
-        id: nomor,
         id_barang: this.detailBarang.id,
         kode_barang: this.detailBarang.kode_barang,
         nama_barang: this.detailBarang.nama,
         jumlah: this.qty,
-        harga_jual: this.hargaJual,
+        harga: this.hargaJual,
         diskon: this.diskon,
         total: grandTotal,
       }
-      this.order.push(data)
-      store.commit('app-transaksi/ADD_ORDER_TO_ACTIVE_PENJUALAN', this.order)
+      this.dataOrder.orders.push(data)
+      console.info(this.dataOrder.orders)
+      // store.commit('app-transaksi/ADD_ORDER_TO_ACTIVE_PENJUALAN', this.dataOrder.orders)
       this.calculateTotal(data)
       // Hide the modal manually
       this.$nextTick(() => {
@@ -394,23 +385,19 @@ export default {
       })
     },
     calculateTotal(order) {
-      this.invoice.total = parseFloat(this.invoice.total) + parseFloat(order.total)
-      this.invoice.diskon = parseFloat(order.diskon)
-      const totalBeforeTax = parseFloat(this.invoice.total) - parseFloat(this.invoice.diskon)
-      this.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
-      this.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.invoice.pajak) + parseFloat(this.invoice.ongkir)
-      store.commit('app-transaksi/SET_INVOICE', this.invoice)
+      this.dataOrder.invoice.total = parseFloat(this.dataOrder.invoice.total) + parseFloat(order.total)
+      this.dataOrder.invoice.diskon = parseFloat(order.diskon)
+      const totalBeforeTax = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
+      this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
+      this.dataOrder.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
+      // store.commit('app-transaksi/SET_INVOICE', this.dataOrder.invoice)
     },
     showModal(id) {
       if (id !== null) {
         this.detailBarang = this.select.barang.find(d => d.id === id)
         this.select.harga = this.detailBarang.harga
-        // console.info(this.detailBarang.harga[0])
         this.selectHarga = this.detailBarang.harga['0']
-        console.info(this.selectHarga)
         this.$refs['my-modal'].show()
-      } else {
-        console.info('error id tidak ditemukan')
       }
     },
     myFilter: (option, label, search) => {

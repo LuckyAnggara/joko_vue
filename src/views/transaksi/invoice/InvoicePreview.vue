@@ -27,8 +27,8 @@
       <!-- Col: Left (Invoice Container) -->
       <b-col
         cols="12"
-        xl="9"
-        md="8"
+        xl="10"
+        md="10"
       >
         <b-card
           no-body
@@ -70,7 +70,7 @@
                           <span class="font-weight-bold"> {{ this.$moment(dataInvoice.tanggalTransaksi).format('DD MMMM YYYY') }}</span>
                         </td>
                       </tr>
-                      <tr v-show="dataInvoice.pembayaran.statusPembayaran.title === 'Lunas' ? false : true">
+                      <tr v-show="dataInvoice.pembayaran.statusPembayaran.value === '1' ? true : false">
                         <td class="pr-1">
                           Tanggal Tempo:
                         </td>
@@ -104,7 +104,7 @@
                   {{ dataInvoice.pelanggan.nama }}
                 </h6>
                 <p class="card-text mb-25">
-                  {{ dataInvoice.pelanggan.alamat }}
+                  <span style="white-space: pre-line;"> {{ dataInvoice.pelanggan.alamat }}</span>
                 </p>
 
                 <p class="card-text mb-25">
@@ -132,13 +132,13 @@
                           <span class="font-weight-bold"> {{ formatRupiah(dataInvoice.invoice.grandTotal) }}</span>
                         </td>
                       </tr>
-                      <tr>
+                      <tr v-show="dataInvoice.pembayaran.statusPembayaran.value === '1' ? false : true">
                         <td class="pr-1">
                           Jenis Pembayaran:
                         </td>
                         <td>{{ dataInvoice.pembayaran.jenisPembayaran.title }}</td>
                       </tr>
-                      <tr v-show="dataInvoice.pembayaran.bank === '' ? false : true">
+                      <tr v-show="dataInvoice.pembayaran.bank === '' || dataInvoice.pembayaran.bank === null ? false : true">
                         <td class="pr-1">
                           Bank:
                         </td>
@@ -152,7 +152,7 @@
                           <b>{{ dataInvoice.pembayaran.statusPembayaran.title }}</b>
                         </td>
                       </tr>
-                      <section v-show="dataInvoice.pembayaran.statusPembayaran.title === 'Lunas' ? false : true">
+                      <section v-show="dataInvoice.pembayaran.statusPembayaran.value === '1' ? true : false">
                         <tr>
                           <td class="pr-1">
                             Down Payment:
@@ -181,9 +181,9 @@
           <b-table-lite
             responsive
             :items="dataInvoice.orders"
-            :fields="['nama_barang', 'harga_jual', 'jumlah', 'total']"
+            :fields="['nama_barang', 'harga', 'jumlah', 'total']"
           >
-            <template #cell(harga_jual)="data">
+            <template #cell(harga)="data">
               <span class="text-nowrap">
                 {{ formatRupiah(data.value) }}
               </span>
@@ -205,9 +205,12 @@
                 class="p-0"
               >
                 <b-card-text class="mb-0">
-                  <span class="font-weight-bold">Salesperson:</span>
-                  <span class="ml-75">Alfie Solomons</span>
+                  <span class="font-weight-bold">Kasir</span>
                 </b-card-text>
+                <br>
+                <br>
+                <br>
+                <span class="font-weight-bold">Lucky Anggara</span>
               </b-col>
 
               <!-- Col: Total -->
@@ -269,7 +272,7 @@
           <!-- Note -->
           <b-card-body class="invoice-padding pt-0">
             <span class="font-weight-bold">Note: </span>
-            <span>It was a pleasure working with you and your team. We hope you will keep us in mind for future freelance projects. Thank You!</span>
+            <span>..</span>
           </b-card-body>
         </b-card>
       </b-col>
@@ -277,8 +280,8 @@
       <!-- Right Col: Card -->
       <b-col
         cols="12"
-        md="4"
-        xl="3"
+        md="2"
+        xl="2"
         class="invoice-actions"
       >
         <b-card>
@@ -388,7 +391,7 @@ export default {
       return this.formatRupiah(parseFloat(this.dataInvoice.invoice.grandTotal) - parseFloat(this.dataInvoice.pembayaran.downPayment))
     },
     bank() {
-      if (this.dataInvoice.pembayaran.bank === '') {
+      if (this.dataInvoice.pembayaran.bank === '' || this.dataInvoice.pembayaran.bank === null) {
         return ''
       }
       return this.dataInvoice.pembayaran.bank.title
@@ -406,13 +409,7 @@ export default {
     },
   },
   setup() {
-    // const dataInvoice = {
-    //   pelanggan: {
-    //     nama: 'Lucky ',
-    //   },
-    // }
     const dataInvoice = store.getters['app-transaksi/getDataInvoice']
-    console.info(dataInvoice)
     return {
       dataInvoice,
     }

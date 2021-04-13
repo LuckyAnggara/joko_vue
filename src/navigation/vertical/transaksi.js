@@ -4,20 +4,22 @@ export default [
   },
   {
     title: 'Penjualan',
-    route: 'transaksi-penjualan',
-    icon: 'ShieldIcon',
-    // acl: {
-    action: 'read',
-    resource: 'ACL',
-    // },
-  },
-  {
-    title: 'Invoice',
-    route: 'transaksi-penjualan-invoice',
-    icon: 'ShieldIcon',
-    // acl: {
-    action: 'read',
-    resource: 'ACL',
-    // },
+    icon: 'HomeIcon',
+    tag: '2',
+    tagVariant: 'light-warning',
+    children: [
+      {
+        title: 'Daftar',
+        route: 'transaksi-penjualan-daftar',
+      },
+      {
+        title: 'Transaksi Baru',
+        route: 'transaksi-penjualan-tambah',
+      },
+      {
+        title: 'Draft Transaksi',
+        route: 'transaksi-penjualan-draft',
+      },
+    ],
   },
 ]

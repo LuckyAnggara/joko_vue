@@ -1,7 +1,10 @@
 <template>
   <b-form>
     <b-row>
-      <b-col cols="12" class="mb-2">
+      <b-col
+        cols="12"
+        class="mb-2"
+      >
         <h5 class="mb-0">
           Detail Konsumen
         </h5>
@@ -10,11 +13,23 @@
         </small>
       </b-col>
       <b-col md="6">
-        <b-form-group label="Kode Pelanggan" label-for="nama-pelanggan-lama" class="mb-2">
-          <v-select v-model="namaPelanggan" placeholder="Nama Pelanggan" label="title" :options="option">
+        <b-form-group
+          label="Kode Pelanggan"
+          label-for="nama-pelanggan-lama"
+          class="mb-2"
+        >
+          <v-select
+            v-model="selectPelanggan"
+            placeholder="Nama Pelanggan"
+            label="title"
+            :options="option"
+          >
             <template #list-header>
               <li class="add-new-data-header d-flex align-items-center my-50">
-                <feather-icon icon="PlusIcon" size="16" />
+                <feather-icon
+                  icon="PlusIcon"
+                  size="16"
+                />
                 <span class="align-middle ml-25">Tambah Pelanggan</span>
               </li>
             </template>
@@ -24,22 +39,51 @@
     </b-row>
     <b-row>
       <b-col md="6">
-        <b-form-group label="Nama Pelanggan*" label-for="nama-pelanggan" class="mb-2">
-          <b-form-input placeholder="Nama Pelanggan" id="nama-pelanggan" v-model="dataOrder.pelanggan.nama" trim />
+        <b-form-group
+          label="Nama Pelanggan*"
+          label-for="nama-pelanggan"
+          class="mb-2"
+        >
+          <b-form-input
+            id="nama-pelanggan"
+            v-model="dataOrder.pelanggan.nama"
+            placeholder="Nama Pelanggan"
+            trim
+          />
         </b-form-group>
       </b-col>
     </b-row>
     <b-row>
       <b-col md="6">
-        <b-form-group label="Alamat Pelanggan*" label-for="alamat-pelanggan" class="mb-2">
-          <b-form-textarea placeholder="Alamat Pelanggan" id="alamat-pelanggan" v-model="dataOrder.pelanggan.alamat" rows="4" trim />
+        <b-form-group
+          label="Alamat Pelanggan*"
+          label-for="alamat-pelanggan"
+          class="mb-2"
+        >
+          <b-form-textarea
+            id="alamat-pelanggan"
+            v-model="dataOrder.pelanggan.alamat"
+            placeholder="Alamat Pelanggan"
+            rows="4"
+            trim
+          />
         </b-form-group>
       </b-col>
     </b-row>
     <b-row>
       <b-col md="6">
-        <b-form-group label="Nomor Telepon" label-for="nomor-telepon" class="mb-2">
-          <b-form-input placeholder="Nomor Telepon (Optional)" id="nomor-telepon" v-model="dataOrder.pelanggan.nomorTelepon" type="number" trim />
+        <b-form-group
+          label="Nomor Telepon"
+          label-for="nomor-telepon"
+          class="mb-2"
+        >
+          <b-form-input
+            id="nomor-telepon"
+            v-model="dataOrder.pelanggan.nomorTelepon"
+            placeholder="Nomor Telepon (Optional)"
+            type="number"
+            trim
+          />
         </b-form-group>
       </b-col>
     </b-row>
@@ -47,7 +91,9 @@
 </template>
 
 <script>
-import { BForm, BRow, BCol, BFormTextarea, BFormGroup, BFormInput } from 'bootstrap-vue'
+import {
+  BForm, BRow, BCol, BFormTextarea, BFormGroup, BFormInput,
+} from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
 export default {
@@ -72,7 +118,7 @@ export default {
   },
   data() {
     return {
-      namaPelanggan: '',
+      selectPelanggan: '',
       option: [{ title: 'Square' }, { title: 'Rectangle' }, { title: 'Rombo' }, { title: 'Romboid' }],
     }
   },
