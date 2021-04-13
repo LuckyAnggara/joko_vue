@@ -4,10 +4,7 @@
     <!-- Products List -->
     <b-form>
       <b-row>
-        <b-col
-          cols="12"
-          class="mb-2"
-        >
+        <b-col cols="12" class="mb-2">
           <h5 class="mb-0">
             Keranjang Belanja
           </h5>
@@ -16,10 +13,7 @@
           </small>
         </b-col>
         <b-col>
-          <b-form-group
-            label="Nama / Kode Barang"
-            label-cols-md="3"
-          >
+          <b-form-group label="Nama / Kode Barang" label-cols-md="3">
             <v-select
               placeholder="Nama / Kode Barang"
               label="nama"
@@ -34,10 +28,7 @@
             </v-select>
           </b-form-group>
         </b-col>
-        <b-col
-          cols="12"
-          class="mb-2"
-        >
+        <b-col cols="12" class="mb-2">
           <vue-good-table
             :columns="columns"
             :rows="this.dataOrder.orders"
@@ -48,19 +39,11 @@
               enabled: false,
             }"
           >
-            <template
-              slot="table-row"
-              slot-scope="props"
-            >
+            <template slot="table-row" slot-scope="props">
               <!-- Column: Action -->
               <span v-if="props.column.field === 'action'">
                 <div>
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="danger"
-                    class="btn-icon"
-                    @click="del(props.index, props.row.id)"
-                  >
+                  <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="danger" class="btn-icon" @click="del(props.index)">
                     <feather-icon icon="TrashIcon" />
                   </b-button>
                 </div>
@@ -72,17 +55,14 @@
             </template>
           </vue-good-table>
         </b-col>
-        <b-col
-          cols="12"
-          md="6"
-        >
+        <b-col cols="12" md="6">
           <div class="checkout-options">
             <b-card>
               <div class="price-details">
                 <h6 class="price-title">
                   Detail Harga
                 </h6>
-                <hr>
+                <hr />
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title">
@@ -121,15 +101,11 @@
                       Ongkos Kirim
                     </div>
                     <div class="detail-amt">
-                      <b-form-input
-                        v-model="dataOrder.invoice.ongkir"
-                        trim
-                        type="number"
-                      />
+                      <b-form-input v-model="dataOrder.invoice.ongkir" trim type="number" />
                     </div>
                   </li>
                 </ul>
-                <hr>
+                <hr />
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title detail-total">
@@ -160,24 +136,12 @@
       <!-- <b-modal id="modal-default" ref="my-modal" ok-only ok-title="Submit" centered :title="detailBarang.nama"> -->
       <b-card-body>
         <b-col cols="12">
-          <b-form-group
-            label="Quantity"
-            label-for="quantity"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="qty"
-              trim
-              type="number"
-            />
+          <b-form-group label="Quantity" label-for="quantity" class="mb-2">
+            <b-form-input v-model="qty" trim type="number" />
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group
-            label="Harga Satuan"
-            label-for="nama-pelanggan-lama"
-            class="mb-2"
-          >
+          <b-form-group label="Harga Satuan" label-for="nama-pelanggan-lama" class="mb-2">
             <v-select
               v-model="selectHarga"
               placeholder="Satuan"
@@ -190,29 +154,13 @@
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group
-            label="Harga Jual"
-            label-for="harga-jual"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="hargaJual"
-              trim
-              type="number"
-            />
+          <b-form-group label="Harga Jual" label-for="harga-jual" class="mb-2">
+            <b-form-input v-model="hargaJual" trim type="number" />
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group
-            label="Diskon"
-            label-for="diskon"
-            class="mb-2"
-          >
-            <b-form-input
-              v-model="diskon"
-              trim
-              type="number"
-            />
+          <b-form-group label="Diskon" label-for="diskon" class="mb-2">
+            <b-form-input v-model="diskon" trim type="number" />
           </b-form-group>
         </b-col>
       </b-card-body>
@@ -338,6 +286,25 @@ export default {
     this.loadDataBarang()
   },
   methods: {
+    del(index) {
+      this.$swal({
+        title: 'Delete data ?',
+        text: 'Data barang akan di hapus dari keranjang',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya !!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          this.calculateTotalMinus(this.dataOrder.orders[index])
+          this.dataOrder.orders.splice(index, 1)
+        }
+      })
+    },
     resetModal() {
       this.detailBarang.qty = 1
       this.diskon = 0
@@ -390,7 +357,13 @@ export default {
       const totalBeforeTax = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
       this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
       this.dataOrder.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
-      // store.commit('app-transaksi/SET_INVOICE', this.dataOrder.invoice)
+    },
+    calculateTotalMinus(order) {
+      this.dataOrder.invoice.total = parseFloat(this.dataOrder.invoice.total) - parseFloat(order.total)
+      this.dataOrder.invoice.diskon = parseFloat(this.dataOrder.invoice.diskon) - parseFloat(order.diskon)
+      const totalBeforeTax = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
+      this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
+      this.dataOrder.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
     },
     showModal(id) {
       if (id !== null) {

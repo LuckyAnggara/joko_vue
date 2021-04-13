@@ -48,7 +48,6 @@ export default {
     ADD_DRAFT_PENJUALAN(state, data) {
       const exist = state.draftPenjualan.find(x => x.nomor === data.nomor)
       console.info(exist)
-
       if (exist === undefined) {
         console.info()
         state.draftPenjualan.push(data)

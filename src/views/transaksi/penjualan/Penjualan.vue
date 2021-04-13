@@ -2,7 +2,7 @@
   <div ref="formContainer">
     <form-wizard
       color="#7367F0"
-      :start-index="dataOrder.startIndex"
+      :start-index="startIndex"
       :title="null"
       :subtitle="null"
       layout="vertical"
@@ -13,18 +13,12 @@
       @on-complete="formSubmitted"
     >
       <!-- account datails tab -->
-      <tab-content
-        title="Account Details"
-        :before-change="beforeTabSwitch1"
-      >
+      <tab-content title="Account Details" :before-change="beforeTabSwitch1">
         <detail-konsumen :data-order="dataOrder" />
       </tab-content>
 
       <!-- personal info tab -->
-      <tab-content
-        title="Keranjang"
-        :before-change="beforeTabSwitch2"
-      >
+      <tab-content title="Keranjang" :before-change="beforeTabSwitch2">
         <keranjang :data-order="dataOrder" />
       </tab-content>
       <!-- social link -->
@@ -46,42 +40,18 @@
       <b-card-body>
         <section>
           <b-row>
-            <b-col
-              cosl="12"
-              md="12"
-            >
-              <b-form-group
-                label="Uang diterima"
-                label-for="jumlah-pembayaran"
-                label-cols-md="5"
-              >
-                <b-form-input
-                  id="jumlah-pembayaran"
-                  v-model="jumlahPembayaran"
-                  placeholder="Jumlah Uang yang diterima"
-                  type="number"
-                />
+            <b-col cosl="12" md="12">
+              <b-form-group label="Uang diterima" label-for="jumlah-pembayaran" label-cols-md="5">
+                <b-form-input id="jumlah-pembayaran" v-model="jumlahPembayaran" placeholder="Jumlah Uang yang diterima" type="number" />
               </b-form-group>
             </b-col>
           </b-row>
           <b-row>
-            <b-col
-              cols="12"
-              md="12"
-            >
-              <b-form-group
-                label="Kembalian"
-                label-for="kembalian"
-                label-cols-md="5"
-              >
-                <b-form-input
-                  id="kembalian"
-                  v-model="kembalian"
-                  readonly
-                  type="text"
-                />
+            <b-col cols="12" md="12">
+              <b-form-group label="Kembalian" label-for="kembalian" label-cols-md="5">
+                <b-form-input id="kembalian" v-model="kembalian" readonly type="text" />
               </b-form-group>
-              <hr>
+              <hr />
             </b-col>
           </b-row>
         </section>
@@ -91,10 +61,9 @@
 </template>
 
 <script>
+import { ref } from '@vue/composition-api'
 import { FormWizard, TabContent } from 'vue-form-wizard'
-import {
-  BCol, BRow, BModal, BFormInput, BFormGroup, BCardBody,
-} from 'bootstrap-vue'
+import { BCol, BRow, BModal, BFormInput, BFormGroup, BCardBody } from 'bootstrap-vue'
 // import vSelect from 'vue-select'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import router from '@/router'
@@ -128,6 +97,7 @@ export default {
   data() {
     return {
       jumlahPembayaran: 0,
+      startIndex: 0,
     }
   },
   computed: {
@@ -138,9 +108,9 @@ export default {
       return this.formatRupiah(this.jumlahPembayaran - this.dataOrder.invoice.grandTotal)
     },
   },
-  // created() {
-  //   this.load()
-  // },
+  mounted() {
+    this.load()
+  },
   methods: {
     success() {
       this.$swal({
@@ -173,7 +143,9 @@ export default {
     },
     beforeTabSwitch1() {
       if (this.dataOrder.pelanggan.nama !== '' || this.dataOrder.pelanggan.alamat !== '') {
-        this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
+        if (this.dataOrder.nomor === '') {
+          this.dataOrder.nomor = parseFloat(store.getters['app-transaksi/getJumlahPenjualan']) + parseFloat(1)
+        }
         // store.commit('app-transaksi/SET_ACTIVE_PENJUALAN', this.dataOrder)
         return true
       }
@@ -243,15 +215,15 @@ export default {
         })
     },
     load() {
-      console.info(router.currentRoute.params.id)
       if (router.currentRoute.params.id !== undefined) {
         this.dataOrder = store.getters['app-transaksi/getDraftByID'](router.currentRoute.params.id)
-        console.info(this.dataOrder)
+        this.startIndex = 1
       }
+      console.info(this.startIndex)
     },
   },
   setup() {
-    const dataOrder = {
+    const dataOrder = ref({
       startIndex: 0,
       nomorTransaksi: '',
       tanggalTransaksi: '',
@@ -279,8 +251,7 @@ export default {
         statusPembayaran: { title: 'Lunas', value: '0' },
       },
       orders: [],
-    }
-    console.info('load')
+    })
     return {
       dataOrder,
     }

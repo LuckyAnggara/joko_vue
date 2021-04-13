@@ -1,27 +1,21 @@
 <template>
   <section>
     <b-form>
-      <b-col
-        cols="12"
-        class="mb-2"
-      >
+      <b-col cols="12" class="mb-2">
         <h5 class="mb-0">
           Review Order
         </h5>
         <small class="text-muted">Cek kembali order sebelum ke Proses selanjutnya</small>
       </b-col>
       <b-row>
-        <b-col
-          cols="12"
-          md="6"
-        >
+        <b-col cols="12" md="6">
           <div class="checkout-options">
             <b-card>
               <div class="price-details">
                 <h6 class="price-title">
                   Data Pelanggan
                 </h6>
-                <hr>
+                <hr />
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title mb-1">
@@ -29,10 +23,7 @@
                     </div>
                   </li>
                   <li class="price-detail">
-                    <div
-                      class="detail-title mb-1"
-                      style="white-space:pre-line;"
-                    >
+                    <div class="detail-title mb-1" style="white-space:pre-line;">
                       {{ dataOrder.pelanggan.alamat }}
                     </div>
                   </li>
@@ -46,25 +37,20 @@
             </b-card>
           </div>
         </b-col>
-        <b-col
-          cols="12"
-          md="6"
-        >
+        <b-col cols="12" md="6">
           <div class="checkout-options">
             <b-card>
               <div class="price-details">
                 <h6 class="price-title">
                   Detail Pembayaran
                 </h6>
-                <hr>
+                <hr />
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title">
                       Item
                     </div>
-                    <div class="detail-amt">
-                      {{ dataOrder.orders.length }} item
-                    </div>
+                    <div class="detail-amt">{{ dataOrder.orders.length }} item</div>
                   </li>
                   <li class="price-detail">
                     <div class="detail-title">
@@ -82,7 +68,7 @@
                       {{ formatRupiah(dataOrder.invoice.diskon) }}
                     </div>
                   </li>
-                  <hr>
+                  <hr />
                   <li class="price-detail">
                     <div class="detail-title">
                       <b>Sub Total</b>
@@ -108,7 +94,7 @@
                     </div>
                   </li>
                 </ul>
-                <hr>
+                <hr />
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title detail-total">
@@ -124,16 +110,10 @@
           </div>
         </b-col>
       </b-row>
-      <hr>
+      <hr />
       <b-row>
-        <b-col
-          cols="12"
-          md="8"
-        >
-          <b-form-group
-            label="Metode Pembayaran"
-            label-cols-md="4"
-          >
+        <b-col cols="12" md="8">
+          <b-form-group label="Metode Pembayaran" label-cols-md="4">
             <v-select
               v-model="dataOrder.pembayaran.statusPembayaran"
               :value="dataOrder.pembayaran.statusPembayaran.value"
@@ -144,57 +124,28 @@
               @input="cekStatusPembayaran"
             />
           </b-form-group>
-          <hr>
+          <hr />
         </b-col>
       </b-row>
       <b-row v-show="dataOrder.pembayaran.kredit">
-        <b-col
-          cols="12"
-          md="8"
-        >
-          <b-form-group
-            label="Tanggal Jatuh Tempo"
-            label-for="tanggalJatuhTempo"
-            label-cols-md="4"
-          >
-            <b-form-datepicker
-              id="tanggalJatuhTempo"
-              v-model="dataOrder.pembayaran.tanggalJatuhTempo"
-            />
+        <b-col cols="12" md="8">
+          <b-form-group label="Tanggal Jatuh Tempo" label-for="tanggalJatuhTempo" label-cols-md="4">
+            <b-form-datepicker id="tanggalJatuhTempo" v-model="dataOrder.pembayaran.tanggalJatuhTempo" />
           </b-form-group>
         </b-col>
       </b-row>
       <b-row v-show="dataOrder.pembayaran.kredit">
-        <b-col
-          cols="12"
-          md="8"
-        >
-          <b-form-group
-            label="Down Payment"
-            label-for="down-payment"
-            label-cols-md="4"
-          >
-            <b-form-input
-              id="down-payment"
-              v-model="dataOrder.pembayaran.downPayment"
-              type="number"
-              @change="dpOnChange($event)"
-            />
+        <b-col cols="12" md="8">
+          <b-form-group label="Down Payment" label-for="down-payment" label-cols-md="4">
+            <b-form-input id="down-payment" v-model="dataOrder.pembayaran.downPayment" type="number" @change="dpOnChange($event)" />
           </b-form-group>
         </b-col>
       </b-row>
 
       <section v-show="caraPembayaran">
         <b-row>
-          <b-col
-            cols="12"
-            md="8"
-          >
-            <b-form-group
-              label="Cara Pembayaran"
-              label-for="down-payment"
-              label-cols-md="4"
-            >
+          <b-col cols="12" md="8">
+            <b-form-group label="Cara Pembayaran" label-for="down-payment" label-cols-md="4">
               <v-select
                 v-model="dataOrder.pembayaran.jenisPembayaran"
                 :value="dataOrder.pembayaran.jenisPembayaran.value"
@@ -209,31 +160,14 @@
         </b-row>
       </section>
       <b-row v-show="transfer">
-        <b-col
-          cols="12"
-          md="8"
-        >
-          <b-form-group
-            label="Transfer ke"
-            label-for="down-payment"
-            label-cols-md="4"
-          >
-            <v-select
-              v-model="dataOrder.pembayaran.bank"
-              placeholder="Nama Bank"
-              label="title"
-              :clearable="false"
-              :options="bankOption"
-            />
+        <b-col cols="12" md="8">
+          <b-form-group label="Transfer ke" label-for="down-payment" label-cols-md="4">
+            <v-select v-model="dataOrder.pembayaran.bank" placeholder="Nama Bank" label="title" :clearable="false" :options="bankOption" />
           </b-form-group>
         </b-col>
       </b-row>
       <div class="d-flex justify-content-end">
-        <b-button
-          v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-          variant="warning"
-          @click="storeDraft()"
-        >
+        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="warning" @click="storeDraft()">
           Simpan Draft
         </b-button>
       </div>
@@ -242,9 +176,7 @@
 </template>
 
 <script>
-import {
-  BButton, BFormDatepicker, BFormGroup, BCard, BForm, BFormInput, BRow, BCol,
-} from 'bootstrap-vue'
+import { BButton, BFormDatepicker, BFormGroup, BCard, BForm, BFormInput, BRow, BCol } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import store from '@/store'
@@ -276,7 +208,6 @@ export default {
     return {
       caraPembayaran: true,
       statusKembalian: true,
-      transfer: false,
       pembayaranOption: [
         { title: 'Lunas', value: '0' },
         { title: 'Kredit', value: '1' },
@@ -296,6 +227,12 @@ export default {
   computed: {
     subTotal() {
       return parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
+    },
+    transfer() {
+      if (this.dataOrder.pembayaran.jenisPembayaran.value === '1') {
+        return true
+      }
+      return false
     },
   },
   methods: {
@@ -321,17 +258,13 @@ export default {
         this.statusKembalian = true
       }
       this.resetInput()
-
-      // console.info(id.value)
     },
     cekJenisPembayaran(id) {
-      console.info(id)
       if (id.value === '1') {
         this.transfer = true
       } else {
         this.transfer = false
       }
-      // console.info(id.value)
     },
     resetInput() {
       this.jumlahPembayaran = 0
@@ -355,7 +288,6 @@ export default {
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          this.dataOrder.startIndex = 2
           store.commit('app-transaksi/ADD_DRAFT_PENJUALAN', this.dataOrder)
           this.$router.push({
             name: 'transaksi-penjualan-draft',

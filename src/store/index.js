@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 // Modules
 import ecommerceStoreModule from '@/views/apps/e-commerce/eCommerceStoreModule'
 import barangStoreModule from '@/views/screens/barang/barangStoreModule'
+import kontakStoreModule from '@/views/screens/kontak/kontakStoreModule'
 import persediaanStoreModule from '@/views/screens/persediaan/persediaanStoreModule'
 import transaksiStoreModule from '@/views/transaksi/transaksiStoreModule'
 import app from './app'
@@ -19,6 +20,7 @@ export default new Vuex.Store({
     verticalMenu,
     'app-ecommerce': ecommerceStoreModule,
     'app-barang': barangStoreModule,
+    'app-kontak': kontakStoreModule,
     'app-persediaan': persediaanStoreModule,
     'app-transaksi': transaksiStoreModule,
   },
