@@ -3,15 +3,18 @@ import axios from '@axios'
 export default {
   namespaced: true,
   state: {
+    listKontak: [],
     listPelanggan: [],
   },
   getters: {
-    getListPelanggan: state => state.listPelanggan,
+    getListKontak: state => state.listKontak,
+    // GET MASTER DATA
+    getListPelanggan: state => state.listKontak.filter(item => item.tipe === 'PELANGGAN'),
     getPelangganById: state => id => state.listPelanggan.find(x => x.id === id),
   },
   mutations: {
-    SET_LIST_PELANGGAN(state, data) {
-      state.listPelanggan = data
+    SET_LIST_KONTAK(state, data) {
+      state.listKontak = data
     },
     UPDATE_LIST_PELANGGAN(state, data) {
       state.listPelanggan.push(data)
@@ -21,6 +24,16 @@ export default {
     },
   },
   actions: {
+    fetchListKontak(ctx, queryParams) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('http://127.0.0.1:8000/api/kontak/', { params: queryParams })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchListPelanggan(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios

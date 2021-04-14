@@ -5,7 +5,6 @@ export default [
   {
     title: 'Penjualan',
     icon: 'HomeIcon',
-    tag: '2',
     tagVariant: 'light-warning',
     children: [
       {

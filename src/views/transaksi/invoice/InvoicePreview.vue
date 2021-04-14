@@ -20,20 +20,10 @@
       </div>
     </b-alert> -->
 
-    <b-row
-      v-if="dataInvoice"
-      class="invoice-preview"
-    >
+    <b-row v-if="dataInvoice" class="invoice-preview">
       <!-- Col: Left (Invoice Container) -->
-      <b-col
-        cols="12"
-        xl="10"
-        md="10"
-      >
-        <b-card
-          no-body
-          class="invoice-preview-card"
-        >
+      <b-col cols="12" xl="10" md="10">
+        <b-card no-body class="invoice-preview-card">
           <!-- Header -->
           <b-card-body class="invoice-padding pb-0">
             <div class="d-flex justify-content-between flex-md-row flex-column invoice-spacing mt-0">
@@ -86,17 +76,13 @@
           </b-card-body>
 
           <!-- Spacer -->
-          <hr class="invoice-spacing">
+          <hr class="invoice-spacing" />
 
           <!-- Invoice Client & Payment Details -->
           <b-card-body class="invoice-padding pt-0">
             <b-row class="invoice-spacing">
               <!-- Col: Invoice To -->
-              <b-col
-                cols="12"
-                xl="6"
-                class="p-0"
-              >
+              <b-col cols="12" xl="6" class="p-0">
                 <h6 class="mb-1">
                   Invoice Ke:
                 </h6>
@@ -113,11 +99,7 @@
               </b-col>
 
               <!-- Col: Payment Details -->
-              <b-col
-                xl="6"
-                cols="12"
-                class="p-0 mt-xl-0 mt-2 d-flex justify-content-xl-end"
-              >
+              <b-col xl="6" cols="12" class="p-0 mt-xl-0 mt-2 d-flex justify-content-xl-end">
                 <div>
                   <h6 class="mb-1">
                     Detail Pembayaran:
@@ -178,11 +160,7 @@
           </b-card-body>
 
           <!-- Invoice Description: Table -->
-          <b-table-lite
-            responsive
-            :items="dataInvoice.orders"
-            :fields="['nama_barang', 'harga', 'jumlah', 'total']"
-          >
+          <b-table-lite responsive :items="dataInvoice.orders" :fields="['nama_barang', 'harga', 'jumlah', 'total']">
             <template #cell(harga)="data">
               <span class="text-nowrap">
                 {{ formatRupiah(data.value) }}
@@ -199,26 +177,18 @@
           <b-card-body class="invoice-padding pb-0">
             <b-row class="invoice-spacing">
               <!-- Col: Sales Persion -->
-              <b-col
-                cols="12"
-                xl="6"
-                class="p-0"
-              >
+              <b-col cols="12" xl="6" class="p-0">
                 <b-card-text class="mb-0">
                   <span class="font-weight-bold">Kasir</span>
                 </b-card-text>
-                <br>
-                <br>
-                <br>
+                <br />
+                <br />
+                <br />
                 <span class="font-weight-bold">Lucky Anggara</span>
               </b-col>
 
               <!-- Col: Total -->
-              <b-col
-                xl="6"
-                cols="12"
-                class="p-0 mt-xl-0 mt-2 d-flex justify-content-xl-end"
-              >
+              <b-col xl="6" cols="12" class="p-0 mt-xl-0 mt-2 d-flex justify-content-xl-end">
                 <table>
                   <tbody>
                     <tr>
@@ -251,7 +221,7 @@
                         {{ formatRupiah(dataInvoice.invoice.ongkir) }}
                       </td>
                     </tr>
-                    <hr>
+                    <hr />
                     <tr>
                       <td class="pr-1">
                         Total:
@@ -267,7 +237,7 @@
           </b-card-body>
 
           <!-- Spacer -->
-          <hr class="invoice-spacing">
+          <hr class="invoice-spacing" />
 
           <!-- Note -->
           <b-card-body class="invoice-padding pt-0">
@@ -278,42 +248,20 @@
       </b-col>
 
       <!-- Right Col: Card -->
-      <b-col
-        cols="12"
-        md="2"
-        xl="2"
-        class="invoice-actions"
-      >
+      <b-col cols="12" md="2" xl="2" class="invoice-actions">
         <b-card>
           <!-- Button: Send Invoice -->
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            v-b-toggle.sidebar-send-invoice
-            variant="primary"
-            class="mb-75"
-            block
-          >
+          <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" v-b-toggle.sidebar-send-invoice variant="primary" class="mb-75" block>
             Send Invoice
           </b-button>
 
           <!-- Button: DOwnload -->
-          <b-button
-            v-ripple.400="'rgba(186, 191, 199, 0.15)'"
-            variant="outline-secondary"
-            class="mb-75"
-            block
-          >
+          <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block>
             Download
           </b-button>
 
           <!-- Button: Print -->
-          <b-button
-            v-ripple.400="'rgba(186, 191, 199, 0.15)'"
-            variant="outline-secondary"
-            class="mb-75"
-            block
-            @click="printInvoice"
-          >
+          <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block @click="printInvoice">
             Print
           </b-button>
 
@@ -329,13 +277,7 @@
           </b-button>
 
           <!-- Button: Add Payment -->
-          <b-button
-            v-b-toggle.sidebar-invoice-add-payment
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
-            class="mb-75"
-            block
-          >
+          <b-button v-b-toggle.sidebar-invoice-add-payment v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mb-75" block>
             Add Payment
           </b-button>
         </b-card>
@@ -345,6 +287,8 @@
 </template>
 
 <script>
+import { ref } from '@vue/composition-api'
+
 import {
   BRow,
   BCol,
@@ -407,9 +351,10 @@ export default {
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
+    printInvoice() {},
   },
   setup() {
-    const dataInvoice = store.getters['app-transaksi/getDataInvoice']
+    const dataInvoice = ref(store.getters['app-transaksi/getDataInvoice'])
     return {
       dataInvoice,
     }

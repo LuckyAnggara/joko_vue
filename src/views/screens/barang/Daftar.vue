@@ -13,10 +13,7 @@
             <div class="flex justify-content-end">
               <b-form-group>
                 <div class="d-flex align-items-center">
-                  <b-button
-                    variant="primary"
-                    @click="toTambahScreen()"
-                  >
+                  <b-button variant="primary" @click="toTambahScreen()">
                     <span class="text-nowrap">Add Item</span>
                   </b-button>
                 </div>
@@ -27,12 +24,7 @@
               <b-form-group>
                 <div class="d-flex align-items-center">
                   <label class="mr-1">Search</label>
-                  <b-form-input
-                    v-model="searchTerm"
-                    placeholder="Search"
-                    type="text"
-                    class="d-inline-block"
-                  />
+                  <b-form-input v-model="searchTerm" placeholder="Search" type="text" class="d-inline-block" />
                 </div>
               </b-form-group>
             </div>
@@ -48,31 +40,24 @@
                 perPage: pageLength,
               }"
             >
-              <template
-                slot="table-row"
-                slot-scope="props"
-              >
+              <template slot="table-row" slot-scope="props">
                 <!-- Column: Action -->
                 <span v-if="props.column.field === 'action'">
-                  <div>
-                    <b-button
-                      v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                      variant="primary"
-                      class="btn-icon"
-                      @click="view(props.row.id)"
-                    >
-                      <feather-icon icon="EyeIcon" />
-                    </b-button>
-
-                    <b-button
-                      v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                      variant="danger"
-                      class="btn-icon"
-                      @click="del(props.index, props.row.id)"
-                    >
-                      <feather-icon icon="TrashIcon" />
-                    </b-button>
-                  </div>
+                  <span>
+                    <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+                      <template v-slot:button-content>
+                        <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
+                      </template>
+                      <b-dropdown-item @click="view(props.row.id)">
+                        <feather-icon icon="Edit2Icon" class="mr-50" />
+                        <span>Detail</span>
+                      </b-dropdown-item>
+                      <b-dropdown-item @click="del(props.index, props.row.id)">
+                        <feather-icon icon="TrashIcon" class="mr-50" />
+                        <span>Delete</span>
+                      </b-dropdown-item>
+                    </b-dropdown>
+                  </span>
                 </span>
 
                 <!-- Column: Common -->
@@ -81,10 +66,7 @@
                 </span>
               </template>
               <!-- pagination -->
-              <template
-                slot="pagination-bottom"
-                slot-scope="props"
-              >
+              <template slot="pagination-bottom" slot-scope="props">
                 <div class="d-flex justify-content-between flex-wrap">
                   <div class="d-flex align-items-center mb-0 mt-1">
                     <span class="text-nowrap ">
@@ -94,13 +76,9 @@
                       v-model="pageLength"
                       :options="['3', '5', '10']"
                       class="mx-1"
-                      @input="
-                        value => props.perPageChanged({ currentPerPage: value })
-                      "
+                      @input="value => props.perPageChanged({ currentPerPage: value })"
                     />
-                    <span class="text-nowrap">
-                      of {{ props.total }} entries
-                    </span>
+                    <span class="text-nowrap"> of {{ props.total }} entries </span>
                   </div>
                   <div>
                     <b-pagination
@@ -113,21 +91,13 @@
                       prev-class="prev-item"
                       next-class="next-item"
                       class="mt-1 mb-0"
-                      @input="
-                        value => props.pageChanged({ currentPage: value })
-                      "
+                      @input="value => props.pageChanged({ currentPage: value })"
                     >
                       <template #prev-text>
-                        <feather-icon
-                          icon="ChevronLeftIcon"
-                          size="18"
-                        />
+                        <feather-icon icon="ChevronLeftIcon" size="18" />
                       </template>
                       <template #next-text>
-                        <feather-icon
-                          icon="ChevronRightIcon"
-                          size="18"
-                        />
+                        <feather-icon icon="ChevronRightIcon" size="18" />
                       </template>
                     </b-pagination>
                   </div>
@@ -145,20 +115,7 @@
 import router from '@/router'
 // import { onUnmounted } from '@vue/composition-api'
 
-import {
-  BRow,
-  BCol,
-  BPagination,
-  BFormGroup,
-  BFormInput,
-  BButton,
-  BCard,
-  BCardHeader,
-  BFormSelect,
-  BCardBody,
-  // BDropdown,
-  // BDropdownItem,
-} from 'bootstrap-vue'
+import { BRow, BCol, BPagination, BFormGroup, BFormInput, BButton, BCard, BCardHeader, BFormSelect, BCardBody, BDropdown, BDropdownItem } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
@@ -177,6 +134,8 @@ export default {
     BCard,
     BCardHeader,
     BCardBody,
+    BDropdown,
+    BDropdownItem,
   },
   directives: {
     Ripple,

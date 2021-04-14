@@ -78,7 +78,6 @@ export default {
   components: {
     BCol,
     BRow,
-
     BCardBody,
     BFormInput,
     BFormGroup,
@@ -205,6 +204,9 @@ export default {
             this.dataOrder.nomorTransaksi = res.data.nomor_transaksi
             this.dataOrder.tanggalTransaksi = res.data.created_at
             store.commit('app-transaksi/SET_DATA_INVOICE', this.dataOrder)
+            if (router.currentRoute.params.nomor !== undefined) {
+              store.commit('app-transaksi/REMOVE_DRAFT_PENJUALAN', router.currentRoute.params.nomor)
+            }
             this.success()
           } else {
             this.error()
@@ -230,7 +232,7 @@ export default {
       nomor: 0,
       status: false, // untuk Status Draft atau Proses
       pelanggan: {
-        kodePelanggan: '',
+        id: '',
         nama: '',
         alamat: '',
         nomorTelepon: '',

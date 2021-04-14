@@ -102,6 +102,7 @@ export default {
     choosePelanggan(id) {
       if (id !== null) {
         const pelanggan = this.option.find(d => d.id === id)
+        this.dataOrder.pelanggan.id = pelanggan.id
         this.dataOrder.pelanggan.nama = pelanggan.nama
         this.dataOrder.pelanggan.alamat = pelanggan.alamat
         this.dataOrder.pelanggan.nomorTelepon = pelanggan.telepon

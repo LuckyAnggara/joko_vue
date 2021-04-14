@@ -13,10 +13,7 @@
             <div class="flex justify-content-end">
               <b-form-group>
                 <div class="d-flex align-items-center">
-                  <b-button
-                    variant="primary"
-                    @click="toTambahScreen()"
-                  >
+                  <b-button variant="primary" @click="toTambahScreen()">
                     <span class="text-nowrap">Add Transaksi</span>
                   </b-button>
                 </div>
@@ -27,12 +24,7 @@
               <b-form-group>
                 <div class="d-flex align-items-center">
                   <label class="mr-1">Search</label>
-                  <b-form-input
-                    v-model="searchTerm"
-                    placeholder="Search"
-                    type="text"
-                    class="d-inline-block"
-                  />
+                  <b-form-input v-model="searchTerm" placeholder="Search" type="text" class="d-inline-block" />
                 </div>
               </b-form-group>
             </div>
@@ -49,10 +41,7 @@
                 perPage: pageLength,
               }"
             >
-              <template
-                slot="table-row"
-                slot-scope="props"
-              >
+              <template slot="table-row" slot-scope="props">
                 <!-- Column: Status -->
                 <span v-if="props.column.field === 'status'">
                   <b-badge :variant="statusPembayaran(props.row.pembayaran.statusPembayaran.value)">
@@ -63,30 +52,16 @@
                 <!-- Column: Action -->
                 <span v-if="props.column.field === 'action'">
                   <span>
-                    <b-dropdown
-                      variant="link"
-                      toggle-class="text-decoration-none"
-                      no-caret
-                    >
+                    <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
                       <template v-slot:button-content>
-                        <feather-icon
-                          icon="MoreVerticalIcon"
-                          size="16"
-                          class="text-body align-middle mr-25"
-                        />
+                        <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
                       </template>
-                      <b-dropdown-item @click="view(props.row.nomor)">
-                        <feather-icon
-                          icon="EyeIcon"
-                          class="mr-50"
-                        />
+                      <b-dropdown-item @click="view(props.row.nomor, props.index)">
+                        <feather-icon icon="EyeIcon" class="mr-50" />
                         <span>View</span>
                       </b-dropdown-item>
                       <b-dropdown-item @click="del(props.index)">
-                        <feather-icon
-                          icon="TrashIcon"
-                          class="mr-50"
-                        />
+                        <feather-icon icon="TrashIcon" class="mr-50" />
                         <span>Delete</span>
                       </b-dropdown-item>
                     </b-dropdown>
@@ -99,10 +74,7 @@
                 </span>
               </template>
               <!-- pagination -->
-              <template
-                slot="pagination-bottom"
-                slot-scope="props"
-              >
+              <template slot="pagination-bottom" slot-scope="props">
                 <div class="d-flex justify-content-between flex-wrap">
                   <div class="d-flex align-items-center mb-0 mt-1">
                     <span class="text-nowrap ">
@@ -131,16 +103,10 @@
                       @input="value => props.pageChanged({ currentPage: value })"
                     >
                       <template #prev-text>
-                        <feather-icon
-                          icon="ChevronLeftIcon"
-                          size="18"
-                        />
+                        <feather-icon icon="ChevronLeftIcon" size="18" />
                       </template>
                       <template #next-text>
-                        <feather-icon
-                          icon="ChevronRightIcon"
-                          size="18"
-                        />
+                        <feather-icon icon="ChevronRightIcon" size="18" />
                       </template>
                     </b-pagination>
                   </div>
@@ -258,9 +224,17 @@ export default {
         }
       })
     },
-    view(index) {
-      router.push({ name: 'transaksi-penjualan-tambah', params: { id: index } })
+    /* eslint-disable */
+    view(nomor, index) {
+      router.push({
+        name: 'transaksi-penjualan-tambah',
+        params: {
+          id: index,
+          nomor: nomor,
+        },
+      })
     },
+    /* eslint-disable */
     jumlahItem(obj) {
       return obj.orders.length
     },
