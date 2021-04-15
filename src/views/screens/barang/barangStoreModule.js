@@ -101,6 +101,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchListTransaksiByBarang(ctx, kodeBarang) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`http://127.0.0.1:8000/api/penjualan/detail/barang/${kodeBarang}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchListMerek(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios

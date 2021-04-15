@@ -7,12 +7,7 @@
         <!-- Per Page -->
         <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
           <label>Data</label>
-          <v-select
-            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            :options="perPageOptions"
-            :clearable="false"
-            class="per-page-selector d-inline-block ml-50 mr-1"
-          />
+          <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
           <b-button variant="primary" :to="{ name: 'apps-invoice-add' }">
             Tambah Transaksi
           </b-button>
@@ -22,19 +17,6 @@
         <b-col cols="12" md="6">
           <div class="d-flex align-items-center justify-content-end">
             <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Search..." />
-            <v-select
-              v-model="statusFilter"
-              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-              :options="statusOptions"
-              class="invoice-filter-select"
-              placeholder="Select Status"
-            >
-              <template #selected-option="{ label }">
-                <span class="text-truncate overflow-hidden">
-                  {{ label }}
-                </span>
-              </template>
-            </v-select>
           </div>
         </b-col>
       </b-row>
@@ -42,7 +24,7 @@
 
     <b-table
       ref="refInvoiceListTable"
-      :items="fetchInvoices"
+      :items="dataTransaksi"
       responsive
       :fields="tableColumns"
       primary-key="id"
@@ -57,12 +39,12 @@
       </template>
 
       <!-- Column: Id -->
-      <template #cell(id)="data">
-        <b-link :to="{ name: 'apps-invoice-preview', params: { id: data.item.id } }" class="font-weight-bold"> #{{ data.value }} </b-link>
-      </template>
+      <!-- <template #cell(id)="data">
+        <b-link :to="{ name: 'apps-invoice-preview', params: { id: data.item.id } }" class="font-weight-bold"> #{{ data.item.nomor_transaksi }} </b-link>
+      </template> -->
 
       <!-- Column: Invoice Status -->
-      <template #cell(invoiceStatus)="data">
+      <!-- <template #cell(invoiceStatus)="data">
         <b-avatar :id="`invoice-row-${data.item.id}`" size="32" :variant="`light-${resolveInvoiceStatusVariantAndIcon(data.item.invoiceStatus).variant}`">
           <feather-icon :icon="resolveInvoiceStatusVariantAndIcon(data.item.invoiceStatus).icon" />
         </b-avatar>
@@ -73,16 +55,16 @@
           <p class="mb-0">Balance: {{ data.item.balance }}</p>
           <p class="mb-0">Due Date: {{ data.item.dueDate }}</p>
         </b-tooltip>
-      </template>
+      </template> -->
 
       <!-- Column: Client -->
-      <template #cell(client)="data">
+      <!-- <template #cell(client)="data">
         <b-media vertical-align="center">
           <template #aside>
             <b-avatar
               size="32"
               :src="data.item.avatar"
-              :text="avatarText(data.item.client.name)"
+              :text="avatarText(data.item.pelanggan.nama)"
               :variant="`light-${resolveClientAvatarVariant(data.item.invoiceStatus)}`"
             />
           </template>
@@ -91,24 +73,24 @@
           </span>
           <small class="text-muted">{{ data.item.client.companyEmail }}</small>
         </b-media>
-      </template>
+      </template> -->
 
       <!-- Column: Issued Date -->
-      <template #cell(issuedDate)="data">
+      <template #cell(tanggal_transaksi)="data">
         <span class="text-nowrap">
-          {{ data.value }}
+          {{ this.$moment(data.item.created_at).format('DD MMMM YYYY') }}
         </span>
       </template>
 
       <!-- Column: Balance -->
       <template #cell(balance)="data">
-        <template v-if="data.value === 0">
+        <template v-if="data.item.sisa_pembayaran === null || data.item.sisa_pembayaran === 0">
           <b-badge pill variant="light-success">
             Paid
           </b-badge>
         </template>
         <template v-else>
-          {{ data.value }}
+          {{ data.item.sisa_pembayaran }}
         </template>
       </template>
 
@@ -132,7 +114,6 @@
           />
           <b-tooltip title="Preview Invoice" :target="`invoice-row-${data.item.id}-preview-icon`" />
 
-          <!-- Dropdown -->
           <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
             <template #button-content>
               <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
@@ -157,38 +138,28 @@
         </div>
       </template>
     </b-table>
-    <div class="mx-2 mb-2">
-      <b-row>
-        <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
-          <span class="text-muted">Showing {{ dataMeta.from }} to {{ dataMeta.to }} of {{ dataMeta.of }} entries</span>
-        </b-col>
-        <!-- Pagination -->
-        <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="totalInvoices"
-            :per-page="perPage"
-            first-number
-            last-number
-            class="mb-0 mt-1 mt-sm-0"
-            prev-class="prev-item"
-            next-class="next-item"
-          >
-            <template #prev-text>
-              <feather-icon icon="ChevronLeftIcon" size="18" />
-            </template>
-            <template #next-text>
-              <feather-icon icon="ChevronRightIcon" size="18" />
-            </template>
-          </b-pagination>
-        </b-col>
-      </b-row>
-    </div>
   </b-card>
 </template>
 
 <script>
-import { BCard, BRow, BCol, BFormInput, BButton, BTable, BMedia, BAvatar, BLink, BBadge, BDropdown, BDropdownItem, BPagination, BTooltip } from 'bootstrap-vue'
+import { ref } from '@vue/composition-api'
+
+import {
+  BCard,
+  BRow,
+  BCol,
+  BFormInput,
+  BButton,
+  BTable,
+  // BMedia,
+  // BAvatar,
+  // BLink,
+  BBadge,
+  BDropdown,
+  BDropdownItem,
+  // BPagination,
+  // BTooltip,
+} from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import store from '@/store'
 
@@ -200,29 +171,63 @@ export default {
     BFormInput,
     BButton,
     BTable,
-    BMedia,
-    BAvatar,
-    BLink,
+    // BMedia,
+    // BAvatar,
+    // BLink,
     BBadge,
     BDropdown,
     BDropdownItem,
-    BPagination,
-    BTooltip,
+    // BPagination,
+    // BTooltip,
 
     vSelect,
   },
   data() {
     return {
-      perPageOptions: ['10', '20'],
+      searchQuery: '',
+      dataTransaksi: '',
     }
+  },
+  props: {
+    dataBarang: {
+      type: Object,
+      required: true,
+    },
+  },
+  mounted() {
+    this.loadTransaksi()
+  },
+  methods: {
+    loadTransaksi() {
+      store.dispatch('app-barang/fetchListTransaksiByBarang', this.dataBarang.kode_barang).then(res => {
+        this.dataTransaksi = res.data
+        console.info(this.dataTransaksi)
+      })
+    },
+    formatRupiah(value) {
+      return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    },
   },
   setup() {
     const statusOptions = ['Downloaded', 'Draft', 'Paid', 'Partial Payment', 'Past Due']
-    const dataTransaksi = store.getters['app-transaksi/getListTransaksiPenjualan']
-    return {
-      dataTransaksi,
-      statusOptions,
-    }
+    const tableColumns = [
+      { key: 'id', label: '#', sortable: true },
+      { key: 'nomor_transaksi', sortable: true },
+      { key: 'nama_pelanggan', sortable: true },
+      { key: 'total', sortable: true, formatter: val => `Rp. ${val}` },
+      { key: 'tanggal_transaksi', sortable: true },
+      { key: 'balance', sortable: true },
+      { key: 'actions' },
+    ]
+    const perPage = ref(10)
+    const totalInvoices = ref(0)
+    const currentPage = ref(1)
+    const perPageOptions = [10, 25, 50, 100]
+    const sortBy = ref('id')
+    const isSortDirDesc = ref(true)
+    const statusFilter = ref(null)
+
+    return { tableColumns, statusOptions, perPage, isSortDirDesc, currentPage, totalInvoices, perPageOptions, sortBy, statusFilter }
   },
 }
 </script>

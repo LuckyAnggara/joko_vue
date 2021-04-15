@@ -20,6 +20,7 @@ export default {
     getDraftByID: state => nomor => state.draftPenjualan.find(x => x.nomor === nomor),
     // TRANSAKSI PENJUALAN
     getListTransaksiPenjualan: state => state.listPenjualan,
+    getTransaksiByBarang: state => kodeBarang => state.listPenjualan.filter(x => x.orders.kode_barang_id === kodeBarang),
   },
   mutations: {
     // PENJUALAN TRANSAKSI

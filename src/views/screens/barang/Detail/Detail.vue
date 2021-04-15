@@ -2,7 +2,7 @@
   <section>
     <div>
       <!-- Alert: No item found -->
-      <b-alert variant="danger" :show="dataBarang === undefined">
+      <!-- <b-alert variant="danger" :show="dataBarang === undefined">
         <h4 class="alert-heading">
           Error fetching data Barang
         </h4>
@@ -13,7 +13,7 @@
           </b-link>
           untuk barang lainnya.
         </div>
-      </b-alert>
+      </b-alert> -->
 
       <template v-if="dataBarang">
         <!-- First Row -->
@@ -26,7 +26,7 @@
           </b-col>
         </b-row>
 
-        <barang-transaksi-card />
+        <barang-transaksi-card :data-barang="dataBarang" />
         <!-- <kartu-persediaan /> -->
       </template>
     </div>
@@ -36,11 +36,16 @@
 </template>
 
 <script>
-import { ref } from '@vue/composition-api'
+// import { ref } from '@vue/composition-api'
 
 import store from '@/store'
-// import router from '@/router'
-import { BRow, BCol, BAlert, BLink } from 'bootstrap-vue'
+import router from '@/router'
+import {
+  BRow,
+  BCol,
+  // BAlert,
+  // BLink
+} from 'bootstrap-vue'
 import BarangTransaksiCard from './BarangTransaksiCard.vue'
 
 // import KartuPersediaan from '@/views/screens/persediaan/Component/KartuPersediaan.vue'
@@ -53,8 +58,8 @@ export default {
   components: {
     BRow,
     BCol,
-    BAlert,
-    BLink,
+    // BAlert,
+    // BLink,
     BarangTransaksiCard,
     // KartuPersediaan,
     BarangInfoCard,
@@ -62,26 +67,32 @@ export default {
     SidebarAddHarga,
     SidebarAddSatuan,
   },
-  created() {
+
+  computed: {
+    dataBarang() {
+      console.info(router.currentRoute.params.id)
+      return store.getters['app-barang/getBarangById'](router.currentRoute.params.id)
+    },
+  },
+  mounted() {
     this.load()
   },
   methods: {
     load() {
+      console.info(store.getters['app-barang/getListBarang'].length)
       if (store.getters['app-barang/getListBarang'].length === 0) {
         store.dispatch('app-barang/fetchListBarang').then(res => {
           store.commit('app-barang/SET_LIST_BARANG', res.data)
-          this.dataBarang = store.getters['app-barang/getBarangById'](2)
+          console.info(this.dataBarang)
+        })
+      }
+      if (store.getters['app-transaksi/getListTransaksiPenjualan'].length === 0) {
+        store.dispatch('app-transaksi/fetchListTransaksiPenjualan').then(res => {
+          store.commit('app-transaksi/SET_LIST_TRANSAKSI_PENJUALAN', res.data)
+          this.rows = store.getters['app-transaksi/getListTransaksiPenjualan']
         })
       }
     },
-          this.dataBarang = store.getters['app-barang/getBarangById'](2)
-
-  },
-  setup() {
-    const dataBarang = ref({})
-    return {
-      dataBarang,
-    }
   },
 }
 </script>
