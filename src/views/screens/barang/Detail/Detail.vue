@@ -25,8 +25,16 @@
             <barang-harga-jual :data-barang="dataBarang" />
           </b-col>
         </b-row>
-
-        <barang-transaksi-card :title="'Data Transaksi'" :data-barang="dataBarang" />
+        <b-card>
+          <b-card-body>
+            <b-tabs pills>
+              <b-tab title="Transaksi" active>
+                <barang-transaksi-card :title="'Data Transaksi'" :data-barang="dataBarang" />
+              </b-tab>
+              <b-tab title="Kartu Persediaan"> </b-tab>
+            </b-tabs>
+          </b-card-body>
+        </b-card>
         <!-- <kartu-persediaan /> -->
       </template>
     </div>
@@ -43,6 +51,10 @@ import router from '@/router'
 import {
   BRow,
   BCol,
+  BTab,
+  BTabs,
+  BCard,
+  BCardBody,
   // BAlert,
   // BLink
 } from 'bootstrap-vue'
@@ -58,8 +70,12 @@ export default {
   components: {
     BRow,
     BCol,
+    BCardBody,
+    BCard,
     // BAlert,
     // BLink,
+    BTab,
+    BTabs,
     BarangTransaksiCard,
     // KartuPersediaan,
     BarangInfoCard,

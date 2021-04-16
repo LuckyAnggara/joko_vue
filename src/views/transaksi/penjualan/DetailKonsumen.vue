@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       selectPelanggan: '',
-      option: '',
+      option: [],
     }
   },
   mounted() {
@@ -89,15 +89,13 @@ export default {
   methods: {
     loadDataPelanggan() {
       if (this.$store.getters['app-kontak/getListPelanggan'].length === 0) {
-        this.$store.dispatch('app-kontak/fetchListPelanggan').then(res => {
-          this.$store.commit('app-kontak/SET_LIST_PELANGGAN', res.data)
-          const data = this.$store.getters['app-kontak/getListPelanggan']
-          this.option = data
-          return data
+        this.$store.dispatch('app-kontak/fetchListKontak').then(res => {
+          this.$store.commit('app-kontak/SET_LIST_KONTAK', res.data)
+          this.option = this.$store.getters['app-kontak/getListPelanggan']
         })
+      } else {
+        this.option = this.$store.getters['app-kontak/getListPelanggan']
       }
-      this.option = this.$store.getters['app-kontak/getListPelanggan']
-      return this.$store.getters['app-kontak/getListPelanggan']
     },
     choosePelanggan(id) {
       if (id !== null) {

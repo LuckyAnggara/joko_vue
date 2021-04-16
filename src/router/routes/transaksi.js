@@ -2,7 +2,7 @@ export default [
   {
     path: '/transaksi/penjualan/daftar',
     name: 'transaksi-penjualan-daftar',
-    component: () => import('@/views/transaksi/penjualan/Daftar.vue'),
+    component: () => import('@/views/transaksi/penjualan/DaftarTransaksi.vue'),
     meta: {
       pageTitle: 'Transaksi',
       breadcrumb: [

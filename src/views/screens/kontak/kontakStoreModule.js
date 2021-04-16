@@ -34,16 +34,6 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchListPelanggan(ctx, queryParams) {
-      return new Promise((resolve, reject) => {
-        axios
-          .get('http://127.0.0.1:8000/api/kontak/pelanggan', { params: queryParams })
-          .then(response => {
-            resolve(response)
-          })
-          .catch(error => reject(error))
-      })
-    },
     addPelanggan(ctx, data) {
       return new Promise((resolve, reject) => {
         axios

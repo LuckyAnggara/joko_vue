@@ -1,23 +1,28 @@
 <template>
-  <!-- Table Container Card -->
-
-  <section>
+  <b-card>
     <div class="mb-2">
       <!-- Table Top -->
       <b-row>
         <!-- Per Page -->
         <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
-          <label>Data</label>
+          <label>Entries</label>
           <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
           <b-button variant="primary" :to="{ name: 'transaksi-penjualan-tambah' }">
-            Tambah Transaksi
+            Tambah Data
           </b-button>
         </b-col>
 
         <!-- Search -->
         <b-col cols="12" md="6">
           <div class="d-flex align-items-center justify-content-end">
-            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... ( Nomor Transaksi , Nama Pelanggan )" />
+            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Transaksi , Nama Pelanggan)" />
+            <v-select v-model="filterQuery" :options="filterOptions" class="invoice-filter-select" placeholder="Select Status">
+              <template #selected-option="{ label }">
+                <span class="text-truncate overflow-hidden">
+                  {{ label }}
+                </span>
+              </template>
+            </v-select>
           </div>
         </b-col>
       </b-row>
@@ -49,32 +54,39 @@
       </template>
 
       <!-- Column: Nomor Transaksi -->
-      <template #cell(nomor_transaksi)="data">
-        <b-link :to="{ name: 'transaksi-penjualan-invoice', params: { id: data.item.id } }" class="font-weight-bold"> #{{ data.item.nomor_transaksi }} </b-link>
+      <template #cell(nomorTransaksi)="data">
+        <b-link :to="{ name: 'transaksi-penjualan-invoice', params: { id: data.item.id } }" class="font-weight-bold"> #{{ data.item.nomorTransaksi }} </b-link>
+      </template>
+
+      <!-- Column: Nama Pelanggan -->
+      <template #cell(namaPelanggan)="data">
+        <span>
+          {{ data.item.pelanggan.nama }}
+        </span>
       </template>
 
       <!-- Column: Total -->
       <template #cell(total)="data">
         <span class="text-nowrap">
-          {{ formatRupiah(data.item.total) }}
+          {{ formatRupiah(data.item.invoice.grandTotal) }}
         </span>
       </template>
 
       <!-- Column: Issued Date -->
-      <template #cell(tanggal_transaksi)="data">
+      <template #cell(tanggalTransaksi)="data">
         <span class="text-nowrap">
-          {{ moment(data.item.created_at) }}
+          {{ moment(data.item.tanggalTransaksi) }}
         </span>
       </template>
 
       <!-- Column: Balance -->
       <template #cell(saldo)="data">
-        <template v-if="data.item.sisa_pembayaran === null || data.item.sisa_pembayaran === 0">
+        <template v-if="data.item.pembayaran.sisaPembayaran === null || data.item.pembayaran.sisaPembayaran === 0">
           <b-badge pill variant="light-success">
             Paid
           </b-badge>
         </template>
-        <template v-else> -{{ formatRupiah(data.item.sisa_pembayaran) }} </template>
+        <template v-else> -{{ formatRupiah(data.item.invoice.grandTotal) }} </template>
       </template>
 
       <!-- Column: Actions -->
@@ -145,13 +157,15 @@
         </b-col>
       </b-row>
     </div>
-  </section>
+  </b-card>
 </template>
 
 <script>
+import store from '@/store'
 import { ref } from '@vue/composition-api'
 
 import {
+  BCard,
   BRow,
   BCol,
   BFormInput,
@@ -167,10 +181,10 @@ import {
   BTooltip,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
-import store from '@/store'
 
 export default {
   components: {
+    BCard,
     BRow,
     BCol,
     BFormInput,
@@ -189,30 +203,32 @@ export default {
   },
   data() {
     return {
-      dataTransaksi: '',
-      data: '',
+      filterQuery: '',
       searchQuery: '',
       refTable: null,
+      dataTransaksi: [],
+      dataTemp: [],
     }
-  },
-  props: {
-    dataBarang: {
-      type: Object,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
   },
   watch: {
     searchQuery(query) {
       if (query === '') {
-        this.dataTransaksi = this.data
+        this.dataTransaksi = this.dataTemp
       } else {
-        this.dataTransaksi = this.data.filter(
-          item => item.nomor_transaksi.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.nama_pelanggan.toLowerCase().indexOf(query.toLowerCase()) > -1,
+        this.dataTransaksi = this.dataTemp.filter(
+          item => item.nomorTransaksi.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.pelanggan.nama.toLowerCase().indexOf(query.toLowerCase()) > -1,
         )
+      }
+      this.totalInvoices = this.dataTransaksi.length
+    },
+    filterQuery(query) {
+      if (query === 'Lunas') {
+        this.dataTransaksi = this.dataTemp.filter(item => item.pembayaran.sisaPembayaran === null || item.pembayaran.sisaPembayaran === 0)
+      } else if (query === 'Kredit') {
+        this.dataTransaksi = this.dataTemp.filter(item => item.pembayaran.sisaPembayaran !== null || item.pembayaran.sisaPembayaran >= 0)
+      } else if (query === null || query === '') {
+        this.dataTransaksi = this.dataTemp
+        console.info(query)
       }
       this.totalInvoices = this.dataTransaksi.length
     },
@@ -227,34 +243,36 @@ export default {
       }
     },
   },
-  mounted() {
-    this.loadTransaksi()
-  },
   methods: {
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },
-    loadTransaksi() {
-      store.dispatch('app-barang/fetchListTransaksiByBarang', this.dataBarang.kode_barang).then(res => {
-        this.dataTransaksi = res.data
-        this.data = res.data
-        this.totalInvoices = res.data.length
-      })
-    },
     formatRupiah(value) {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
+    loadTransaksi() {
+      store.dispatch('app-transaksi/fetchListTransaksiPenjualan').then(res => {
+        store.commit('app-transaksi/SET_LIST_TRANSAKSI_PENJUALAN', res.data)
+        this.dataTransaksi = res.data
+        this.totalInvoices = this.dataTransaksi.length
+      })
+    },
+  },
+  mounted() {
+    this.loadTransaksi()
   },
   setup() {
+    const filterOptions = ['Lunas', 'COD', 'Kredit']
     const tableColumns = [
       { key: 'id', label: '#', sortable: true },
-      { key: 'nomor_transaksi', sortable: true },
-      { key: 'nama_pelanggan', sortable: true },
+      { key: 'nomorTransaksi', sortable: true },
+      { key: 'namaPelanggan', sortable: true },
       { key: 'total', sortable: true },
-      { key: 'tanggal_transaksi', sortable: true },
+      { key: 'tanggalTransaksi', sortable: true },
       { key: 'saldo', sortable: true },
       { key: 'actions' },
     ]
+
     // const searchQuery = ref('')
     const perPage = ref(10)
     const totalInvoices = ref(0)
@@ -265,6 +283,7 @@ export default {
     const statusFilter = ref(null)
 
     return {
+      filterOptions,
       tableColumns,
       // searchQuery,
       perPage,
