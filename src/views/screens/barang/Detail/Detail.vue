@@ -26,7 +26,7 @@
           </b-col>
         </b-row>
 
-        <barang-transaksi-card :data-barang="dataBarang" />
+        <barang-transaksi-card :title="'Data Transaksi'" :data-barang="dataBarang" />
         <!-- <kartu-persediaan /> -->
       </template>
     </div>

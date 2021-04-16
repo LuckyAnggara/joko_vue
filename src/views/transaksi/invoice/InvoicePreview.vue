@@ -287,6 +287,8 @@
 </template>
 
 <script>
+import router from '@/router'
+
 import { ref } from '@vue/composition-api'
 
 import {
@@ -354,6 +356,7 @@ export default {
     printInvoice() {},
   },
   setup() {
+    store.commit('app-transaksi/SET_DATA_INVOICE_FROM_DAFTAR', router.currentRoute.params.id)
     const dataInvoice = ref(store.getters['app-transaksi/getDataInvoice'])
     return {
       dataInvoice,
