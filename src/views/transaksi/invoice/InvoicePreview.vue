@@ -1,24 +1,18 @@
 <template>
   <section class="invoice-preview-wrapper">
     <!-- Alert: No item found -->
-    <!-- <b-alert
-      variant="danger"
-      :show="invoiceData === undefined"
-    >
+    <b-alert variant="danger" :show="dataInvoice === undefined">
       <h4 class="alert-heading">
         Error fetching invoice data
       </h4>
       <div class="alert-body">
-        No invoice found with this invoice id. Check
-        <b-link
-          class="alert-link"
-          :to="{ name: 'apps-invoice-list'}"
-        >
-          Invoice List
+        Tidak ada Invoice di temukan, silahkan pilih kembali Invoice di
+        <b-link class="alert-link" :to="{ name: 'transaksi-penjualan-daftar' }">
+          <span class="text-primary">Daftar Transaksi</span>
         </b-link>
-        for other invoices.
+        untuk Invoice lainnya.
       </div>
-    </b-alert> -->
+    </b-alert>
 
     <b-row v-if="dataInvoice" class="invoice-preview">
       <!-- Col: Left (Invoice Container) -->
@@ -291,18 +285,7 @@ import router from '@/router'
 
 import { ref } from '@vue/composition-api'
 
-import {
-  BRow,
-  BCol,
-  BCard,
-  BCardBody,
-  BTableLite,
-  BCardText,
-  BButton,
-  // BAlert,
-  // BLink,
-  VBToggle,
-} from 'bootstrap-vue'
+import { BRow, BCol, BCard, BCardBody, BTableLite, BCardText, BButton, BAlert, BLink, VBToggle } from 'bootstrap-vue'
 import Logo from '@core/layouts/components/Logo.vue'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
@@ -320,8 +303,8 @@ export default {
     BTableLite,
     BCardText,
     BButton,
-    // BAlert,
-    // BLink,
+    BAlert,
+    BLink,
 
     Logo,
   },

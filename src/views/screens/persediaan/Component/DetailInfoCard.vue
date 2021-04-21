@@ -2,18 +2,10 @@
   <b-card>
     <b-row>
       <!-- User Info: Left col -->
-      <b-col
-        cols="21"
-        xl="6"
-        class="d-flex justify-content-between flex-column"
-      >
+      <b-col cols="21" xl="6" class="d-flex justify-content-between flex-column">
         <!-- User Avatar & Action Buttons -->
         <div class="d-flex justify-content-start">
-          <b-avatar
-            :text="avatarText(dataBarang.nama)"
-            size="104px"
-            rounded
-          />
+          <b-avatar :text="avatarText(dataBarang.nama)" size="104px" rounded />
           <div class="d-flex justify-content-center flex-column ml-1">
             <div class="mb-1">
               <h2 class="mb-0">
@@ -25,10 +17,7 @@
       </b-col>
 
       <!-- Right Col: Table -->
-      <b-col
-        cols="12"
-        xl="6"
-      >
+      <b-col cols="12" xl="6">
         <table class="mt-2 mt-xl-0 w-100 table-striped">
           <tr>
             <th class="pb-50">
@@ -85,9 +74,7 @@
 </template>
 
 <script>
-import {
-  BCard, BAvatar, BRow, BCol,
-} from 'bootstrap-vue'
+import { BCard, BAvatar, BRow, BCol } from 'bootstrap-vue'
 import { avatarText } from '@core/utils/filter'
 
 export default {
@@ -105,14 +92,10 @@ export default {
       avatarText,
     }
   },
-  created() {
-    console.info(this.dataBarang)
-  },
+
   methods: {
     formatRupiah(value) {
-      return `Rp. ${value
-        .toFixed(0)
-        .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+      return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
   },
 }

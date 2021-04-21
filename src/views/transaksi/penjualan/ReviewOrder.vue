@@ -7,7 +7,7 @@
         </h5>
         <small class="text-muted">Cek kembali order sebelum ke Proses selanjutnya</small>
       </b-col>
-      <b-row>
+      <b-row class="match-height">
         <b-col cols="12" md="6">
           <div class="checkout-options">
             <b-card>
@@ -159,10 +159,18 @@
           </b-col>
         </b-row>
       </section>
+
       <b-row v-show="transfer">
         <b-col cols="12" md="8">
           <b-form-group label="Transfer ke" label-for="down-payment" label-cols-md="4">
             <v-select v-model="dataOrder.pembayaran.bank" placeholder="Nama Bank" label="title" :clearable="false" :options="bankOption" />
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="12" md="8">
+          <b-form-group label="Catatan" label-for="down-payment" label-cols-md="4">
+            <b-form-textarea id="down-payment" v-model="dataOrder.catatan" type="text" placeholder="Catatan akan muncul di Invoice" />
           </b-form-group>
         </b-col>
       </b-row>
@@ -176,7 +184,7 @@
 </template>
 
 <script>
-import { BButton, BFormDatepicker, BFormGroup, BCard, BForm, BFormInput, BRow, BCol } from 'bootstrap-vue'
+import { BButton, BFormDatepicker, BFormGroup, BFormTextarea, BCard, BForm, BFormInput, BRow, BCol } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import store from '@/store'
@@ -187,6 +195,7 @@ export default {
     BButton,
     BFormDatepicker,
     BForm,
+    BFormTextarea,
     BFormGroup,
     BRow,
     BCol,
@@ -234,6 +243,9 @@ export default {
       }
       return false
     },
+  },
+  mounted() {
+    this.loadBank()
   },
   methods: {
     dpOnChange(e) {
@@ -293,6 +305,11 @@ export default {
             name: 'transaksi-penjualan-draft',
           })
         }
+      })
+    },
+    loadBank() {
+      store.dispatch('app-transaksi/fetchDataBank', this.dataOrder).then(res => {
+        this.bankOption = res.data
       })
     },
   },

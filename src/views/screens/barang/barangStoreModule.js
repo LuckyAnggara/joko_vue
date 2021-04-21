@@ -9,6 +9,8 @@ export default {
     satuan: [],
     merek: [],
     barang: '',
+    // PERSEDIAAN
+    listDetailPersediaan: [],
   },
   getters: {
     getListBarang: state => state.listBarang,
@@ -17,6 +19,8 @@ export default {
     getListMerek: state => state.merek,
     getListSatuan: state => state.satuan,
     getBarangById: state => id => state.listBarang.find(x => x.id === id),
+    // PERSEDIAAN
+    getDetailListPersediaan: state => state.listDetailPersediaan,
   },
   mutations: {
     SET_LIST_BARANG(state, data) {
@@ -50,14 +54,21 @@ export default {
       state.satuan.push(data)
     },
     REMOVE_LIST_BARANG(state, data) {
-      state.listBarang.splice(data, 1)
+      state.listBarang.splice(
+        state.listBarang.findIndex(x => x.id === data),
+        1,
+      )
+    },
+    // PERSEDIAAN
+    SET_LIST_DETAIL_PERSEDIAAN(state, data) {
+      state.listDetailPersediaan = data
     },
   },
   actions: {
     fetchListBarang(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/barang', { params: queryParams })
+          .get(`${axios.defaults.baseURL}barang`, { params: queryParams })
           .then(response => {
             resolve(response)
           })
@@ -67,7 +78,7 @@ export default {
     fetchListGudang(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/barang/gudang', {
+          .get(`${axios.defaults.baseURL}barang/gudang`, {
             params: queryParams,
           })
           .then(response => {
@@ -80,7 +91,7 @@ export default {
     fetchListJenis(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/barang/jenis', {
+          .get(`${axios.defaults.baseURL}barang/jenis`, {
             params: queryParams,
           })
           .then(response => {
@@ -92,7 +103,7 @@ export default {
     fetchListSatuan(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/barang/satuan', {
+          .get(`${axios.defaults.baseURL}barang/satuan`, {
             params: queryParams,
           })
           .then(response => {
@@ -104,7 +115,7 @@ export default {
     fetchListTransaksiByBarang(ctx, kodeBarang) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`http://127.0.0.1:8000/api/penjualan/detail/barang/${kodeBarang}`)
+          .get(`${axios.defaults.baseURL}penjualan/detail/barang/${kodeBarang}`)
           .then(response => {
             resolve(response)
           })
@@ -114,7 +125,7 @@ export default {
     fetchListMerek(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/barang/merek', {
+          .get(`${axios.defaults.baseURL}barang/merek`, {
             params: queryParams,
           })
           .then(response => {
@@ -126,7 +137,7 @@ export default {
     addBarang(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/barang/store', data)
+          .post(`${axios.defaults.baseURL}barang/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -134,7 +145,7 @@ export default {
     addGudang(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/barang/gudang/store', data)
+          .post(`${axios.defaults.baseURL}barang/gudang/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -142,7 +153,7 @@ export default {
     addHargaBarang(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/barang/harga/store', data)
+          .post(`${axios.defaults.baseURL}barang/harga/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -150,7 +161,7 @@ export default {
     addJenis(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/barang/satuan/store', data)
+          .post(`${axios.defaults.baseURL}barang/satuan/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -158,7 +169,7 @@ export default {
     addMerek(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/barang/merek/store', data)
+          .post(`${axios.defaults.baseURL}barang/merek/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -166,7 +177,7 @@ export default {
     addSatuan(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/barang/satuan/store', data)
+          .post(`${axios.defaults.baseURL}barang/satuan/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -174,7 +185,7 @@ export default {
     removeBarang(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`http://127.0.0.1:8000/api/barang/${id}`)
+          .delete(`${axios.defaults.baseURL}barang/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -182,7 +193,16 @@ export default {
     removeHarga(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`http://127.0.0.1:8000/api/barang/harga/${id}`)
+          .delete(`${axios.defaults.baseURL}barang/harga/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    // PERSEDIAAN
+    fetchDetailPersediaan(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}persediaan/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

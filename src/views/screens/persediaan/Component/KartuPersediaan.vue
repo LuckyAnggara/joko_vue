@@ -14,12 +14,7 @@
               <b-form-group>
                 <div class="d-flex align-items-center">
                   <label class="mr-1">Search</label>
-                  <b-form-input
-                    v-model="searchTerm"
-                    placeholder="Search"
-                    type="text"
-                    class="d-inline-block"
-                  />
+                  <b-form-input v-model="searchTerm" placeholder="Search" type="text" class="d-inline-block" />
                 </div>
               </b-form-group>
             </div>
@@ -37,19 +32,11 @@
                 perPage: pageLength,
               }"
             >
-              <template
-                slot="table-row"
-                slot-scope="props"
-              >
+              <template slot="table-row" slot-scope="props">
                 <!-- Column: Action -->
                 <span v-if="props.column.field === 'action'">
                   <div>
-                    <b-button
-                      v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                      variant="primary"
-                      class="btn-icon"
-                      @click="view(props.row.id)"
-                    >
+                    <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="primary" class="btn-icon" @click="view(props.row.id)">
                       <feather-icon icon="EyeIcon" />
                     </b-button>
                   </div>
@@ -61,10 +48,7 @@
                 </span>
               </template>
               <!-- pagination -->
-              <template
-                slot="pagination-bottom"
-                slot-scope="props"
-              >
+              <template slot="pagination-bottom" slot-scope="props">
                 <div class="d-flex justify-content-between flex-wrap">
                   <div class="d-flex align-items-center mb-0 mt-1">
                     <span class="text-nowrap ">
@@ -74,13 +58,9 @@
                       v-model="pageLength"
                       :options="['3', '5', '10']"
                       class="mx-1"
-                      @input="
-                        value => props.perPageChanged({ currentPerPage: value })
-                      "
+                      @input="value => props.perPageChanged({ currentPerPage: value })"
                     />
-                    <span class="text-nowrap">
-                      of {{ props.total }} entries
-                    </span>
+                    <span class="text-nowrap"> of {{ props.total }} entries </span>
                   </div>
                   <div>
                     <b-pagination
@@ -93,21 +73,13 @@
                       prev-class="prev-item"
                       next-class="next-item"
                       class="mt-1 mb-0"
-                      @input="
-                        value => props.pageChanged({ currentPage: value })
-                      "
+                      @input="value => props.pageChanged({ currentPage: value })"
                     >
                       <template #prev-text>
-                        <feather-icon
-                          icon="ChevronLeftIcon"
-                          size="18"
-                        />
+                        <feather-icon icon="ChevronLeftIcon" size="18" />
                       </template>
                       <template #next-text>
-                        <feather-icon
-                          icon="ChevronRightIcon"
-                          size="18"
-                        />
+                        <feather-icon icon="ChevronRightIcon" size="18" />
                       </template>
                     </b-pagination>
                   </div>
@@ -122,18 +94,7 @@
 </template>
 
 <script>
-import {
-  BRow,
-  BCol,
-  BPagination,
-  BFormGroup,
-  BFormInput,
-  BButton,
-  BCard,
-  BCardHeader,
-  BFormSelect,
-  BCardBody,
-} from 'bootstrap-vue'
+import { BRow, BCol, BPagination, BFormGroup, BFormInput, BButton, BCard, BCardHeader, BFormSelect, BCardBody } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import Ripple from 'vue-ripple-directive'
 // import store from '@/store'
@@ -198,9 +159,7 @@ export default {
       searchTerm: '',
     }
   },
-  created() {
-    console.info(this.dataPersediaan)
-  },
+
   methods: {
     formatFn(value) {
       if (value === null || value === 0) {

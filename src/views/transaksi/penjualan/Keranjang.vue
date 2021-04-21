@@ -60,7 +60,29 @@
             <b-card>
               <div class="price-details">
                 <h6 class="price-title">
-                  Detail Harga
+                  Pajak dan Ongkos Kirim
+                </h6>
+                <hr />
+
+                <b-form-group label="Pajak" label-for="pajak" label-cols-md="6">
+                  <b-input-group prepend="%" append="%">
+                    <b-form-spinbutton v-model="pajakpersen" min="1" max="100" />
+                    <!-- <b-form-input id="h-first-name" placeholder="0" type="number" /> -->
+                  </b-input-group>
+                </b-form-group>
+                <b-form-group label="Ongkos Kirim" label-for="ongkir" label-cols-md="6">
+                  <b-form-input v-model="dataOrder.invoice.ongkir" trim type="number" />
+                </b-form-group>
+              </div>
+            </b-card>
+          </div>
+        </b-col>
+        <b-col cols="12" md="6">
+          <div class="checkout-options">
+            <b-card>
+              <div class="price-details">
+                <h6 class="price-title">
+                  Detail
                 </h6>
                 <hr />
                 <ul class="list-unstyled">
@@ -100,9 +122,12 @@
                     <div class="detail-title mt-1">
                       Ongkos Kirim
                     </div>
-                    <div class="detail-amt">
-                      <b-form-input v-model="dataOrder.invoice.ongkir" trim type="number" />
+                    <div class="detail-amt text-primary">
+                      {{ formatRupiah(dataOrder.invoice.ongkir) }}
                     </div>
+                    <!-- <div class="detail-amt">
+                      <b-form-input v-model="dataOrder.invoice.ongkir" trim type="number" />
+                    </div> -->
                   </li>
                 </ul>
                 <hr />
@@ -171,6 +196,7 @@
 <script>
 import {
   BRow,
+  BFormSpinbutton,
   BCol,
   BButton,
   BModal,
@@ -178,7 +204,7 @@ import {
   BForm,
   BCard,
   BCardBody,
-  // BInputGroup,
+  BInputGroup,
   BFormInput,
   // BInputGroupAppend,
 } from 'bootstrap-vue'
@@ -188,6 +214,8 @@ import Ripple from 'vue-ripple-directive'
 
 export default {
   components: {
+    BInputGroup,
+    BFormSpinbutton,
     BCard,
     BCardBody,
     BForm,
@@ -221,6 +249,7 @@ export default {
       qty: 1,
       diskon: 0,
       hargaJual: 0,
+      pajakpersen: 0,
       detailBarang: {
         nama: null,
         qty: null,
@@ -269,15 +298,23 @@ export default {
     },
   },
   watch: {
+    pajakpersen(ss) {
+      if (ss === '') {
+        this.pajakpersen = 0
+      } else {
+        const totalBFT = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
+        this.dataOrder.invoice.pajak = (totalBFT * parseFloat(this.pajakpersen)) / 100
+        this.dataOrder.invoice.grandTotal = parseFloat(totalBFT) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
+      }
+    },
     ongkir() {
       if (this.dataOrder.invoice.ongkir === '') {
         this.dataOrder.invoice.ongkir = 0
       } else {
-        this.dataOrder.invoice.grandTotal =
-          parseFloat(this.dataOrder.invoice.total) -
-          parseFloat(this.dataOrder.invoice.diskon) +
-          parseFloat(this.dataOrder.invoice.pajak) +
-          parseFloat(this.dataOrder.invoice.ongkir)
+        const totalBFT = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
+        this.dataOrder.invoice.pajak = (totalBFT * parseFloat(this.pajakpersen)) / 100
+        this.dataOrder.invoice.grandTotal = parseFloat(totalBFT) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
+
         // store.commit('app-transaksi/SET_INVOICE', this.dataOrder.invoice)
       }
     },
@@ -343,7 +380,6 @@ export default {
         total: grandTotal,
       }
       this.dataOrder.orders.push(data)
-      console.info(this.dataOrder.orders)
       // store.commit('app-transaksi/ADD_ORDER_TO_ACTIVE_PENJUALAN', this.dataOrder.orders)
       this.calculateTotal(data)
       // Hide the modal manually
@@ -355,7 +391,7 @@ export default {
       this.dataOrder.invoice.total = parseFloat(this.dataOrder.invoice.total) + parseFloat(order.total)
       this.dataOrder.invoice.diskon = parseFloat(order.diskon)
       const totalBeforeTax = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
-      this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
+      this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * this.pajakpersen) / 100
       this.dataOrder.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
     },
     calculateTotalMinus(order) {

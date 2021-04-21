@@ -2,31 +2,13 @@
   <b-row>
     <b-col cols="12">
       <b-card>
-        <b-card-header class="pb-50">
-          <h4>
-            Data Kontak
-          </h4>
-        </b-card-header>
         <b-card-body>
-          <!-- Add New Item Button -->
-          <div class="flex justify-content-end">
-            <b-form-group>
-              <div class="d-flex align-items-center">
-                <b-button variant="primary" @click="toTambahScreen()">
-                  <span class="text-nowrap">Add Kontak</span>
-                </b-button>
-              </div>
-            </b-form-group>
-          </div>
           <b-tabs pills>
             <b-tab title="Pelanggan" active>
-              <tabel-component :data-kontak="kontak" filter="PELANGGAN" />
+              <tabel-component :data-kontak="kontak.filter(item => item.tipe === `PELANGGAN`)" />
             </b-tab>
             <b-tab title="Supplier">
-              <tabel-component :data-kontak="kontak" filter="SUPPLIER" />
-            </b-tab>
-            <b-tab title="Karyawan">
-              <tabel-component :data-kontak="kontak" filter="KARYAWAN" />
+              <tabel-component :data-kontak="kontak.filter(item => item.tipe === `SUPPLIER`)" />
             </b-tab>
           </b-tabs>
         </b-card-body>
@@ -39,7 +21,7 @@
 import { ref } from '@vue/composition-api'
 
 import router from '@/router'
-import { BRow, BCol, BButton, BFormGroup, BCard, BCardHeader, BCardBody, BTab, BTabs } from 'bootstrap-vue'
+import { BRow, BCol, BCard, BCardBody, BTab, BTabs } from 'bootstrap-vue'
 import store from '@/store'
 import TabelComponent from './TabelComponent.vue'
 
@@ -48,15 +30,12 @@ export default {
     TabelComponent,
     BTab,
     BTabs,
-    BFormGroup,
     BRow,
     BCol,
-    BButton,
 
     // BDropdown,
     // BDropdownItem,
     BCard,
-    BCardHeader,
     BCardBody,
   },
 

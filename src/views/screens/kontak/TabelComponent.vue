@@ -1,129 +1,135 @@
 <template>
-  <div>
-    <!-- search input -->
-    <div class="custom-search d-flex justify-content-end">
-      <b-form-group>
-        <div class="d-flex align-items-center">
-          <label class="mr-1">Search</label>
-          <b-form-input v-model="searchTerm" placeholder="Search" type="text" class="d-inline-block" />
-        </div>
-      </b-form-group>
+  <!-- Table Container Card -->
+
+  <section>
+    <div class="mb-2">
+      <!-- Table Top -->
+      <b-row>
+        <!-- Per Page -->
+        <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
+          <label>Data</label>
+          <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
+          <b-button variant="primary" :to="{ name: 'screen-kontak-tambah' }">
+            Tambah Kontak
+          </b-button>
+        </b-col>
+
+        <!-- Search -->
+        <b-col cols="12" md="6">
+          <div class="d-flex align-items-center justify-content-end">
+            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... ( Nama Kontak )" />
+          </div>
+        </b-col>
+      </b-row>
     </div>
 
-    <vue-good-table
-      :line-numbers="true"
-      :columns="columns"
-      :rows="pelanggan"
-      :search-options="{
-        enabled: true,
-        externalQuery: searchTerm,
-      }"
-      :pagination-options="{
-        enabled: true,
-        perPage: pageLength,
-      }"
+    <b-table
+      ref="refTable"
+      responsive
+      primary-key="id"
+      :fields="tableColumns"
+      :items="kontak"
+      :current-page="currentPage"
+      :per-page="perPage"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="isSortDirDesc"
+      show-empty
+      empty-text="Tidak ada data"
+      class="position-relative"
     >
-      <template slot="table-row" slot-scope="props">
-        <!-- Column: Action -->
-        <span v-if="props.column.field === 'action'">
-          <div>
-            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" class="btn-icon" @click="view(props.row.id)">
-              <feather-icon icon="Edit2Icon" />
-            </b-button>
-
-            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" class="btn-icon" @click="del(props.row.id)">
-              <feather-icon icon="TrashIcon" />
-            </b-button>
-          </div>
-        </span>
-
-        <!-- Column: Common -->
-        <span v-else>
-          {{ props.formattedRow[props.column.field] }}
+      <!-- Column: Id -->
+      <template #cell(id)="data">
+        <span>
+          {{ data.index + 1 }}
         </span>
       </template>
-      <!-- pagination -->
-      <template slot="pagination-bottom" slot-scope="props">
-        <div class="d-flex justify-content-between flex-wrap">
-          <div class="d-flex align-items-center mb-0 mt-1">
-            <span class="text-nowrap ">
-              Showing 1 to
-            </span>
-            <b-form-select v-model="pageLength" :options="['20', '40', '100']" class="mx-1" @input="value => props.perPageChanged({ currentPerPage: value })" />
-            <span class="text-nowrap"> of {{ props.total }} entries </span>
-          </div>
-          <div>
-            <b-pagination
-              :value="1"
-              :total-rows="props.total"
-              :per-page="pageLength"
-              first-number
-              last-number
-              align="right"
-              prev-class="prev-item"
-              next-class="next-item"
-              class="mt-1 mb-0"
-              @input="value => props.pageChanged({ currentPage: value })"
-            >
-              <template #prev-text>
-                <feather-icon icon="ChevronLeftIcon" size="18" />
-              </template>
-              <template #next-text>
-                <feather-icon icon="ChevronRightIcon" size="18" />
-              </template>
-            </b-pagination>
-          </div>
+
+      <!-- Column: Actions -->
+      <template #cell(action)="data">
+        <div class="text-nowrap">
+          <feather-icon
+            :id="`kontak-row-${data.item.id}-detail`"
+            icon="EyeIcon"
+            size="16"
+            class="mx-1"
+            @click="
+              $router.push({
+                name: 'transaksi-penjualan-kontak',
+                params: { id: data.item.id },
+              })
+            "
+          />
+          <b-tooltip title="Detail" :target="`kontak-row-${data.item.id}-detail`" />
+
+          <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
+            <template #button-content>
+              <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+            </template>
+            <b-dropdown-item>
+              <feather-icon icon="TrashIcon" />
+              <span class="align-middle ml-50">Delete</span>
+            </b-dropdown-item>
+          </b-dropdown>
         </div>
       </template>
-    </vue-good-table>
-  </div>
+    </b-table>
+    <div class="mx-2 mb-2">
+      <b-row>
+        <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
+          <span class="text-muted">Showing {{ dataMeta.from }} to {{ dataMeta.to }} of {{ dataMeta.of }} entries</span>
+        </b-col>
+        <!-- Pagination -->
+        <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalData"
+            :per-page="perPage"
+            first-number
+            last-number
+            class="mb-0 mt-1 mt-sm-0"
+            prev-class="prev-item"
+            next-class="next-item"
+          >
+            <template #prev-text>
+              <feather-icon icon="ChevronLeftIcon" size="18" />
+            </template>
+            <template #next-text>
+              <feather-icon icon="ChevronRightIcon" size="18" />
+            </template>
+          </b-pagination>
+        </b-col>
+      </b-row>
+    </div>
+  </section>
 </template>
 
 <script>
-import router from '@/router'
-import { BFormGroup, BFormInput, BButton, BFormSelect, BPagination } from 'bootstrap-vue'
-import Ripple from 'vue-ripple-directive'
-import { VueGoodTable } from 'vue-good-table'
+import { ref } from '@vue/composition-api'
+
+import { BRow, BCol, BFormInput, BButton, BTable, BPagination, BDropdown, BDropdownItem, BTooltip } from 'bootstrap-vue'
+import vSelect from 'vue-select'
+// import store from '@/store'
 
 export default {
   components: {
-    BButton,
-    VueGoodTable,
-    BFormSelect,
-    BFormGroup,
+    BRow,
+    BCol,
     BFormInput,
+    BButton,
+    BTable,
+
     BPagination,
-  },
-  directives: {
-    Ripple,
+    BDropdown,
+    BDropdownItem,
+    BTooltip,
+    vSelect,
   },
   data() {
     return {
-      pageLength: 20,
-      dir: false,
-      columns: [
-        {
-          label: 'Nama',
-          field: 'nama',
-        },
-        {
-          label: 'Alamat',
-          field: 'alamat',
-        },
-        {
-          label: 'Email',
-          field: 'email',
-        },
-        {
-          label: 'No. Telepon',
-          field: 'telepon',
-        },
-        {
-          label: 'Action',
-          field: 'action',
-        },
-      ],
-      searchTerm: '',
+      kontak: [],
+      data: [],
+      searchQuery: '',
+      refTable: null,
     }
   },
   props: {
@@ -131,60 +137,93 @@ export default {
       type: Array,
       required: true,
     },
-    filter: {
-      type: String,
-      required: true,
+  },
+  watch: {
+    searchQuery(query) {
+      if (query === '') {
+        this.kontak = this.data
+      } else {
+        this.kontak = this.data.filter(item => item.nama.toLowerCase().indexOf(query.toLowerCase()) > -1)
+      }
+      this.totalData = this.kontak.length
+    },
+    dataKontak() {
+      this.kontak = this.dataKontak
+      this.data = this.dataKontak
+      this.totalData = this.dataKontak.length
     },
   },
   computed: {
-    pelanggan() {
-      return this.dataKontak.filter(item => item.tipe === this.filter)
+    // kontak() {
+    //   return this.dataKontak.filter(item => item.tipe === this.filter)
+    // },
+    // data() {
+    //   return this.dataKontak.filter(item => item.tipe === this.filter)
+    // },
+    dataMeta() {
+      const localItemsCount = this.$refs.refTable ? this.$refs.refTable.computedItems.length : 0
+      return {
+        from: this.perPage * (this.currentPage - 1) + (localItemsCount ? 1 : 0),
+        to: this.perPage * (this.currentPage - 1) + localItemsCount,
+        of: this.totalData,
+      }
     },
   },
   methods: {
-    formatRupiah(value) {
-      return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    moment(value) {
+      return this.$moment(value).format('DD MMMM YYYY')
     },
-    view(obj) {
-      router.push({ name: 'screen-barang-detail', params: { id: obj } })
-    },
-    edit(id) {
-      return id
-    },
-    del(id) {
-      this.$swal({
-        title: 'Delete data ?',
-        text: 'Data barang akan di hapus',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        if (result.value) {
-          console.info(id)
-          // axios.delete(`http://127.0.0.1:8000/api/barang/${id}`).then(res => {
-          //   if (res.status === 200) {
-          //     this.loadData()
-          //     this.$swal({
-          //       icon: 'success',
-          //       title: 'Deleted!',
-          //       customClass: {
-          //         confirmButton: 'btn btn-success',
-          //       },
-          //     })
-          //   }
-          // })
-        }
-      })
-    },
+  },
+  setup() {
+    const tableColumns = [
+      { key: 'id', label: '#', sortable: true },
+      { key: 'nama', sortable: true },
+      { key: 'telepon', sortable: true },
+      { key: 'alamat', sortable: true },
+      { key: 'action' },
+    ]
+    // const searchQuery = ref('')
+    const perPage = ref(10)
+    const totalData = ref(0)
+    const currentPage = ref(1)
+    const perPageOptions = [10, 25, 50, 100]
+    const sortBy = ref('id')
+    const isSortDirDesc = ref(true)
+    const statusFilter = ref(null)
+
+    return {
+      tableColumns,
+      // searchQuery,
+      perPage,
+      isSortDirDesc,
+      currentPage,
+      totalData,
+      perPageOptions,
+      sortBy,
+      statusFilter,
+    }
   },
 }
 </script>
 
+<style lang="scss" scoped>
+.per-page-selector {
+  width: 90px;
+}
+
+.kontak-filter-select {
+  min-width: 190px;
+
+  ::v-deep .vs__selected-options {
+    flex-wrap: nowrap;
+  }
+
+  ::v-deep .vs__selected {
+    width: 100px;
+  }
+}
+</style>
+
 <style lang="scss">
-@import '@core/scss/vue/libs/vue-good-table.scss';
+@import '@core/scss/vue/libs/vue-select.scss';
 </style>

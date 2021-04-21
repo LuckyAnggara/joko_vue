@@ -64,14 +64,13 @@ export default {
     },
     SET_DATA_INVOICE_FROM_DAFTAR(state, data) {
       state.activeDataInvoice = state.listPenjualan.find(x => x.id === data)
-      console.info(state.listPenjualan.find(x => x.id === data))
     },
   },
   actions: {
     addTransaksi(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:8000/api/penjualan/store', data)
+          .post(`${axios.defaults.baseURL}penjualan/store`, data)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -79,7 +78,19 @@ export default {
     fetchListTransaksiPenjualan(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/penjualan/', {
+          .get(`${axios.defaults.baseURL}penjualan/`, {
+            params: queryParams,
+          })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchDataBank(ctx, queryParams) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}bank/`, {
             params: queryParams,
           })
           .then(response => {

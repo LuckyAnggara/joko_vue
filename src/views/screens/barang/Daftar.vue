@@ -1,190 +1,203 @@
 <template>
-  <b-row>
-    <b-col cols="12">
-      <b-card>
-        <b-card-header class="pb-50">
-          <h4>
-            Data Barang
-          </h4>
-        </b-card-header>
-        <b-card-body>
-          <div>
-            <!-- Add New Item Button -->
-            <div class="flex justify-content-end">
-              <b-form-group>
-                <div class="d-flex align-items-center">
-                  <b-button variant="primary" @click="toTambahScreen()">
-                    <span class="text-nowrap">Add Item</span>
-                  </b-button>
-                </div>
-              </b-form-group>
-            </div>
-            <!-- search input -->
-            <div class="custom-search d-flex justify-content-end">
-              <b-form-group>
-                <div class="d-flex align-items-center">
-                  <label class="mr-1">Search</label>
-                  <b-form-input v-model="searchTerm" placeholder="Search" type="text" class="d-inline-block" />
-                </div>
-              </b-form-group>
-            </div>
-            <vue-good-table
-              :columns="columns"
-              :rows="rows"
-              :search-options="{
-                enabled: true,
-                externalQuery: searchTerm,
-              }"
-              :pagination-options="{
-                enabled: true,
-                perPage: pageLength,
-              }"
-            >
-              <template slot="table-row" slot-scope="props">
-                <!-- Column: Action -->
-                <span v-if="props.column.field === 'action'">
-                  <span>
-                    <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
-                      <template v-slot:button-content>
-                        <feather-icon icon="MoreVerticalIcon" size="16" class="text-body align-middle mr-25" />
-                      </template>
-                      <b-dropdown-item @click="view(props.row.id)">
-                        <feather-icon icon="Edit2Icon" class="mr-50" />
-                        <span>Detail</span>
-                      </b-dropdown-item>
-                      <b-dropdown-item @click="del(props.index, props.row.id)">
-                        <feather-icon icon="TrashIcon" class="mr-50" />
-                        <span>Delete</span>
-                      </b-dropdown-item>
-                    </b-dropdown>
-                  </span>
-                </span>
+  <section>
+    <b-row class="match-height">
+      <b-col lg="9" cols="12">
+        <!-- <card-statistics-group :data-barang="dataBarang" /> -->
+      </b-col>
+      <b-col lg="12" cols="12">
+        <b-card>
+          <div class="mb-2">
+            <!-- Table Top -->
+            <b-row>
+              <!-- Per Page -->
+              <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
+                <label>Entries</label>
+                <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
+                <b-button variant="primary" :to="{ name: 'screen-barang-tambah' }">
+                  Tambah Data
+                </b-button>
+              </b-col>
 
-                <!-- Column: Common -->
-                <span v-else>
-                  {{ props.formattedRow[props.column.field] }}
-                </span>
-              </template>
-              <!-- pagination -->
-              <template slot="pagination-bottom" slot-scope="props">
-                <div class="d-flex justify-content-between flex-wrap">
-                  <div class="d-flex align-items-center mb-0 mt-1">
-                    <span class="text-nowrap ">
-                      Showing 1 to
-                    </span>
-                    <b-form-select
-                      v-model="pageLength"
-                      :options="['3', '5', '10']"
-                      class="mx-1"
-                      @input="value => props.perPageChanged({ currentPerPage: value })"
-                    />
-                    <span class="text-nowrap"> of {{ props.total }} entries </span>
-                  </div>
-                  <div>
-                    <b-pagination
-                      :value="1"
-                      :total-rows="props.total"
-                      :per-page="pageLength"
-                      first-number
-                      last-number
-                      align="right"
-                      prev-class="prev-item"
-                      next-class="next-item"
-                      class="mt-1 mb-0"
-                      @input="value => props.pageChanged({ currentPage: value })"
-                    >
-                      <template #prev-text>
-                        <feather-icon icon="ChevronLeftIcon" size="18" />
-                      </template>
-                      <template #next-text>
-                        <feather-icon icon="ChevronRightIcon" size="18" />
-                      </template>
-                    </b-pagination>
-                  </div>
+              <!-- Search -->
+              <b-col cols="12" md="6">
+                <div class="d-flex align-items-center justify-content-end">
+                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Kode Barang, Nama Barang)" />
+                  <!-- <v-select v-model="filterQuery" :options="filterOptions" class="barang-filter-select  mr-1" placeholder="Merek Barang">
+                    <template #selected-option="{ label }">
+                      <span class="text-truncate overflow-hidden">
+                        {{ label }}
+                      </span>
+                    </template>
+                  </v-select> -->
                 </div>
-              </template>
-            </vue-good-table>
+              </b-col>
+            </b-row>
           </div>
-        </b-card-body>
-      </b-card>
-    </b-col>
-  </b-row>
+
+          <b-table
+            ref="refTable"
+            responsive
+            primary-key="id"
+            :fields="tableColumns"
+            :items="dataBarang"
+            :current-page="currentPage"
+            :per-page="perPage"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="isSortDirDesc"
+            show-empty
+            empty-text="Tidak ada data"
+            class="position-relative"
+          >
+            <template #head(barangStatus)>
+              <feather-icon icon="TrendingUpIcon" class="mx-auto" />
+            </template>
+
+            <!-- Column: Id -->
+            <template #cell(id)="data">
+              <span>
+                {{ data.index + 1 }}
+              </span>
+            </template>
+
+            <!-- Column: Actions -->
+            <template #cell(actions)="data">
+              <div class="text-nowrap">
+                <feather-icon
+                  :id="`barang-row-${data.item.id}-preview-icon`"
+                  icon="EyeIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="
+                    $router.push({
+                      name: 'screen-barang-detail',
+                      params: { id: data.item.id },
+                    })
+                  "
+                />
+                <b-tooltip title="Detail Barang" :target="`barang-row-${data.item.id}-preview-icon`" />
+
+                <b-dropdown variant="link" toggle-class="p-0" no-caret>
+                  <template #button-content>
+                    <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+                  </template>
+
+                  <b-dropdown-item @click="del(data.item.id)">
+                    <feather-icon icon="TrashIcon" />
+                    <span class="align-middle ml-50">Delete</span>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </div>
+            </template>
+          </b-table>
+          <div class="mx-2 mb-2">
+            <b-row>
+              <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
+                <span class="text-muted">Showing {{ dataMeta.from }} to {{ dataMeta.to }} of {{ dataMeta.of }} entries</span>
+              </b-col>
+              <!-- Pagination -->
+              <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
+                <b-pagination
+                  v-model="currentPage"
+                  :total-rows="totalBarang"
+                  :per-page="perPage"
+                  first-number
+                  last-number
+                  class="mb-0 mt-1 mt-sm-0"
+                  prev-class="prev-item"
+                  next-class="next-item"
+                >
+                  <template #prev-text>
+                    <feather-icon icon="ChevronLeftIcon" size="18" />
+                  </template>
+                  <template #next-text>
+                    <feather-icon icon="ChevronRightIcon" size="18" />
+                  </template>
+                </b-pagination>
+              </b-col>
+            </b-row>
+          </div>
+        </b-card>
+      </b-col>
+    </b-row>
+  </section>
 </template>
 
 <script>
-import router from '@/router'
-// import { onUnmounted } from '@vue/composition-api'
-
-import { BRow, BCol, BPagination, BFormGroup, BFormInput, BButton, BCard, BCardHeader, BFormSelect, BCardBody, BDropdown, BDropdownItem } from 'bootstrap-vue'
-import { VueGoodTable } from 'vue-good-table'
-import Ripple from 'vue-ripple-directive'
 import store from '@/store'
-// import barangStoreModule from './barangStoreModule'
+import { ref } from '@vue/composition-api'
+
+import { BCard, BRow, BCol, BFormInput, BButton, BTable, BDropdown, BDropdownItem, BPagination, BTooltip } from 'bootstrap-vue'
+import vSelect from 'vue-select'
+// import CardStatisticsGroup from './CardStatisticsGroup.vue'
 
 export default {
   components: {
+    // CardStatisticsGroup,
+    BCard,
     BRow,
     BCol,
-    VueGoodTable,
-    BPagination,
-    BFormGroup,
     BFormInput,
     BButton,
-    BFormSelect,
-    BCard,
-    BCardHeader,
-    BCardBody,
+    BTable,
+    // BMedia,
+    // BAvatar,
     BDropdown,
     BDropdownItem,
-  },
-  directives: {
-    Ripple,
+    BPagination,
+    BTooltip,
+
+    vSelect,
   },
   data() {
     return {
-      pageLength: 5,
-      dir: false,
-      columns: [
-        {
-          label: 'Kode',
-          field: 'kode_barang',
-        },
-        {
-          label: 'Nama',
-          field: 'nama',
-        },
-        {
-          label: 'Jenis',
-          field: 'nama_jenis',
-        },
-        {
-          label: 'Merek',
-          field: 'nama_merek',
-        },
-        {
-          label: 'Gudang',
-          field: 'nama_gudang',
-        },
-        {
-          label: 'Action',
-          field: 'action',
-        },
-      ],
-      rows: '',
-      searchTerm: '',
+      filterQuery: '',
+      searchQuery: '',
+      refTable: null,
+      dataBarang: [],
+      dataTemp: [],
     }
   },
-  created() {
-    this.rows = store.getters['app-barang/getListBarang']
-    if (this.rows.length === 0) {
-      this.loadData()
-    }
+  watch: {
+    searchQuery(query) {
+      if (query === '') {
+        this.dataBarang = this.dataTemp
+      } else {
+        this.dataBarang = this.dataTemp.filter(
+          item => item.kode_barang.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.nama.toLowerCase().indexOf(query.toLowerCase()) > -1,
+        )
+      }
+      this.totalBarang = this.dataBarang.length
+    },
+    filterQuery(query) {
+      if (query === 'Lunas') {
+        this.dataBarang = this.dataTemp.filter(trx => trx.pembayaran.sisaPembayaran === null || trx.pembayaran.sisaPembayaran === 0)
+      } else if (query === 'COD') {
+        this.dataBarang = this.dataTemp.filter(trx => parseFloat(trx.pembayaran.sisaPembayaran) >= 0 && trx.pembayaran.statusPembayaran.value === 2)
+      } else if (query === 'Kredit') {
+        this.dataBarang = this.dataTemp.filter(trx => parseFloat(trx.pembayaran.sisaPembayaran) >= 0 && trx.pembayaran.statusPembayaran.value === 1)
+      } else if (query === null || query === '') {
+        this.dataBarang = this.dataTemp
+      }
+      this.totalBarang = this.dataBarang.length
+    },
+  },
+  computed: {
+    dataMeta() {
+      const localItemsCount = this.$refs.refTable ? this.$refs.refTable.computedItems.length : 0
+      return {
+        from: this.perPage * (this.currentPage - 1) + (localItemsCount ? 1 : 0),
+        to: this.perPage * (this.currentPage - 1) + localItemsCount,
+        of: this.totalBarang,
+      }
+    },
   },
   methods: {
-    loadData() {
+    loadbarang() {
       store.dispatch('app-barang/fetchListBarang').then(res => {
         store.commit('app-barang/SET_LIST_BARANG', res.data)
-        this.rows = store.getters['app-barang/getListBarang']
+        this.dataBarang = store.getters['app-barang/getListBarang']
+        this.dataTemp = store.getters['app-barang/getListBarang']
+        this.totalBarang = this.dataBarang.length
       })
       store.dispatch('app-barang/fetchListGudang').then(res => {
         store.commit('app-barang/SET_LIST_GUDANG', res.data)
@@ -199,16 +212,7 @@ export default {
         store.commit('app-barang/SET_LIST_MEREK', res.data)
       })
     },
-    view(obj) {
-      router.push({ name: 'screen-barang-detail', params: { id: obj } })
-    },
-    fieldFn(rows) {
-      return `${rows.harga_1} <br> ${rows.harga_2} <br> ${rows.harga_3}`
-    },
-    edit(id) {
-      return id
-    },
-    del(index, id) {
+    del(id) {
       this.$swal({
         title: 'Delete data ?',
         text: 'Data barang akan di hapus',
@@ -228,7 +232,9 @@ export default {
             })
             .then(res => {
               if (res.status === 200) {
-                store.commit('app-barang/REMOVE_LIST_BARANG', index)
+                store.commit('app-barang/REMOVE_LIST_BARANG', id)
+                this.dataBarang = store.getters['app-barang/getListBarang']
+                this.totalBarang = this.dataBarang.length
                 this.$swal({
                   icon: 'success',
                   title: 'Deleted!',
@@ -241,15 +247,65 @@ export default {
         }
       })
     },
-    toTambahScreen() {
-      this.$router.push({
-        name: 'screen-barang-tambah',
-      })
-    },
+  },
+  mounted() {
+    this.loadbarang()
+  },
+  setup() {
+    const filterOptions = ['Lunas', 'COD', 'Kredit']
+    const tableColumns = [
+      { key: 'id', label: '#', sortable: true },
+      { key: 'kode_barang', sortable: true },
+      { key: 'nama', sortable: true },
+      { label: 'jenis', key: 'nama_jenis', sortable: true },
+      { label: 'merek', key: 'nama_merek', sortable: true },
+      { label: 'gudang', key: 'rak', sortable: true },
+      { key: 'actions' },
+    ]
+
+    // const searchQuery = ref('')
+    const perPage = ref(10)
+    const totalBarang = ref(0)
+    const currentPage = ref(1)
+    const perPageOptions = [10, 25, 50, 100]
+    const sortBy = ref('id')
+    const isSortDirDesc = ref(true)
+    const statusFilter = ref(null)
+
+    return {
+      filterOptions,
+      tableColumns,
+      // searchQuery,
+      perPage,
+      isSortDirDesc,
+      currentPage,
+      totalBarang,
+      perPageOptions,
+      sortBy,
+      statusFilter,
+    }
   },
 }
 </script>
 
+<style lang="scss" scoped>
+.per-page-selector {
+  width: 90px;
+}
+
+.barang-filter-select {
+  min-width: 190px;
+
+  ::v-deep .vs__selected-options {
+    flex-wrap: nowrap;
+  }
+
+  ::v-deep .vs__selected {
+    width: 100px;
+  }
+}
+</style>
+
 <style lang="scss">
-@import '@core/scss/vue/libs/vue-good-table.scss';
+@import '@core/scss/vue/libs/vue-select.scss';
 </style>

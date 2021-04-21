@@ -221,11 +221,11 @@ export default {
         this.dataOrder = store.getters['app-transaksi/getDraftByID'](router.currentRoute.params.id)
         this.startIndex = 1
       }
-      console.info(this.startIndex)
     },
   },
   setup() {
     const dataOrder = ref({
+      catatan: '',
       startIndex: 0,
       nomorTransaksi: '',
       tanggalTransaksi: '',

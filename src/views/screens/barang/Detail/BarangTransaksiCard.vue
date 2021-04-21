@@ -37,10 +37,6 @@
       empty-text="Tidak ada data"
       class="position-relative"
     >
-      <template #head(invoiceStatus)>
-        <feather-icon icon="TrendingUpIcon" class="mx-auto" />
-      </template>
-
       <!-- Column: Id -->
       <template #cell(id)="data">
         <span>
@@ -108,11 +104,11 @@
             </b-dropdown-item>
             <b-dropdown-item>
               <feather-icon icon="TrashIcon" />
-              <span class="align-middle ml-50">Delete</span>
+              <span class="align-middle ml-50">Retur</span>
             </b-dropdown-item>
             <b-dropdown-item>
-              <feather-icon icon="CopyIcon" />
-              <span class="align-middle ml-50">Duplicate</span>
+              <feather-icon icon="TrashIcon" />
+              <span class="align-middle ml-50">Delete</span>
             </b-dropdown-item>
           </b-dropdown>
         </div>
@@ -189,7 +185,7 @@ export default {
   },
   data() {
     return {
-      dataTransaksi: '',
+      dataTransaksi: [],
       data: '',
       searchQuery: '',
       refTable: null,
@@ -198,10 +194,6 @@ export default {
   props: {
     dataBarang: {
       type: Object,
-      required: true,
-    },
-    title: {
-      type: String,
       required: true,
     },
   },
@@ -216,6 +208,9 @@ export default {
       }
       this.totalInvoices = this.dataTransaksi.length
     },
+    dataBarang() {
+      this.loadTransaksi()
+    },
   },
   computed: {
     dataMeta() {
@@ -227,9 +222,7 @@ export default {
       }
     },
   },
-  mounted() {
-    this.loadTransaksi()
-  },
+
   methods: {
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
