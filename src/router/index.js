@@ -3,13 +3,10 @@ import VueRouter from 'vue-router'
 
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection'
-import {
-  isUserLoggedIn,
-  getUserData,
-  getHomeRouteForLoggedInUser,
-} from '@/auth/utils'
+import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 // import apps from './routes/apps'
 import dashboard from './routes/dashboard'
+import keuangan from './routes/keuangan'
 import transaksi from './routes/transaksi'
 // import uiElements from './routes/ui-elements/index'
 // import pages from './routes/pages'
@@ -31,6 +28,7 @@ const router = new VueRouter({
     ...screen,
     ...transaksi,
     // ...apps,
+    ...keuangan,
     ...dashboard,
     // ...pages,
     // ...chartsMaps,

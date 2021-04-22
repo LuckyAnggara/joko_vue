@@ -339,7 +339,9 @@ export default {
     printInvoice() {},
   },
   setup() {
-    store.commit('app-transaksi/SET_DATA_INVOICE_FROM_DAFTAR', router.currentRoute.params.id)
+    if (router.currentRoute.params.id !== undefined) {
+      store.commit('app-transaksi/SET_DATA_INVOICE_FROM_DAFTAR', router.currentRoute.params.id)
+    }
     const dataInvoice = ref(store.getters['app-transaksi/getDataInvoice'])
     return {
       dataInvoice,

@@ -33,6 +33,7 @@ tagVariant
 import dashboard from './dashboard'
 import persediaan from './persediaan'
 import transaksi from './transaksi'
+import keuangan from './keuangan'
 // import others from './others'
 // import chartsAndMaps from './charts-and-maps'
 // import uiElements from './ui-elements'
@@ -43,6 +44,7 @@ export default [
   ...dashboard,
   ...persediaan,
   ...transaksi,
+  ...keuangan,
   // ...appsAndPages,
   // ...uiElements,
   // ...formAndTable,
