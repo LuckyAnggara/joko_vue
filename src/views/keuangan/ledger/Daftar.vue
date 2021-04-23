@@ -1,7 +1,34 @@
 <template>
   <section>
     <b-row class="match-height">
-      <b-col lg="9" cols="12">
+      <b-col lg="6" cols="12">
+        <b-card>
+          <b-row>
+            <b-col lg="6" cols="12">
+              <b-form-group label="Kode Akun" label-cols-md="4">
+                <b-form-input readonly v-model="dataAkun.kode_akun" />
+              </b-form-group>
+              <b-form-group label="Klasifikasi" label-cols-md="4">
+                <b-form-input readonly v-model="dataAkun.nama_jenis" />
+              </b-form-group>
+            </b-col>
+            <b-col lg="6" cols="12">
+              <b-form-group label="Saldo Akun" label-cols-md="4">
+                <b-form-input readonly v-model="saldo" />
+              </b-form-group>
+              <b-form-group label="Sifat Akun" label-cols-md="4">
+                <b-form-input readonly v-model="dataAkun.saldo_normal" />
+              </b-form-group>
+            </b-col>
+            <b-col lg="12" cols="12">
+              <b-form-group label="Nama Akun" label-cols-md="2">
+                <b-form-input readonly v-model="dataAkun.nama" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-card>
+      </b-col>
+      <b-col lg="6" cols="12">
         <b-card>
           <b-form-group>
             <h5>Filter</h5>
@@ -73,7 +100,7 @@
 
             <template #cell(saldo)="data">
               <span>
-                {{ sumSaldo(data) }}
+                {{ formatRupiah(data.item.saldo) }}
               </span>
             </template>
           </b-table>
@@ -140,18 +167,23 @@ export default {
         value: null,
         config: {
           wrap: true, // set wrap to true only when using 'input-group'
-          altFormat: 'M j, Y',
+          altFormat: 'd F Y',
           altInput: true,
-          dateFormat: 'd F Y',
+          dateFormat: 'Y-m-d',
           mode: 'range',
         },
       },
-      saldo: 0,
       filterQuery: '',
       searchQuery: '',
       refTable: null,
       dataLedger: [],
       dataTemp: [],
+      dataAkun: {
+        kode_akun: '',
+        nama_jenis: '',
+        nama: '',
+        saldo: 0,
+      },
     }
   },
   computed: {
@@ -162,6 +194,9 @@ export default {
         to: this.perPage * (this.currentPage - 1) + localItemsCount,
         of: this.totalLedger,
       }
+    },
+    saldo() {
+      return this.formatRupiah(parseFloat(this.dataAkun.saldo))
     },
   },
   watch: {
@@ -184,34 +219,43 @@ export default {
   },
 
   mounted() {
-    this.loadLedger()
+    this.loadLedger('2021-04-22', '2021-04-22')
   },
   methods: {
-    sumSaldo(x) {
-      let output = this.saldo
-      return output
-    },
     clear() {
       this.date.value = null
       this.dateFilter(null)
     },
     dateFilter(x) {
-      if (x === null || x === '' || x.length === 0) {
-        this.dataTransaksi = this.dataTemp
-      } else {
-        this.dataTransaksi = this.dataTemp.filter(
-          item => Date.parse(this.moment(item.tanggalTransaksi)) >= Date.parse(x[0]) && Date.parse(this.moment(item.tanggalTransaksi)) <= Date.parse(x[1]),
-        )
-      }
-      this.totalInvoices = this.dataTransaksi.length
+      console.info(x)
+      this.loadLedger(this.moment(x[0]), this.moment(x[1]))
+      // if (x === null || x === '' || x.length === 0) {
+      //   this.dataLedger = this.dataTemp
+      // } else {
+      //   this.dataLedger = this.dataTemp.filter(
+      //     item => Date.parse(this.moment(item.created_at)) >= Date.parse(x[0]) && Date.parse(this.moment(item.created_at)) <= Date.parse(x[1]),
+      //   )
+      // }
+      this.totalInvoices = this.totalLedger.length
     },
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },
-    loadLedger() {
-      const { kode_akun } = router.currentRoute.params
-      this.dataTemp = store.getters['app-keuangan/getListJurnal']
-      this.dataLedger = store.getters['app-keuangan/getListJurnal'].filter(item => item.kode_akun === kode_akun)
+    loadLedger(dateawal = null, dateakhir = null) {
+      const { id } = router.currentRoute.params
+      store
+        .dispatch('app-keuangan/fetchLedgerByAkun', {
+          id,
+          dateawal,
+          dateakhir,
+        })
+        .then(res => {
+          store.commit('app-keuangan/SET_DATA_LEDGER', res.data.ledger)
+          this.dataAkun = res.data.master
+          this.dataTemp = store.getters['app-keuangan/getDataLedger']
+          this.dataLedger = this.dataTemp
+          this.totalLedger = this.dataLedger.length
+        })
     },
     formatRupiah(value) {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`

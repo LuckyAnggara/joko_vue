@@ -67,7 +67,7 @@
 
             <!-- Column: Tanggal -->
             <template #cell(nama)="data">
-              <b-link :to="{ name: 'keuangan-ledger', params: { kode_akun: data.item.kode_akun } }" class="font-weight-bold">
+              <b-link :to="{ name: 'keuangan-ledger', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
                 {{ data.item.kode_akun + ' - ' + data.item.nama_akun }}
               </b-link>
             </template>
@@ -200,13 +200,13 @@ export default {
     },
     dateFilter(x) {
       if (x === null || x === '' || x.length === 0) {
-        this.dataTransaksi = this.dataTemp
+        this.dataJurnal = this.dataTemp
       } else {
-        this.dataTransaksi = this.dataTemp.filter(
-          item => Date.parse(this.moment(item.tanggalTransaksi)) >= Date.parse(x[0]) && Date.parse(this.moment(item.tanggalTransaksi)) <= Date.parse(x[1]),
+        this.dataJurnal = this.dataTemp.filter(
+          item => Date.parse(this.moment(item.created_at)) >= Date.parse(x[0]) && Date.parse(this.moment(item.created_at)) <= Date.parse(x[1]),
         )
       }
-      this.totalInvoices = this.dataTransaksi.length
+      this.totalJurnal = this.dataJurnal.length
     },
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
