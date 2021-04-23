@@ -164,7 +164,7 @@ export default {
   data() {
     return {
       date: {
-        value: null,
+        value: Date.now(),
         config: {
           wrap: true, // set wrap to true only when using 'input-group'
           altFormat: 'd F Y',
@@ -217,9 +217,8 @@ export default {
     },
     /* eslint-disable */
   },
-
   mounted() {
-    this.loadLedger('2021-04-22', '2021-04-22')
+    this.loadLedger(this.moment(Date.now()), this.moment(Date.now()))
   },
   methods: {
     clear() {
@@ -229,13 +228,6 @@ export default {
     dateFilter(x) {
       console.info(x)
       this.loadLedger(this.moment(x[0]), this.moment(x[1]))
-      // if (x === null || x === '' || x.length === 0) {
-      //   this.dataLedger = this.dataTemp
-      // } else {
-      //   this.dataLedger = this.dataTemp.filter(
-      //     item => Date.parse(this.moment(item.created_at)) >= Date.parse(x[0]) && Date.parse(this.moment(item.created_at)) <= Date.parse(x[1]),
-      //   )
-      // }
       this.totalInvoices = this.totalLedger.length
     },
     moment(value) {

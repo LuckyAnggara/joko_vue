@@ -145,7 +145,7 @@
       <section v-show="caraPembayaran">
         <b-row>
           <b-col cols="12" md="8">
-            <b-form-group label="Cara Pembayaran" label-for="down-payment" label-cols-md="4">
+            <b-form-group label="Cara Pembayaran" label-for="cara-pembayaran" label-cols-md="4">
               <v-select
                 v-model="dataOrder.pembayaran.jenisPembayaran"
                 :value="dataOrder.pembayaran.jenisPembayaran.value"
@@ -162,15 +162,15 @@
 
       <b-row v-show="transfer">
         <b-col cols="12" md="8">
-          <b-form-group label="Transfer ke" label-for="down-payment" label-cols-md="4">
+          <b-form-group label="Transfer ke" label-for="bank" label-cols-md="4">
             <v-select v-model="dataOrder.pembayaran.bank" placeholder="Nama Bank" label="title" :clearable="false" :options="bankOption" />
           </b-form-group>
         </b-col>
       </b-row>
       <b-row>
         <b-col cols="12" md="8">
-          <b-form-group label="Catatan" label-for="down-payment" label-cols-md="4">
-            <b-form-textarea id="down-payment" v-model="dataOrder.catatan" type="text" placeholder="Catatan akan muncul di Invoice" />
+          <b-form-group label="Catatan" label-for="catatan" label-cols-md="4">
+            <b-form-textarea v-model="dataOrder.catatan" type="text" placeholder="Catatan akan muncul di Invoice" />
           </b-form-group>
         </b-col>
       </b-row>

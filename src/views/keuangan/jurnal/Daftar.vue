@@ -1,7 +1,7 @@
 <template>
   <section>
     <b-row class="match-height">
-      <b-col lg="9" cols="12">
+      <b-col lg="6" cols="12">
         <b-card>
           <b-form-group>
             <h5>Filter</h5>
@@ -31,14 +31,7 @@
               <!-- Search -->
               <b-col cols="12" md="6">
                 <div class="d-flex align-items-center justify-content-end">
-                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Kode Akun, Nama Akun, Nomor Jurnal)" />
-                  <!-- <v-select v-model="filterQuery" :options="filterOptions" class="keuangan-filter-select  mr-1" placeholder="Merek Jurnal">
-                    <template #selected-option="{ label }">
-                      <span class="text-truncate overflow-hidden">
-                        {{ label }}
-                      </span>
-                    </template>
-                  </v-select> -->
+                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Jurnal, Keterangan)" />
                 </div>
               </b-col>
             </b-row>
@@ -65,9 +58,9 @@
               </span>
             </template>
 
-            <!-- Column: Tanggal -->
+            <!-- Column: Nama Akun -->
             <template #cell(nama)="data">
-              <b-link :to="{ name: 'keuangan-ledger', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
+              <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
                 {{ data.item.kode_akun + ' - ' + data.item.nama_akun }}
               </b-link>
             </template>
@@ -145,12 +138,12 @@ export default {
   data() {
     return {
       date: {
-        value: null,
+        value: Date.now(),
         config: {
           wrap: true, // set wrap to true only when using 'input-group'
-          altFormat: 'M j, Y',
+          altFormat: 'd F Y',
           altInput: true,
-          dateFormat: 'd F Y',
+          dateFormat: 'Y-m-d',
           mode: 'range',
         },
       },
@@ -178,11 +171,7 @@ export default {
         this.dataJurnal = this.dataTemp
       } else {
         this.dataJurnal = this.dataTemp.filter(
-          item =>
-            item.nomor_jurnal.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
-            item.keterangan.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
-            item.kode_akun.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
-            item.nama_akun.toLowerCase().indexOf(query.toLowerCase()) > -1,
+          item => item.nomor_jurnal.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.keterangan.toLowerCase().indexOf(query.toLowerCase()) > -1,
         )
       }
       this.totalJurnal = this.dataJurnal.length
@@ -191,7 +180,7 @@ export default {
   },
 
   mounted() {
-    this.loadJurnal()
+    this.loadJurnal(this.moment(Date.now()), this.moment(Date.now()))
   },
   methods: {
     clear() {
@@ -211,13 +200,18 @@ export default {
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },
-    loadJurnal() {
-      store.dispatch('app-keuangan/fetchListJurnal').then(res => {
-        store.commit('app-keuangan/SET_LIST_JURNAL', res.data)
-        this.dataJurnal = store.getters['app-keuangan/getListJurnal']
-        this.dataTemp = store.getters['app-keuangan/getListJurnal']
-        this.totalJurnal = this.dataJurnal.length
-      })
+    loadJurnal(dateawal = null, dateakhir = null) {
+      store
+        .dispatch('app-keuangan/fetchListJurnal', {
+          dateawal,
+          dateakhir,
+        })
+        .then(res => {
+          store.commit('app-keuangan/SET_LIST_JURNAL', res.data)
+          this.dataJurnal = store.getters['app-keuangan/getListJurnal']
+          this.dataTemp = store.getters['app-keuangan/getListJurnal']
+          this.totalJurnal = this.dataJurnal.length
+        })
     },
     formatRupiah(value) {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`

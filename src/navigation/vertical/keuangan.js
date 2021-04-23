@@ -3,9 +3,23 @@ export default [
     header: 'Keuangan',
   },
   {
-    title: 'Jurnal',
+    title: 'Akuntansi',
     icon: 'HomeIcon',
     tagVariant: 'light-warning',
-    route: 'keuangan-jurnal-daftar',
+    children: [
+      {
+        title: 'Daftar Akun',
+        route: 'akuntansi-akun-daftar',
+      },
+      {
+        title: 'Jurnal',
+        route: 'akuntansi-jurnal-daftar',
+      },
+
+      {
+        title: 'Neraca',
+        route: 'akuntansi-ledger-daftar',
+      },
+    ],
   },
 ]

@@ -1,14 +1,11 @@
 export default [
   {
-    path: '/keuangan/jurnal/daftar',
-    name: 'keuangan-jurnal-daftar',
-    component: () => import('@/views/keuangan/jurnal/Daftar.vue'),
+    path: '/akuntansi/akun/daftar',
+    name: 'akuntansi-akun-daftar',
+    component: () => import('@/views/keuangan/akun/Daftar.vue'),
     meta: {
-      pageTitle: 'Keuangan',
+      pageTitle: 'Akun',
       breadcrumb: [
-        {
-          text: 'Jurnal',
-        },
         {
           text: 'Daftar',
           active: true,
@@ -17,17 +14,45 @@ export default [
     },
   },
   {
-    path: '/keuangan/ledger/',
-    name: 'keuangan-ledger',
-    component: () => import('@/views/keuangan/ledger/Daftar.vue'),
+    path: '/akuntansi/jurnal/daftar',
+    name: 'akuntansi-jurnal-daftar',
+    component: () => import('@/views/keuangan/jurnal/Daftar.vue'),
     meta: {
-      pageTitle: 'Keuangan',
+      pageTitle: 'Jurnal',
       breadcrumb: [
         {
-          text: 'Ledger',
+          text: 'Daftar',
+          active: true,
         },
+      ],
+    },
+  },
+  {
+    path: '/akuntansi/ledger/daftar',
+    name: 'akuntansi-ledger-daftar',
+    component: () => import('@/views/keuangan/jurnal/Daftar.vue'),
+    meta: {
+      pageTitle: 'Ledger',
+      breadcrumb: [
         {
           text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/akuntansi/ledger/detail',
+    name: 'akuntansi-ledger-detail',
+    component: () => import('@/views/keuangan/ledger/Daftar.vue'),
+    meta: {
+      pageTitle: 'Ledger',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
           active: true,
         },
       ],
