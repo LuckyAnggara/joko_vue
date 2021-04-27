@@ -3,6 +3,7 @@ import axios from '@axios'
 export default {
   namespaced: true,
   state: {
+    // PENJUALAN
     draftPenjualan: [],
     activePenjualan: '',
     activeDataInvoice: '',
@@ -10,6 +11,7 @@ export default {
     listPenjualan: [],
   },
   getters: {
+    // PENJUALAN
     getJumlahPenjualan: state => state.draftPenjualan.length,
     getActiveOrder: state => state.activeOrder,
     getActivePenjualan: state => state.activePenjualan,
@@ -40,17 +42,14 @@ export default {
       state.activePenjualan.orders = data
     },
 
-    ADD_ORDER(state, id) {
-      console.info(id)
-      // state.penjualan[id].orders.push(data)
-    },
+    // ADD_ORDER(state, id) {
+    //   // state.penjualan[id].orders.push(data)
+    // },
 
     // DATA DRAFT TRANSAKSI PENJUALAN
     ADD_DRAFT_PENJUALAN(state, data) {
       const exist = state.draftPenjualan.find(x => x.nomor === data.nomor)
-      console.info(exist)
       if (exist === undefined) {
-        console.info()
         state.draftPenjualan.push(data)
       }
     },
@@ -75,12 +74,10 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchListTransaksiPenjualan(ctx, queryParams) {
+    fetchListTransaksiPenjualan(ctx, params) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${axios.defaults.baseURL}penjualan/`, {
-            params: queryParams,
-          })
+          .get(`${axios.defaults.baseURL}penjualan/${params.dateawal}/${params.dateakhir}`)
           .then(response => {
             resolve(response)
           })

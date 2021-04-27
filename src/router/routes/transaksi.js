@@ -67,4 +67,55 @@ export default [
       ],
     },
   },
+  {
+    path: '/transaksi/pembelian/daftar',
+    name: 'transaksi-pembelian-daftar',
+    component: () => import('@/views/transaksi/pembelian/DaftarTransaksi.vue'),
+    meta: {
+      pageTitle: 'Transaksi',
+      breadcrumb: [
+        {
+          text: 'Pembelian',
+        },
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/transaksi/pembelian/draft',
+    name: 'transaksi-pembelian-draft',
+    component: () => import('@/views/transaksi/pembelian/DaftarDraft.vue'),
+    meta: {
+      pageTitle: 'Transaksi',
+      breadcrumb: [
+        {
+          text: 'Pembelian',
+        },
+        {
+          text: 'Draft',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/transaksi/pembelian/tambah',
+    name: 'transaksi-pembelian-tambah',
+    component: () => import('@/views/transaksi/pembelian/Pembelian.vue'),
+    meta: {
+      pageTitle: 'Pembelian',
+      breadcrumb: [
+        {
+          text: 'Transaksi',
+        },
+        {
+          text: 'Pembelian',
+          active: true,
+        },
+      ],
+    },
+  },
 ]

@@ -14,7 +14,7 @@
     >
       <!-- account datails tab -->
       <tab-content title="Data Kontak" :before-change="beforeTabSwitch1">
-        <detail-konsumen :data-order="dataOrder" />
+        <detail-supplier :data-order="dataOrder" />
       </tab-content>
 
       <!-- personal info tab -->
@@ -36,7 +36,6 @@
       @hidden="resetModal"
       @ok="store"
     >
-      <!-- <b-modal id="modal-default" ref="my-modal" ok-only ok-title="Submit" centered :title="detailBarang.nama"> -->
       <b-card-body>
         <section>
           <b-row>
@@ -64,13 +63,11 @@
 import { ref } from '@vue/composition-api'
 import { FormWizard, TabContent } from 'vue-form-wizard'
 import { BCol, BRow, BModal, BFormInput, BFormGroup, BCardBody } from 'bootstrap-vue'
-// import vSelect from 'vue-select'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import router from '@/router'
 import store from '@/store'
 
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
-import DetailKonsumen from './DetailKonsumen.vue'
+import DetailSupplier from './DetailSupplier.vue'
 import ReviewOrder from './ReviewOrder.vue'
 import Keranjang from './Keranjang.vue'
 
@@ -83,15 +80,10 @@ export default {
     BFormGroup,
     BModal,
     FormWizard,
-    DetailKonsumen,
+    DetailSupplier,
     ReviewOrder,
     TabContent,
     Keranjang,
-    // BFormTextarea,
-
-    // vSelect,
-    // eslint-disable-next-line vue/no-unused-components
-    ToastificationContent,
   },
   data() {
     return {
@@ -123,7 +115,7 @@ export default {
       })
 
       this.$router.push({
-        name: 'transaksi-penjualan-invoice',
+        name: 'transaksi-pembelian-invoice',
       })
     },
     error(error) {
@@ -137,15 +129,25 @@ export default {
         buttonsStyling: false,
       })
     },
+    errorNomor() {
+      this.$swal({
+        title: 'Error!',
+        text: 'Nomor Transaksi masih kosong!!!',
+        icon: 'error',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },
+        buttonsStyling: false,
+      })
+    },
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
     beforeTabSwitch1() {
-      if (this.dataOrder.pelanggan.nama !== '' || this.dataOrder.pelanggan.alamat !== '') {
+      if (this.dataOrder.supplier.nama !== '' || this.dataOrder.supplier.alamat !== '') {
         if (this.dataOrder.nomor === '') {
-          this.dataOrder.nomor = parseFloat(store.getters['app-transaksi-penjualan/getJumlahPenjualan']) + parseFloat(1)
+          this.dataOrder.nomor = parseFloat(store.getters['app-transaksi-pembelian/getJumlahPembelian']) + parseFloat(1)
         }
-        // store.commit('app-transaksi-penjualan/SET_ACTIVE_PENJUALAN', this.dataOrder)
         return true
       }
       this.$swal({
@@ -184,41 +186,45 @@ export default {
       this.$refs['my-modal'].show()
     },
     store() {
-      const loader = this.$loading.show({
-        // Optional parameters
-        container: this.$refs.formContainer,
-        canCancel: true,
-        color: '#000000',
-        loader: 'spinner',
-        width: 64,
-        height: 64,
-        backgroundColor: '#ffffff',
-        opacity: 0.5,
-        zIndex: 999,
-      })
-      store
-        .dispatch('app-transaksi-penjualan/addTransaksi', this.dataOrder)
-        .then(res => {
-          if (res.status === 200) {
-            loader.hide()
-            this.dataOrder.nomorTransaksi = res.data.nomor_transaksi
-            this.dataOrder.tanggalTransaksi = res.data.created_at
-            store.commit('app-transaksi-penjualan/SET_DATA_INVOICE', this.dataOrder)
-            if (router.currentRoute.params.nomor !== undefined) {
-              store.commit('app-transaksi-penjualan/REMOVE_DRAFT_PENJUALAN', router.currentRoute.params.nomor)
+      if (this.dataOrder.nomorTransaksi === '' || this.dataOrder.nomorTransaksi === null) {
+        this.errorNomor()
+      } else {
+        const loader = this.$loading.show({
+          // Optional parameters
+          container: this.$refs.formContainer,
+          canCancel: true,
+          color: '#000000',
+          loader: 'spinner',
+          width: 64,
+          height: 64,
+          backgroundColor: '#ffffff',
+          opacity: 0.5,
+          zIndex: 999,
+        })
+        store
+          .dispatch('app-transaksi-pembelian/addTransaksi', this.dataOrder)
+          .then(res => {
+            if (res.status === 200) {
+              loader.hide()
+              this.dataOrder.nomorTransaksi = res.data.nomor_transaksi
+              this.dataOrder.tanggalTransaksi = res.data.created_at
+              store.commit('app-transaksi-pembelian/SET_DATA_INVOICE', this.dataOrder)
+              if (router.currentRoute.params.nomor !== undefined) {
+                store.commit('app-transaksi-pembelian/REMOVE_DRAFT_PEMBELIAN', router.currentRoute.params.nomor)
+              }
+              this.success()
+            } else {
+              this.error()
             }
-            this.success()
-          } else {
-            this.error()
-          }
-        })
-        .catch(error => {
-          this.error(error)
-        })
+          })
+          .catch(error => {
+            this.error(error)
+          })
+      }
     },
     load() {
       if (router.currentRoute.params.id !== undefined) {
-        this.dataOrder = store.getters['app-transaksi-penjualan/getDraftByID'](router.currentRoute.params.id)
+        this.dataOrder = store.getters['app-transaksi-pembelian/getDraftByID'](router.currentRoute.params.id)
         this.startIndex = 1
       }
     },
@@ -231,7 +237,7 @@ export default {
       tanggalTransaksi: '',
       nomor: 0,
       status: false, // untuk Status Draft atau Proses
-      pelanggan: {
+      supplier: {
         id: '',
         nama: '',
         alamat: '',

@@ -21,4 +21,23 @@ export default [
       },
     ],
   },
+  {
+    title: 'Pembelian',
+    icon: 'HomeIcon',
+    tagVariant: 'light-warning',
+    children: [
+      {
+        title: 'Daftar',
+        route: 'transaksi-pembelian-daftar',
+      },
+      {
+        title: 'Transaksi Baru',
+        route: 'transaksi-pembelian-tambah',
+      },
+      {
+        title: 'Draft Transaksi',
+        route: 'transaksi-pembelian-draft',
+      },
+    ],
+  },
 ]

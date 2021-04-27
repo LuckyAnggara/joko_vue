@@ -178,7 +178,6 @@ export default {
     },
     /* eslint-disable */
   },
-
   mounted() {
     this.loadJurnal(this.moment(Date.now()), this.moment(Date.now()))
   },
@@ -187,14 +186,9 @@ export default {
       this.date.value = null
       this.dateFilter(null)
     },
+
     dateFilter(x) {
-      if (x === null || x === '' || x.length === 0) {
-        this.dataJurnal = this.dataTemp
-      } else {
-        this.dataJurnal = this.dataTemp.filter(
-          item => Date.parse(this.moment(item.created_at)) >= Date.parse(x[0]) && Date.parse(this.moment(item.created_at)) <= Date.parse(x[1]),
-        )
-      }
+      this.loadJurnal(this.moment(x[0]), this.moment(x[1]))
       this.totalJurnal = this.dataJurnal.length
     },
     moment(value) {

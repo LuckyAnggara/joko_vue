@@ -4,7 +4,7 @@
       <b-card>
         <b-card-header class="pb-50">
           <h4>
-            Data Transaksi Penjualan
+            Data Transaksi Pembelian
           </h4>
         </b-card-header>
         <b-card-body>
@@ -142,7 +142,6 @@ import { VueGoodTable } from 'vue-good-table'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
 import router from '@/router'
-// import barangStoreModule from './barangStoreModule'
 
 export default {
   components: {
@@ -170,8 +169,8 @@ export default {
       dir: false,
       columns: [
         {
-          label: 'Nama Pelanggan',
-          field: 'pelanggan.nama',
+          label: 'Nama Supplier',
+          field: 'supplier.nama',
         },
         {
           label: 'Jumlah Item',
@@ -193,7 +192,7 @@ export default {
     }
   },
   created() {
-    this.rows = store.getters['app-transaksi-penjualan/getListDraftPenjualan']
+    this.rows = store.getters['app-transaksi-pembelian/getListDraftPembelian']
     if (this.rows.length === 0) {
       this.loadData()
     }
@@ -202,7 +201,7 @@ export default {
     del(index) {
       this.$swal({
         title: 'Delete ?',
-        text: 'Draft Penjualan akan di Hapus',
+        text: 'Draft Pembelian akan di Hapus',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!',
@@ -213,7 +212,7 @@ export default {
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          store.commit('app-transaksi-penjualan/REMOVE_DRAFT_PENJUALAN', index)
+          store.commit('app-transaksi-pembelian/REMOVE_DRAFT_PEMBELIAN', index)
           this.$swal({
             icon: 'success',
             title: 'Deleted!',
@@ -227,7 +226,7 @@ export default {
     /* eslint-disable */
     view(nomor, index) {
       router.push({
-        name: 'transaksi-penjualan-tambah',
+        name: 'transaksi-pembelian-tambah',
         params: {
           id: index,
           nomor: nomor,
@@ -239,11 +238,11 @@ export default {
       return obj.orders.length
     },
     invoice(id) {
-      store.commit('app-transaksi-penjualan/SET_DATA_INVOICE_FROM_DAFTAR', id)
-      router.push({ name: 'transaksi-penjualan-invoice' })
+      store.commit('app-transaksi-pembelian/SET_DATA_INVOICE_FROM_DAFTAR', id)
+      router.push({ name: 'transaksi-pembelian-invoice' })
     },
     loadData() {
-      this.rows = store.getters['app-transaksi-penjualan/getListDraftPenjualan']
+      this.rows = store.getters['app-transaksi-pembelian/getListDraftPembelian']
     },
     statusPembayaran(status) {
       const statusColor = {
@@ -258,7 +257,7 @@ export default {
     },
     toTambahScreen() {
       this.$router.push({
-        name: 'transaksi-penjualan-tambah',
+        name: 'transaksi-pembelian-tambah',
       })
     },
     formatDate(value) {

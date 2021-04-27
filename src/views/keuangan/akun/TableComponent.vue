@@ -2,7 +2,7 @@
   <section>
     <b-card-body :title="header.nama">
       <div class="d-flex mb-2">
-        <span> Saldo : {{ formatRupiah(header.saldo) }} </span>
+        <span> Saldo : {{ formatRupiah(Math.abs(header.saldo)) }} </span>
       </div>
       <b-table
         ref="refTable"
@@ -38,7 +38,7 @@
         <!-- Column: DEBIT KREDIT SALDO-->
         <template #cell(saldo)="data">
           <span>
-            {{ formatRupiah(data.item.saldo) }}
+            {{ formatRupiah(Math.abs(data.item.saldo)) }}
           </span>
         </template>
       </b-table>

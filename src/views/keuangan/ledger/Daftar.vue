@@ -226,7 +226,6 @@ export default {
       this.dateFilter(null)
     },
     dateFilter(x) {
-      console.info(x)
       this.loadLedger(this.moment(x[0]), this.moment(x[1]))
       this.totalInvoices = this.totalLedger.length
     },

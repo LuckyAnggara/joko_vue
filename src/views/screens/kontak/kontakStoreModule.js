@@ -10,9 +10,9 @@ export default {
   getters: {
     getListKontak: state => state.listKontak,
     // GET MASTER DATA
-    getListPelanggan: state => state.listKontak,
+    getListPelanggan: state => state.listPelanggan,
     getPelangganById: state => id => state.listPelanggan.find(x => x.id === id),
-    getListSupplier: state => state.listKontak,
+    getListSupplier: state => state.listSupplier,
     getSupplierById: state => id => state.listSupplier.find(x => x.id === id),
   },
   mutations: {

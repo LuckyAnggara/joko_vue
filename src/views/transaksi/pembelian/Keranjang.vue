@@ -9,7 +9,7 @@
             Keranjang Belanja
           </h5>
           <small class="text-muted">
-            Masukan Daftar Barang Penjualan.
+            Masukan Daftar Barang Pembelian.
           </small>
         </b-col>
         <b-col>
@@ -174,13 +174,12 @@
               :options="select.harga"
               :reduce="harga => harga.id"
               :value="selectHarga.id"
-              @input="setHarga"
             />
           </b-form-group>
         </b-col>
         <b-col cols="12">
-          <b-form-group label="Harga Jual" label-for="harga-jual" class="mb-2">
-            <b-form-input v-model="hargaJual" trim type="number" />
+          <b-form-group label="Harga Beli" label-for="harga-beli" class="mb-2">
+            <b-form-input v-model="hargaBeli" trim type="number" />
           </b-form-group>
         </b-col>
         <b-col cols="12">
@@ -248,7 +247,7 @@ export default {
       },
       qty: 1,
       diskon: 0,
-      hargaJual: 0,
+      hargaBeli: 0,
       pajakpersen: 0,
       detailBarang: {
         nama: null,
@@ -268,7 +267,7 @@ export default {
           field: 'jumlah',
         },
         {
-          label: 'Harga Jual',
+          label: 'Harga Beli',
           field: 'harga',
           formatFn: this.formatRupiah,
         },
@@ -314,8 +313,6 @@ export default {
         const totalBFT = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
         this.dataOrder.invoice.pajak = (totalBFT * parseFloat(this.pajakpersen)) / 100
         this.dataOrder.invoice.grandTotal = parseFloat(totalBFT) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
-
-        // store.commit('app-transaksi-penjualan/SET_INVOICE', this.dataOrder.invoice)
       }
     },
   },
@@ -346,7 +343,7 @@ export default {
       this.detailBarang.qty = 1
       this.diskon = 0
       this.selectHarga = ''
-      this.hargaJual = 0
+      this.hargaBeli = 0
       this.qty = 1
     },
     handleInput(event) {
@@ -354,12 +351,6 @@ export default {
     },
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
-    },
-    setHarga(id) {
-      if (id !== null) {
-        const data = this.detailBarang.harga.find(d => d.id === id)
-        this.hargaJual = data.harga
-      }
     },
     handleOk(bvModalEvt) {
       // Prevent modal from closing
@@ -369,18 +360,17 @@ export default {
     },
     handleSubmit() {
       // Push the name to submitted names
-      const grandTotal = this.qty * this.hargaJual - this.diskon
+      const grandTotal = this.qty * this.hargaBeli - this.diskon
       const data = {
         id_barang: this.detailBarang.id,
         kode_barang: this.detailBarang.kode_barang,
         nama_barang: this.detailBarang.nama,
         jumlah: this.qty,
-        harga: this.hargaJual,
+        harga: this.hargaBeli,
         diskon: this.diskon,
         total: grandTotal,
       }
       this.dataOrder.orders.push(data)
-      // store.commit('app-transaksi-penjualan/ADD_ORDER_TO_ACTIVE_PENJUALAN', this.dataOrder.orders)
       this.calculateTotal(data)
       // Hide the modal manually
       this.$nextTick(() => {

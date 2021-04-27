@@ -38,7 +38,7 @@
               <!-- Search -->
               <b-col cols="12" md="6">
                 <div class="d-flex align-items-center justify-content-end">
-                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Transaksi , Nama Pelanggan)" />
+                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Transaksi , Nama Supplier)" />
                   <v-select v-model="filterQuery" :options="filterOptions" class="invoice-filter-select  mr-1" placeholder="Status Pembayaran">
                     <template #selected-option="{ label }">
                       <span class="text-truncate overflow-hidden">
@@ -86,10 +86,10 @@
               </span>
             </template>
 
-            <!-- Column: Nama Pelanggan -->
-            <template #cell(namaPelanggan)="data">
+            <!-- Column: Nama Supplier -->
+            <template #cell(namaSupplier)="data">
               <span>
-                {{ data.item.pelanggan.nama }}
+                {{ data.item.supplier.nama }}
               </span>
             </template>
 
@@ -240,8 +240,6 @@ export default {
     BFormInput,
     BButton,
     BTable,
-    // BMedia,
-    // BAvatar,
     BLink,
     BBadge,
     BDropdown,
@@ -276,7 +274,7 @@ export default {
         this.dataTransaksi = this.dataTemp
       } else {
         this.dataTransaksi = this.dataTemp.filter(
-          item => item.nomorTransaksi.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.pelanggan.nama.toLowerCase().indexOf(query.toLowerCase()) > -1,
+          item => item.nomorTransaksi.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.supplier.nama.toLowerCase().indexOf(query.toLowerCase()) > -1,
         )
       }
       this.totalInvoices = this.dataTransaksi.length
@@ -284,8 +282,6 @@ export default {
     filterQuery(query) {
       if (query === 'Lunas') {
         this.dataTransaksi = this.dataTemp.filter(trx => trx.pembayaran.sisaPembayaran === null || trx.pembayaran.sisaPembayaran === 0)
-      } else if (query === 'COD') {
-        this.dataTransaksi = this.dataTemp.filter(trx => parseFloat(trx.pembayaran.sisaPembayaran) >= 0 && trx.pembayaran.statusPembayaran.value === 2)
       } else if (query === 'Kredit') {
         this.dataTransaksi = this.dataTemp.filter(trx => parseFloat(trx.pembayaran.sisaPembayaran) >= 0 && trx.pembayaran.statusPembayaran.value === 1)
       } else if (query === null || query === '') {
@@ -321,12 +317,12 @@ export default {
     },
     loadTransaksi(dateawal = null, dateakhir = null) {
       store
-        .dispatch('app-transaksi-penjualan/fetchListTransaksiPenjualan', {
+        .dispatch('app-transaksi-pembelian/fetchListTransaksiPembelian', {
           dateawal,
           dateakhir,
         })
         .then(res => {
-          store.commit('app-transaksi-penjualan/SET_LIST_TRANSAKSI_PENJUALAN', res.data)
+          store.commit('app-transaksi-pembelian/SET_LIST_TRANSAKSI_PEMBELIAN', res.data)
           this.dataTransaksi = res.data
           this.dataTemp = res.data
           this.totalInvoices = this.dataTransaksi.length
@@ -337,12 +333,12 @@ export default {
     this.loadTransaksi(this.moment(Date.now()), this.moment(Date.now()))
   },
   setup() {
-    const filterOptions = ['Lunas', 'COD', 'Kredit']
+    const filterOptions = ['Lunas', 'Kredit']
     const tableColumns = [
       { key: 'id', label: '#', sortable: true },
       { key: 'nomorTransaksi', sortable: true },
       { key: 'tanggalTransaksi', sortable: true },
-      { key: 'namaPelanggan', sortable: true },
+      { key: 'namaSupplier', sortable: true },
       { key: 'total', sortable: true },
       { key: 'saldo', sortable: true },
       { key: 'actions' },

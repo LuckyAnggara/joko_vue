@@ -13,23 +13,23 @@
             <b-card>
               <div class="price-details">
                 <h6 class="price-title">
-                  Data Pelanggan
+                  Data Supplier
                 </h6>
                 <hr />
                 <ul class="list-unstyled">
                   <li class="price-detail">
                     <div class="detail-title mb-1">
-                      {{ dataOrder.pelanggan.nama }}
+                      {{ dataOrder.supplier.nama }}
                     </div>
                   </li>
                   <li class="price-detail">
                     <div class="detail-title mb-1" style="white-space:pre-line;">
-                      {{ dataOrder.pelanggan.alamat }}
+                      {{ dataOrder.supplier.alamat }}
                     </div>
                   </li>
                   <li class="price-detail">
                     <div class="detail-title">
-                      {{ dataOrder.pelanggan.nomorTelepon }}
+                      {{ dataOrder.supplier.nomorTelepon }}
                     </div>
                   </li>
                 </ul>
@@ -113,6 +113,14 @@
       <hr />
       <b-row>
         <b-col cols="12" md="8">
+          <b-form-group label="Nomor Transaksi" label-cols-md="4">
+            <b-form-input v-model="dataOrder.nomorTransaksi" type="text" required placeholder="Nomor Transaksi / Invoice / Faktur" />
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <hr />
+      <b-row>
+        <b-col cols="12" md="8">
           <b-form-group label="Metode Pembayaran" label-cols-md="4">
             <v-select
               v-model="dataOrder.pembayaran.statusPembayaran"
@@ -145,7 +153,7 @@
       <section v-show="caraPembayaran">
         <b-row>
           <b-col cols="12" md="8">
-            <b-form-group label="Cara Pembayaran" label-for="cara-pembayaran" label-cols-md="4">
+            <b-form-group label="Cara Pembayaran" label-for="down-payment" label-cols-md="4">
               <v-select
                 v-model="dataOrder.pembayaran.jenisPembayaran"
                 :value="dataOrder.pembayaran.jenisPembayaran.value"
@@ -153,23 +161,15 @@
                 label="title"
                 :options="jenisPembayaranOption"
                 :clearable="false"
-                @input="cekJenisPembayaran"
               />
             </b-form-group>
           </b-col>
         </b-row>
       </section>
 
-      <b-row v-show="transfer">
-        <b-col cols="12" md="8">
-          <b-form-group label="Transfer ke" label-for="bank" label-cols-md="4">
-            <v-select v-model="dataOrder.pembayaran.bank" placeholder="Nama Bank" label="title" :clearable="false" :options="bankOption" />
-          </b-form-group>
-        </b-col>
-      </b-row>
       <b-row>
         <b-col cols="12" md="8">
-          <b-form-group label="Catatan" label-for="catatan" label-cols-md="4">
+          <b-form-group label="Catatan" label-cols-md="4">
             <b-form-textarea v-model="dataOrder.catatan" type="text" placeholder="Catatan akan muncul di Invoice" />
           </b-form-group>
         </b-col>
@@ -220,16 +220,10 @@ export default {
       pembayaranOption: [
         { title: 'Lunas', value: '0' },
         { title: 'Kredit', value: '1' },
-        { title: 'Cash On Delivery (COD)', value: '2' },
       ],
       jenisPembayaranOption: [
         { title: 'Tunai', value: '0' },
         { title: 'Transfer', value: '1' },
-      ],
-      bankOption: [
-        { title: 'BNI - 0542424', value: '0' },
-        { title: 'BRI - 0203203020302', value: '1' },
-        { title: 'BCA - asdasdasdasd', value: '1' },
       ],
     }
   },
@@ -244,9 +238,7 @@ export default {
       return false
     },
   },
-  mounted() {
-    this.loadBank()
-  },
+
   methods: {
     dpOnChange(e) {
       if (e >= this.dataOrder.invoice.grandTotal) {
@@ -271,12 +263,16 @@ export default {
       }
       this.resetInput()
     },
-    cekJenisPembayaran(id) {
-      if (id.value === '1') {
-        this.transfer = true
-      } else {
-        this.transfer = false
-      }
+    errorNomor() {
+      this.$swal({
+        title: 'Error!',
+        text: 'Nomor Transaksi masih kosong!!!',
+        icon: 'error',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },
+        buttonsStyling: false,
+      })
     },
     resetInput() {
       this.jumlahPembayaran = 0
@@ -287,30 +283,29 @@ export default {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
     storeDraft() {
-      this.$swal({
-        title: 'Simpan ?',
-        text: 'Draft Penjualan akan di Simpan',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        if (result.value) {
-          store.commit('app-transaksi-penjualan/ADD_DRAFT_PENJUALAN', this.dataOrder)
-          this.$router.push({
-            name: 'transaksi-penjualan-draft',
-          })
-        }
-      })
-    },
-    loadBank() {
-      store.dispatch('app-transaksi-penjualan/fetchDataBank', this.dataOrder).then(res => {
-        this.bankOption = res.data
-      })
+      if (this.dataOrder.nomorTransaksi === '' || this.dataOrder.nomorTransaksi === null) {
+        this.errorNomor()
+      } else {
+        this.$swal({
+          title: 'Simpan ?',
+          text: 'Draft Pembelian akan di Simpan',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-danger ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          if (result.value) {
+            store.commit('app-transaksi-pembelian/ADD_DRAFT_PEMBELIAN', this.dataOrder)
+            this.$router.push({
+              name: 'transaksi-pembelian-draft',
+            })
+          }
+        })
+      }
     },
   },
 }
