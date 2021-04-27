@@ -2,7 +2,7 @@
   <section>
     <b-card-body :title="header.nama">
       <div class="d-flex mb-2">
-        <span> Saldo : {{ formatRupiah(Math.abs(header.saldo)) }} </span>
+        <span> Saldo : {{ formatRupiah(header.saldo) }} </span>
       </div>
       <b-table
         ref="refTable"
@@ -37,8 +37,8 @@
 
         <!-- Column: DEBIT KREDIT SALDO-->
         <template #cell(saldo)="data">
-          <span>
-            {{ formatRupiah(Math.abs(data.item.saldo)) }}
+          <span :class="cekStatus(data.item.saldo)">
+            {{ formatRupiah(data.item.saldo) }}
           </span>
         </template>
       </b-table>
@@ -70,6 +70,12 @@ export default {
   methods: {
     formatRupiah(value) {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    },
+    cekStatus(value) {
+      if (value < 0) {
+        return 'text-danger'
+      }
+      return ''
     },
   },
 

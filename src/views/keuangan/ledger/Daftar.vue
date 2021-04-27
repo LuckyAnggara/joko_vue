@@ -218,7 +218,8 @@ export default {
     /* eslint-disable */
   },
   mounted() {
-    this.loadLedger(this.moment(Date.now()), this.moment(Date.now()))
+    this.loadLedger(this.moment(), this.moment(Date.now()))
+    // this.loadLedger(this.moment(new Date(year, month, 1)), this.moment(Date.now()))
   },
   methods: {
     clear() {

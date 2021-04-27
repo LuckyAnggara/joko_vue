@@ -118,6 +118,13 @@
           </b-form-group>
         </b-col>
       </b-row>
+      <b-row>
+        <b-col cols="12" md="8">
+          <b-form-group label="Tanggal Transaksi" label-for="tanggalTransaksi" label-cols-md="4">
+            <b-form-datepicker id="tanggalTransaksi" v-model="dataOrder.tanggalTransaksi" />
+          </b-form-group>
+        </b-col>
+      </b-row>
       <hr />
       <b-row>
         <b-col cols="12" md="8">

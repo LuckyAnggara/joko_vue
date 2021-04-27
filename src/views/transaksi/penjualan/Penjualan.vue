@@ -231,6 +231,10 @@ export default {
       tanggalTransaksi: '',
       nomor: 0,
       status: false, // untuk Status Draft atau Proses
+      sales: {
+        value: 1,
+        nama: 'Lucky',
+      }, // untuk Status Draft atau Proses
       pelanggan: {
         id: '',
         nama: '',

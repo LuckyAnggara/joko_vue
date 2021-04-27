@@ -37,7 +37,7 @@
             </b-media-body>
           </b-media>
         </b-col>
-        <b-col md="3" sm="6" class="mb-2 mb-md-0 mb-xl-0">
+        <!-- <b-col md="3" sm="6" class="mb-2 mb-md-0 mb-xl-0">
           <b-media no-body>
             <b-media-aside class="mr-2">
               <b-avatar size="48" variant="light-success">
@@ -46,10 +46,10 @@
             </b-media-aside>
             <b-media-body class="my-auto">
               <h4 class="font-weight-bolder mb-0">{{ totalBarang }} Produk</h4>
-              <b-card-text class="font-small-3 mb-0"> Produk Terjual </b-card-text>
+              <b-card-text class="font-small-3 mb-0"> Produk </b-card-text>
             </b-media-body>
           </b-media>
-        </b-col>
+        </b-col> -->
         <b-col md="3" sm="6" class="mb-2 mb-md-0 mb-xl-0">
           <b-media no-body>
             <b-media-aside class="mr-2">
@@ -141,16 +141,16 @@ export default {
       })
       return total
     },
-    totalBarang() {
-      let total = 0
-      this.dataTransaksi.forEach(v => {
-        v.orders.forEach(x => {
-          total += x.jumlah
-        })
-        // total += v.orders.jumlah
-      })
-      return total
-    },
+    // totalBarang() {
+    //   let total = 0
+    //   this.dataTransaksi.forEach(v => {
+    //     v.orders.forEach(x => {
+    //       total += x.jumlah
+    //     })
+    //     // total += v.orders.jumlah
+    //   })
+    //   return total
+    // },
   },
   methods: {
     formatRupiah(value) {

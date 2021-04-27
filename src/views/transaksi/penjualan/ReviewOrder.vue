@@ -113,6 +113,15 @@
       <hr />
       <b-row>
         <b-col cols="12" md="8">
+          <b-form-group label="Sales" label-cols-md="4">
+            <v-select placeholder="Sales" label="title" :options="salesOption" :clearable="true" />
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <hr />
+
+      <b-row>
+        <b-col cols="12" md="8">
           <b-form-group label="Metode Pembayaran" label-cols-md="4">
             <v-select
               v-model="dataOrder.pembayaran.statusPembayaran"
@@ -221,6 +230,11 @@ export default {
         { title: 'Lunas', value: '0' },
         { title: 'Kredit', value: '1' },
         { title: 'Cash On Delivery (COD)', value: '2' },
+      ],
+      salesOption: [
+        { title: 'Lulu', value: '0' },
+        { title: 'Wawan', value: '1' },
+        { title: 'Dadan', value: '2' },
       ],
       jenisPembayaranOption: [
         { title: 'Tunai', value: '0' },

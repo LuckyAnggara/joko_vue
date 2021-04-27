@@ -28,6 +28,20 @@ export default [
     },
   },
   {
+    path: '/akuntansi/jurnal/tambah',
+    name: 'akuntansi-jurnal-tambah',
+    component: () => import('@/views/keuangan/jurnal/Tambah.vue'),
+    meta: {
+      pageTitle: 'Jurnal',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/akuntansi/ledger/daftar',
     name: 'akuntansi-ledger-daftar',
     component: () => import('@/views/keuangan/jurnal/Daftar.vue'),

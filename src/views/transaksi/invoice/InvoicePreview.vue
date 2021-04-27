@@ -340,9 +340,9 @@ export default {
   },
   setup() {
     if (router.currentRoute.params.id !== undefined) {
-      store.commit('app-transaksi/SET_DATA_INVOICE_FROM_DAFTAR', router.currentRoute.params.id)
+      store.commit('app-transaksi-penjualan/SET_DATA_INVOICE_FROM_DAFTAR', router.currentRoute.params.id)
     }
-    const dataInvoice = ref(store.getters['app-transaksi/getDataInvoice'])
+    const dataInvoice = ref(store.getters['app-transaksi-penjualan/getDataInvoice'])
     return {
       dataInvoice,
     }

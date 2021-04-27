@@ -18,12 +18,14 @@ export default {
   mutations: {
     SET_LIST_KONTAK(state, data) {
       state.listKontak = data
-      state.listPelanggan = data.filter(item => item.tipe === 'PELANGGAN')
+      state.listPelanggan = state.listKontak.filter(item => item.tipe === 'PELANGGAN')
       state.listSupplier = state.listKontak.filter(item => item.tipe === 'SUPPLIER')
     },
     // PELANGGAN
     UPDATE_LIST_KONTAK(state, data) {
       state.listKontak.push(data)
+      state.listPelanggan = state.listKontak.filter(item => item.tipe === 'PELANGGAN')
+      state.listSupplier = state.listKontak.filter(item => item.tipe === 'SUPPLIER')
     },
     UPDATE_LIST_PELANGGAN(state, data) {
       state.listPelanggan.push(data)
