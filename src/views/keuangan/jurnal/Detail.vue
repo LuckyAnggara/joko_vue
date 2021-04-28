@@ -1,6 +1,6 @@
 <template>
   <section>
-    <b-row class="match-height">
+    <!-- <b-row class="match-height">
       <b-col lg="6" cols="6">
         <b-card>
           <h5>Form Jurnal</h5>
@@ -24,13 +24,21 @@
         </b-card>
       </b-col>
       <b-col lg="6" cols="6"> </b-col>
-    </b-row>
+    </b-row> -->
     <b-row class="match-height">
-      <b-col lg="9" cols="9">
+      <b-col lg="12" cols="12">
         <b-card>
-          <h5>Jurnal</h5>
+          <h4>
+            Nomor Jurnal
+            <u
+              ><b>{{ nomorJurnal }}</b></u
+            >
+          </h4>
           <hr />
-          <div class="mb-2">
+          <b-form-group label="Tanggal Transaksi" label-for="tanggalTransaksi" label-cols-md="4">
+            <flat-pickr disabled v-model="tanggalTransaksi.value" class="form-control" :config="tanggalTransaksi.config" placeholder="Tanggal Transaksi" />
+          </b-form-group>
+          <div class="mt-2">
             <b-table
               responsive
               primary-key="id"
@@ -47,22 +55,28 @@
                   {{ data.index + 1 }}
                 </span>
               </template>
+              <template #cell(kode_akun)="data">
+                <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
+                  {{ data.item.kode_akun }}
+                </b-link>
+              </template>
+              <template #cell(nama_akun)="data">
+                <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
+                  {{ data.item.nama_akun }}
+                </b-link>
+              </template>
+
               <template #cell(debit)="data">
                 <span class="text-nowrap">
-                  {{ data.item.jenis === 0 ? formatRupiah(data.item.saldo) : formatRupiah(0) }}
+                  {{ data.item.jenis === 'DEBIT' ? formatRupiah(data.item.nominal) : formatRupiah(0) }}
                 </span>
               </template>
               <template #cell(kredit)="data">
                 <span class="text-nowrap">
-                  {{ data.item.jenis === 1 ? formatRupiah(data.item.saldo) : formatRupiah(0) }}
+                  {{ data.item.jenis === 'KREDIT' ? formatRupiah(data.item.nominal) : formatRupiah(0) }}
                 </span>
               </template>
-              <!-- Column: Actions -->
-              <template #cell(actions)="data">
-                <div class="text-nowrap">
-                  <feather-icon icon="TrashIcon" size="16" class="mx-1" @click="remove(data.index)" />
-                </div>
-              </template>
+
               <!-- FOOTER -->
 
               <!-- Debit -->
@@ -75,20 +89,11 @@
               <template #foot(kredit)>
                 <span class="text-danger">{{ formatRupiah(totalKredit) }}</span>
               </template>
-              <template #foot(actions)>
+              <template #foot(keterangan)>
                 <span class="text-primary">{{ balance }}</span>
               </template>
             </b-table>
           </div>
-          <b-form-group label="Tanggal Transaksi" label-for="tanggalTransaksi" label-cols-md="4">
-            <flat-pickr v-model="tanggalTransaksi.value" class="form-control" :config="tanggalTransaksi.config" placeholder="Tanggal Transaksi" />
-          </b-form-group>
-          <b-form-group label="Catatan" label-cols-md="4">
-            <b-form-textarea placeholder="Contoh : Transaksi Pembelian Mobil" v-model="catatan" />
-          </b-form-group>
-          <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" type="button" @click="proses" variant="primary" class="mr-1">
-            Proses
-          </b-button>
         </b-card>
       </b-col>
     </b-row>
@@ -96,22 +101,35 @@
 </template>
 
 <script>
+import router from '@/router'
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import { BCard, BButton, BFormInput, BFormTextarea, BFormGroup, BRow, BCol, BTable } from 'bootstrap-vue'
-import vSelect from 'vue-select'
+import {
+  BCard,
+  // BButton,
+  // BFormInput,
+  // BFormTextarea,
+  BLink,
+  BFormGroup,
+  BRow,
+  BCol,
+  BTable,
+} from 'bootstrap-vue'
+// import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
     flatPickr,
-    BFormTextarea,
-    BButton,
+    // BFormTextarea,
+    // BButton,
     BTable,
-    vSelect,
-    BFormInput,
+    BLink,
+
+    // vSelect,
+    // BFormInput,
     BCard,
     BRow,
     BCol,
@@ -141,11 +159,15 @@ export default {
     this.loadAkun()
   },
   computed: {
+    nomorJurnal() {
+      const { id } = router.currentRoute.params
+      return id
+    },
     totalDebit() {
       let saldo = 0
       this.dataJurnal.forEach(x => {
-        if (x.jenis === 0) {
-          saldo += parseFloat(x.saldo)
+        if (x.jenis === 'KREDIT') {
+          saldo += parseFloat(x.nominal)
         }
       })
       return saldo
@@ -153,8 +175,8 @@ export default {
     totalKredit() {
       let saldo = 0
       this.dataJurnal.forEach(x => {
-        if (x.jenis === 1) {
-          saldo += parseFloat(x.saldo)
+        if (x.jenis === 'DEBIT') {
+          saldo += parseFloat(x.nominal)
         }
       })
       return saldo
@@ -203,126 +225,25 @@ export default {
       this.akun = ''
       this.saldo = 0
     },
-    submit() {
-      if (this.cek()) {
-        const data = {
-          akunId: this.akun.id,
-          namaAkun: this.akun.nama,
-          kodeAkun: this.akun.kode_akun,
-          jenis: this.jenis.value,
-          namaJenis: this.jenis.title,
-          saldo: this.saldo,
-        }
-        this.dataJurnal.push(data)
-        this.clear()
-      } else {
-        this.$swal({
-          icon: 'error',
-          title: 'Oopss cek kembali Jurnal',
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        })
-      }
-    },
-    cekValidasi() {
-      if (this.tanggalTransaksi === '' || this.tanggalTransaksi === null) {
-        this.$swal({
-          icon: 'error',
-          title: 'Tanggal transaksi belum di isi',
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        })
-        return false
-      }
-      if (this.catatan === '' || this.catatan === null) {
-        this.$swal({
-          icon: 'error',
-          title: 'Catatan wajib di isi',
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        })
-        return false
-      }
-      if (this.dataJurnal.length <= 0) {
-        this.$swal({
-          icon: 'error',
-          title: 'Oopss Data Jurnal masih Kosong',
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        })
-        return false
-      }
-      if (this.balance === 'TIDAK BALANCE') {
-        this.$swal({
-          icon: 'error',
-          title: 'Oopss Jurnal tidak Balance',
-          customClass: {
-            confirmButton: 'btn btn-success',
-          },
-        })
-        return false
-      }
-      return true
-    },
-    proses() {
-      if (this.cekValidasi()) {
-        const loader = this.$loading.show({
-          container: this.$refs.formContainer,
-
-          // Optional parameters
-        })
-        const output = {
-          catatan: this.catatan,
-          tanggalTransaksi: this.$moment(this.tanggalTransaksi.value),
-          jurnal: this.dataJurnal,
-        }
-        store.dispatch('app-keuangan/storeJurnal', output).then(res => {
-          loader.hide()
-          if (res.status === 200) {
-            store.commit('app-keuangan/UPDATE_LIST_JURNAL', res.data)
-            this.success()
-            this.$router.push({
-              name: 'akuntansi-jurnal-daftar',
-            })
-          } else {
-            this.error()
-          }
-        })
-      }
-      return false
-    },
     remove(x) {
-      console.info(x)
       this.dataJurnal.splice(x, 1)
       this.total()
     },
     loadAkun() {
-      store.dispatch('app-keuangan/fetchListAkun').then(res => {
-        store.commit('app-keuangan/SET_LIST_AKUN', res.data)
-        this.load(store.getters['app-keuangan/getListAkun'])
-      })
-    },
-    load(data) {
-      data.forEach(x => {
-        x.subheader.forEach(y => {
-          this.dataAkun.push(y)
-        })
-      })
-      return this.dataAkun
+      const { id } = router.currentRoute.params
+      const data = store.getters['app-keuangan/getListJurnal']
+      this.dataJurnal = data.filter(x => x.nomor_jurnal === id)
+      // console.info(store.getters['app-keuangan/getListJurnal'])
     },
   },
   setup() {
     const tableColumns = [
       { label: 'No', key: 'id', sortable: false },
-      { key: 'kodeAkun', sortable: false },
-      { key: 'namaAkun', sortable: false },
+      { key: 'kode_akun', sortable: false },
+      { key: 'nama_akun', sortable: false },
       { key: 'debit', sortable: false },
       { key: 'kredit', sortable: false },
-      { key: 'actions', sortable: false },
+      { label: 'catatan', key: 'keterangan', sortable: false },
     ]
     const dataAkun = ref([])
     const dataJurnal = ref([])

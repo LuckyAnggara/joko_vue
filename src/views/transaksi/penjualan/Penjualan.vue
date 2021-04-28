@@ -199,8 +199,9 @@ export default {
       store
         .dispatch('app-transaksi-penjualan/addTransaksi', this.dataOrder)
         .then(res => {
+          loader.hide()
+
           if (res.status === 200) {
-            loader.hide()
             this.dataOrder.nomorTransaksi = res.data.nomor_transaksi
             this.dataOrder.tanggalTransaksi = res.data.created_at
             store.commit('app-transaksi-penjualan/SET_DATA_INVOICE', this.dataOrder)

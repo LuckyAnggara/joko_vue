@@ -19,6 +19,9 @@ export default {
     SET_LIST_JURNAL(state, data) {
       state.listJurnal = data
     },
+    UPDATE_LIST_JURNAL(state, data) {
+      state.listJurnal.push(data)
+    },
     SET_DATA_LEDGER(state, data) {
       state.dataLedger = data
     },
@@ -49,6 +52,16 @@ export default {
         axios
           // .get(`http://127.0.0.1:8080/api/ledger/${id}`)
           .get(`http://127.0.0.1:8080/api/ledger/${params.id}/${params.dateawal}/${params.dateakhir}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeJurnal(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:8080/api/jurnal/store', data)
           .then(response => {
             resolve(response)
           })

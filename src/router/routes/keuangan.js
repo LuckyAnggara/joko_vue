@@ -42,6 +42,20 @@ export default [
     },
   },
   {
+    path: '/akuntansi/jurnal/detail/:id',
+    name: 'akuntansi-jurnal-detail',
+    component: () => import('@/views/keuangan/jurnal/Detail.vue'),
+    meta: {
+      pageTitle: 'Jurnal',
+      breadcrumb: [
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/akuntansi/ledger/daftar',
     name: 'akuntansi-ledger-daftar',
     component: () => import('@/views/keuangan/jurnal/Daftar.vue'),

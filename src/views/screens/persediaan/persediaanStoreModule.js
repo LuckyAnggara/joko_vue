@@ -22,7 +22,7 @@ export default {
     fetchListPersediaan(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
-          .get('http://127.0.0.1:8000/api/persediaan', { params: queryParams })
+          .get(`${axios.defaults.baseURL}persediaan`, { params: queryParams })
           .then(response => {
             resolve(response)
           })
@@ -32,7 +32,7 @@ export default {
     fetchDetailPersediaan(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`http://127.0.0.1:8000/api/persediaan/${id}`)
+          .get(`${axios.defaults.baseURL}persediaan/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

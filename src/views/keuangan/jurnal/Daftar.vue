@@ -61,6 +61,13 @@
               </span>
             </template>
 
+            <!-- Column: Nomor Jurnal -->
+            <template #cell(nomor_jurnal)="data">
+              <b-link :to="{ name: 'akuntansi-jurnal-detail', params: { id: data.item.nomor_jurnal } }" class="font-weight-bold">
+                {{ data.item.nomor_jurnal }}
+              </b-link>
+            </template>
+
             <!-- Column: Nama Akun -->
             <template #cell(nama)="data">
               <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
@@ -79,6 +86,31 @@
               <span>
                 {{ data.item.jenis === 'KREDIT' ? formatRupiah(data.item.nominal) : '' }}
               </span>
+            </template>
+            <!-- Column: Actions -->
+            <template #cell(actions)="data">
+              <div class="text-nowrap">
+                <feather-icon
+                  icon="EyeIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="
+                    $router.push({
+                      name: 'akuntansi-jurnal-detail',
+                      params: { id: data.item.nomor_jurnal },
+                    })
+                  "
+                />
+                <!-- <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
+                  <template #button-content>
+                    <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+                  </template>
+                  <b-dropdown-item>
+                    <feather-icon icon="TrashIcon" @click="remove(data.index)" />
+                    <span class="align-middle ml-50">Delete</span>
+                  </b-dropdown-item>
+                </b-dropdown> -->
+              </div>
             </template>
           </b-table>
           <div class="mx-2 mb-2">
@@ -118,12 +150,28 @@
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import { BLink, BCard, BFormGroup, BRow, BCol, BFormInput, BTable, BPagination, BButton, BInputGroupAppend, BInputGroup } from 'bootstrap-vue'
+import {
+  BLink,
+  BCard,
+  BFormGroup,
+  BRow,
+  BCol,
+  // BDropdown,
+  // BDropdownItem,
+  BFormInput,
+  BTable,
+  BPagination,
+  BButton,
+  BInputGroupAppend,
+  BInputGroup,
+} from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
+    // BDropdown,
+    // BDropdownItem,
     BLink,
     vSelect,
     BButton,
@@ -189,7 +237,9 @@ export default {
       this.date.value = null
       this.dateFilter(null)
     },
-
+    detail(x) {
+      console.info(x)
+    },
     dateFilter(x) {
       this.loadJurnal(this.moment(x[0]), this.moment(x[1]))
       this.totalJurnal = this.dataJurnal.length
@@ -224,6 +274,7 @@ export default {
       { label: 'debit', key: 'debit', sortable: true },
       { label: 'kredit', key: 'kredit', sortable: true },
       { label: 'keterangan', key: 'keterangan', sortable: true },
+      { label: 'actions', key: 'actions', sortable: true },
     ]
 
     // const searchQuery = ref('')
