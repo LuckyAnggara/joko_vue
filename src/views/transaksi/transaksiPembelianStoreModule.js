@@ -85,6 +85,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchListTransaksiByBarang(ctx, kodeBarang) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}pembelian/detail/barang/${kodeBarang}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchDataBank(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios

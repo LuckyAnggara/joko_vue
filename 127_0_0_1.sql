@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2021 at 10:02 AM
+-- Generation Time: Apr 29, 2021 at 08:45 AM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 7.4.15
 
@@ -153,8 +153,10 @@ CREATE TABLE `master_jurnal` (
 --
 
 INSERT INTO `master_jurnal` (`id`, `reff`, `nomor_jurnal`, `master_akun_id`, `nominal`, `jenis`, `keterangan`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'PEMBELIAN_ID_1', '2104271', '3', 500000, 'KREDIT', 'PENGELUARAN KAS PEMBELIAN NOMOR INVOICE #123', '2021-04-27 00:11:13', '2021-04-27 00:11:13', NULL),
-(2, 'PEMBELIAN_ID_1', '2104271', '6', 500000, 'DEBIT', 'PEMBELIAN NOMOR INVOICE #123', '2021-04-27 00:11:13', '2021-04-27 00:11:13', NULL);
+(1, 'BBM-280421-1', '2104281', '4', 50000, 'DEBIT', 'PENERIMAAN KAS PENJUALAN NOMOR INVOICE #BBM-280421-1', '2021-04-28 00:07:53', '2021-04-28 00:07:53', NULL),
+(2, 'BBM-280421-1', '2104281', '32', 50000, 'KREDIT', 'PENJUALAN NOMOR INVOICE #BBM-280421-1', '2021-04-28 00:07:53', '2021-04-28 00:07:53', NULL),
+(3, 'BBM-280421-1', '2104281', '6', 25000, 'KREDIT', 'PENJUALAN NOMOR INVOICE #BBM-280421-1', '2021-04-28 00:07:53', '2021-04-28 00:07:53', NULL),
+(4, 'BBM-280421-1', '2104281', '44', 25000, 'DEBIT', 'PENJUALAN NOMOR INVOICE #BBM-280421-1', '2021-04-28 00:07:53', '2021-04-28 00:07:53', NULL);
 
 -- --------------------------------------------------------
 
@@ -285,7 +287,7 @@ ALTER TABLE `master_akun`
 -- AUTO_INCREMENT for table `master_jurnal`
 --
 ALTER TABLE `master_jurnal`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `migrations`
@@ -406,6 +408,14 @@ CREATE TABLE `detail_penjualan` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `detail_penjualan`
+--
+
+INSERT INTO `detail_penjualan` (`id`, `master_penjualan_id`, `kode_barang_id`, `jumlah`, `harga`, `diskon`, `total`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 1, 'X00008', 5, 10000, 0, 50000, '2021-04-28 00:07:52', '2021-04-28 00:07:52', NULL),
+(2, 2, 'S00001', 5, 20000, 0, 100000, '2021-04-28 21:17:33', '2021-04-28 21:17:33', NULL);
 
 -- --------------------------------------------------------
 
@@ -544,7 +554,9 @@ CREATE TABLE `kartu_persediaan` (
 
 INSERT INTO `kartu_persediaan` (`id`, `nomor_transaksi`, `master_barang_id`, `debit`, `harga_beli`, `kredit`, `harga_jual`, `catatan`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, '12345', '8', 100, 5000, 0, 0, 'Pembelian Transaksi ##12345', '2021-04-27 00:01:55', '2021-04-27 00:01:55', NULL),
-(2, '123', '8', 100, 5000, 0, 0, 'Pembelian Transaksi ##123', '2021-04-27 00:11:12', '2021-04-27 00:11:12', NULL);
+(2, '123', '8', 100, 5000, 0, 0, 'Pembelian Transaksi ##123', '2021-04-27 00:11:12', '2021-04-27 00:11:12', NULL),
+(20, 'BBM-280421-1', '8', 0, 0, 5, 10000, 'Penjualan Transaksi ##BBM-280421-1', '2021-04-28 00:07:52', '2021-04-28 00:07:52', NULL),
+(21, 'BBM-290421-1', '9', 0, 0, 5, 20000, 'Penjualan Transaksi ##BBM-290421-1', '2021-04-28 21:17:33', '2021-04-28 21:17:33', NULL);
 
 -- --------------------------------------------------------
 
@@ -680,6 +692,14 @@ CREATE TABLE `master_penjualan` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `master_penjualan`
+--
+
+INSERT INTO `master_penjualan` (`id`, `nomor_transaksi`, `kontak_id`, `total`, `diskon`, `ongkir`, `pajak_keluaran`, `grand_total`, `metode_pembayaran`, `kredit`, `down_payment`, `sisa_pembayaran`, `cara_pembayaran`, `bank_id`, `tanggal_jatuh_tempo`, `retur`, `sales_id`, `user_id`, `catatan`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'BBM-280421-1', '1', 50000, 0, 0, 0, 50000, 'Lunas', 0, 0, 0, 'Tunai', NULL, NULL, 'Tidak', '1', '1', NULL, '2021-04-28 00:07:52', '2021-04-28 00:07:52', NULL),
+(2, 'BBM-290421-1', '1', 100000, 0, 20000, 10000, 130000, 'Lunas', 0, 0, 0, 'Tunai', NULL, NULL, 'Tidak', '1', '1', NULL, '2021-04-28 21:17:33', '2021-04-28 21:17:33', NULL);
 
 -- --------------------------------------------------------
 
@@ -949,7 +969,7 @@ ALTER TABLE `detail_pembelian`
 -- AUTO_INCREMENT for table `detail_penjualan`
 --
 ALTER TABLE `detail_penjualan`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -979,7 +999,7 @@ ALTER TABLE `jenis_barang`
 -- AUTO_INCREMENT for table `kartu_persediaan`
 --
 ALTER TABLE `kartu_persediaan`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `master_bank`
@@ -1003,7 +1023,7 @@ ALTER TABLE `master_pembelian`
 -- AUTO_INCREMENT for table `master_penjualan`
 --
 ALTER TABLE `master_penjualan`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `master_persediaan`

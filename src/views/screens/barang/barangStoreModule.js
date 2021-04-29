@@ -112,16 +112,7 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchListTransaksiByBarang(ctx, kodeBarang) {
-      return new Promise((resolve, reject) => {
-        axios
-          .get(`${axios.defaults.baseURL}penjualan/detail/barang/${kodeBarang}`)
-          .then(response => {
-            resolve(response)
-          })
-          .catch(error => reject(error))
-      })
-    },
+
     fetchListMerek(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios

@@ -1,23 +1,28 @@
 <template>
-  <!-- Table Container Card -->
-
   <section>
     <div class="mb-2">
       <!-- Table Top -->
       <b-row>
         <!-- Per Page -->
         <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
-          <label>Data</label>
+          <label>Entries</label>
           <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
           <b-button variant="primary" :to="{ name: 'transaksi-penjualan-tambah' }">
-            Tambah Transaksi
+            Tambah Data
           </b-button>
         </b-col>
 
         <!-- Search -->
         <b-col cols="12" md="6">
           <div class="d-flex align-items-center justify-content-end">
-            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... ( Nomor Transaksi , Nama Pelanggan )" />
+            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Transaksi , Nama Pelanggan)" />
+            <v-select v-model="filterQuery" :options="filterOptions" class="invoice-filter-select  mr-1" placeholder="Status Pembayaran">
+              <template #selected-option="{ label }">
+                <span class="text-truncate overflow-hidden">
+                  {{ label }}
+                </span>
+              </template>
+            </v-select>
           </div>
         </b-col>
       </b-row>
@@ -45,32 +50,57 @@
       </template>
 
       <!-- Column: Nomor Transaksi -->
-      <template #cell(nomor_transaksi)="data">
-        <b-link :to="{ name: 'transaksi-penjualan-invoice', params: { id: data.item.id } }" class="font-weight-bold"> #{{ data.item.nomor_transaksi }} </b-link>
+      <template #cell(nomorTransaksi)="data">
+        <b-link :to="{ name: 'transaksi-penjualan-invoice', params: { id: data.item.id } }" class="font-weight-bold"> #{{ data.item.nomorTransaksi }} </b-link>
+      </template>
+
+      <!-- Column: Issued Date -->
+      <template #cell(tanggalTransaksi)="data">
+        <span class="text-nowrap">
+          {{ moment(data.item.tanggalTransaksi) }}
+        </span>
+      </template>
+
+      <!-- Column: Nama Pelanggan -->
+      <template #cell(namaPelanggan)="data">
+        <span>
+          {{ data.item.pelanggan.nama }}
+        </span>
       </template>
 
       <!-- Column: Total -->
       <template #cell(total)="data">
         <span class="text-nowrap">
-          {{ formatRupiah(data.item.total) }}
-        </span>
-      </template>
-
-      <!-- Column: Issued Date -->
-      <template #cell(tanggal_transaksi)="data">
-        <span class="text-nowrap">
-          {{ moment(data.item.created_at) }}
+          {{ formatRupiah(data.item.invoice.grandTotal) }}
         </span>
       </template>
 
       <!-- Column: Balance -->
       <template #cell(saldo)="data">
-        <template v-if="data.item.sisa_pembayaran === null || data.item.sisa_pembayaran === 0">
-          <b-badge pill variant="light-success">
-            Paid
-          </b-badge>
-        </template>
-        <template v-else> -{{ formatRupiah(data.item.sisa_pembayaran) }} </template>
+        <div class="text-nowrap">
+          <template v-if="data.item.pembayaran.sisaPembayaran === null || data.item.pembayaran.sisaPembayaran === 0">
+            <b-badge pill variant="light-success">
+              Lunas
+            </b-badge>
+          </template>
+          <template v-else>
+            <span :id="`transaksi-row-${data.item.id}-tooltip-saldo`">-{{ formatRupiah(data.item.pembayaran.sisaPembayaran) }}</span>
+            <b-tooltip :target="`transaksi-row-${data.item.id}-tooltip-saldo`">
+              <span v-if="data.item.pembayaran.statusPembayaran.value === 1">
+                Kredit
+                <br />
+                Jt. Tempo : {{ moment(data.item.pembayaran.tanggalJatuhTempo) }}
+                <br />
+                Total Tagihan : {{ data.item.pembayaran.sisaPembayaran }}
+              </span>
+              <span v-else-if="data.item.pembayaran.statusPembayaran.value === 2">
+                Cash On Delivery
+                <br />
+                Total Tagihan : {{ data.item.pembayaran.sisaPembayaran }}
+              </span>
+            </b-tooltip>
+          </template>
+        </div>
       </template>
 
       <!-- Column: Actions -->
@@ -103,7 +133,7 @@
               <span class="align-middle ml-50">Edit</span>
             </b-dropdown-item>
             <b-dropdown-item>
-              <feather-icon icon="TrashIcon" />
+              <feather-icon icon="CornerUpLeftIcon" />
               <span class="align-middle ml-50">Retur</span>
             </b-dropdown-item>
             <b-dropdown-item>
@@ -147,21 +177,7 @@
 <script>
 import { ref } from '@vue/composition-api'
 
-import {
-  BRow,
-  BCol,
-  BFormInput,
-  BButton,
-  BTable,
-  // BMedia,
-  // BAvatar,
-  BLink,
-  BBadge,
-  BDropdown,
-  BDropdownItem,
-  BPagination,
-  BTooltip,
-} from 'bootstrap-vue'
+import { BRow, BCol, BFormInput, BButton, BTable, BLink, BBadge, BDropdown, BDropdownItem, BPagination, BTooltip } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
 export default {
@@ -171,43 +187,40 @@ export default {
     BFormInput,
     BButton,
     BTable,
-    // BMedia,
-    // BAvatar,
     BLink,
     BBadge,
     BDropdown,
     BDropdownItem,
     BPagination,
     BTooltip,
-
     vSelect,
   },
   data() {
     return {
-      data: '',
+      filterQuery: '',
       searchQuery: '',
       refTable: null,
     }
+  },
+  watch: {
+    searchQuery(query) {
+      this.$emit('searchdata', query)
+    },
+    filterQuery(query) {
+      this.$emit('filterdata', query)
+    },
+    dataTransaksi() {
+      this.totalInvoices = this.dataTransaksi.length
+    },
   },
   props: {
     dataTransaksi: {
       type: Array,
       required: true,
     },
-  },
-  watch: {
-    searchQuery(query) {
-      if (query === '') {
-        this.dataTransaksi = this.data
-      } else {
-        this.dataTransaksi = this.data.filter(
-          item => item.nomor_transaksi.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.nama_pelanggan.toLowerCase().indexOf(query.toLowerCase()) > -1,
-        )
-      }
-      this.totalInvoices = this.dataTransaksi.length
-    },
-    dataBarang() {
-      this.loadTransaksi()
+    dataTemp: {
+      type: Array,
+      required: true,
     },
   },
   computed: {
@@ -220,28 +233,26 @@ export default {
       }
     },
   },
-
   methods: {
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },
-
-    loadTransaksi() {},
     formatRupiah(value) {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
   },
   setup() {
+    const filterOptions = ['Lunas', 'COD', 'Kredit']
     const tableColumns = [
       { key: 'id', label: '#', sortable: true },
-      { key: 'nomor_transaksi', sortable: true },
-      { key: 'nama_pelanggan', sortable: true },
+      { key: 'nomorTransaksi', sortable: true },
+      { key: 'tanggalTransaksi', sortable: true },
+      { key: 'namaPelanggan', sortable: true },
       { key: 'total', sortable: true },
-      { key: 'tanggal_transaksi', sortable: true },
       { key: 'saldo', sortable: true },
       { key: 'actions' },
     ]
-    // const searchQuery = ref('')
+
     const perPage = ref(10)
     const totalInvoices = ref(0)
     const currentPage = ref(1)
@@ -251,8 +262,8 @@ export default {
     const statusFilter = ref(null)
 
     return {
+      filterOptions,
       tableColumns,
-      // searchQuery,
       perPage,
       isSortDirDesc,
       currentPage,
@@ -285,4 +296,5 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
+@import '@core/scss/vue/libs/vue-flatpicker.scss';
 </style>

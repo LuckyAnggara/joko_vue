@@ -1,117 +1,104 @@
 <template>
-  <b-row>
-    <b-col cols="12">
-      <b-card>
-        <b-card-header class="pb-50">
-          <h4>
-            Kartu Persediaan
-          </h4>
-        </b-card-header>
-        <b-card-body>
-          <div>
-            <!-- search input -->
-            <div class="custom-search d-flex justify-content-end">
-              <b-form-group>
-                <div class="d-flex align-items-center">
-                  <label class="mr-1">Search</label>
-                  <b-form-input v-model="searchTerm" placeholder="Search" type="text" class="d-inline-block" />
-                </div>
-              </b-form-group>
-            </div>
-
-            <vue-good-table
-              :columns="columns"
-              :rows="dataPersediaan"
-              :line-numbers="true"
-              :search-options="{
-                enabled: true,
-                externalQuery: searchTerm,
-              }"
-              :pagination-options="{
-                enabled: true,
-                perPage: pageLength,
-              }"
-            >
-              <template slot="table-row" slot-scope="props">
-                <!-- Column: Action -->
-                <span v-if="props.column.field === 'action'">
-                  <div>
-                    <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="primary" class="btn-icon" @click="view(props.row.id)">
-                      <feather-icon icon="EyeIcon" />
-                    </b-button>
-                  </div>
-                </span>
-
-                <!-- Column: Common -->
-                <span v-else>
-                  {{ props.formattedRow[props.column.field] }}
-                </span>
-              </template>
-              <!-- pagination -->
-              <template slot="pagination-bottom" slot-scope="props">
-                <div class="d-flex justify-content-between flex-wrap">
-                  <div class="d-flex align-items-center mb-0 mt-1">
-                    <span class="text-nowrap ">
-                      Showing 1 to
-                    </span>
-                    <b-form-select
-                      v-model="pageLength"
-                      :options="['3', '5', '10']"
-                      class="mx-1"
-                      @input="value => props.perPageChanged({ currentPerPage: value })"
-                    />
-                    <span class="text-nowrap"> of {{ props.total }} entries </span>
-                  </div>
-                  <div>
-                    <b-pagination
-                      :value="1"
-                      :total-rows="props.total"
-                      :per-page="pageLength"
-                      first-number
-                      last-number
-                      align="right"
-                      prev-class="prev-item"
-                      next-class="next-item"
-                      class="mt-1 mb-0"
-                      @input="value => props.pageChanged({ currentPage: value })"
-                    >
-                      <template #prev-text>
-                        <feather-icon icon="ChevronLeftIcon" size="18" />
-                      </template>
-                      <template #next-text>
-                        <feather-icon icon="ChevronRightIcon" size="18" />
-                      </template>
-                    </b-pagination>
-                  </div>
-                </div>
-              </template>
-            </vue-good-table>
+  <section>
+    <div class="mb-2">
+      <!-- Table Top -->
+      <b-row>
+        <!-- Per Page -->
+        <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
+          <label>Data</label>
+          <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
+        </b-col>
+        <!-- Search -->
+        <b-col cols="12" md="6">
+          <div class="d-flex align-items-center justify-content-end">
+            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Kode Barang, Nama Barang)" />
           </div>
-        </b-card-body>
-      </b-card>
-    </b-col>
-  </b-row>
+        </b-col>
+      </b-row>
+    </div>
+
+    <b-table
+      ref="refTable"
+      responsive
+      primary-key="id"
+      show-empty
+      empty-text="Tidak ada data"
+      class="position-relative"
+      :items="dataPersediaan"
+      :fields="tableColumns"
+      :current-page="currentPage"
+      :per-page="perPage"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="isSortDirDesc"
+    >
+      <!-- Column: Nomor -->
+      <template #cell(tanggal_transaksi)="data">
+        <span>
+          {{ moment(data.item.created_at) }}
+        </span>
+      </template>
+
+      <!-- Column: Actions -->
+      <template #cell(actions)="data">
+        <div class="text-nowrap">
+          <feather-icon
+            icon="EyeIcon"
+            size="16"
+            class="mx-1"
+            @click="
+              $router.push({
+                name: 'screen-persediaan-detail',
+                params: { id: data.item.id },
+              })
+            "
+          />
+        </div>
+      </template>
+    </b-table>
+    <div class="mx-2 mb-2">
+      <b-row>
+        <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
+          <span class="text-muted">Showing {{ dataMeta.from }} to {{ dataMeta.to }} of {{ dataMeta.of }} entries</span>
+        </b-col>
+        <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalData"
+            :per-page="perPage"
+            first-number
+            last-number
+            class="mb-0 mt-1 mt-sm-0"
+            prev-class="prev-item"
+            next-class="next-item"
+          >
+            <template #prev-text>
+              <feather-icon icon="ChevronLeftIcon" size="18" />
+            </template>
+            <template #next-text>
+              <feather-icon icon="ChevronRightIcon" size="18" />
+            </template>
+          </b-pagination>
+        </b-col>
+      </b-row>
+    </div>
+  </section>
 </template>
 
 <script>
-import { BRow, BCol, BPagination, BFormGroup, BFormInput, BButton, BCard, BCardHeader, BFormSelect, BCardBody } from 'bootstrap-vue'
-import { VueGoodTable } from 'vue-good-table'
+import { BRow, BCol, BPagination, BTable, BFormInput } from 'bootstrap-vue'
+import { ref } from '@vue/composition-api'
+
 import Ripple from 'vue-ripple-directive'
-// import store from '@/store'
+import vSelect from 'vue-select'
 
 export default {
   components: {
+    BTable,
     BRow,
     BCol,
-    VueGoodTable,
     BPagination,
-    BFormGroup,
     BFormInput,
-    BButton,
-    BFormSelect,
-    BCard,
-    BCardHeader,
-    BCardBody,
+    vSelect,
   },
   directives: {
     Ripple,
@@ -121,56 +108,68 @@ export default {
   },
   data() {
     return {
-      pageLength: 5,
-      dir: false,
-      columns: [
-        {
-          label: 'Tanggal Transaksi',
-          field: 'tanggal_transaksi',
-          type: 'date',
-          dateInputFormat: 'yyyy-MM-dd HH:mm:ss', // expects 2018-03-16
-          dateOutputFormat: 'd MMM yyyy | HH:mm', // outputs Mar 16th 2018
+      date: {
+        value: Date.now(),
+        config: {
+          wrap: true, // set wrap to true only when using 'input-group'
+          altFormat: 'd F Y',
+          altInput: true,
+          dateFormat: 'Y-m-d',
+          mode: 'range',
         },
-        {
-          label: 'Nomor Transaksi',
-          field: 'nomor_transaksi',
-        },
-        {
-          label: 'Debit',
-          field: 'debit',
-          formatFn: this.formatFn,
-        },
-        {
-          label: 'Kredit',
-          field: 'kredit',
-          formatFn: this.formatFn,
-        },
-        {
-          label: 'Saldo',
-          field: 'saldo',
-          formatFn: this.formatFn,
-        },
-        {
-          label: 'Keterangan',
-          field: 'keterangan',
-        },
-      ],
-      // rows: [],
-      searchTerm: '',
+      },
+      filterQuery: '',
+      searchQuery: '',
+      refTable: null,
+      totalData: 0,
     }
   },
-
-  methods: {
-    formatFn(value) {
-      if (value === null || value === 0) {
-        return '-'
+  computed: {
+    dataMeta() {
+      const localItemsCount = this.$refs.refTable ? this.$refs.refTable.computedItems.length : 0
+      return {
+        from: this.perPage * (this.currentPage - 1) + (localItemsCount ? 1 : 0),
+        to: this.perPage * (this.currentPage - 1) + localItemsCount,
+        of: this.totalData,
       }
-      return value
     },
+  },
+  methods: {
+    moment(value) {
+      return this.$moment(value).format('DD MMMM YYYY')
+    },
+  },
+  setup() {
+    const tableColumns = [
+      { key: 'tanggal_transaksi', sortable: false },
+      { key: 'nomor_transaksi', sortable: false },
+      { key: 'debit', sortable: false },
+      { key: 'kredit', sortable: false },
+      { key: 'saldo', sortable: false },
+      { key: 'catatan', sortable: false },
+    ]
+    const perPage = ref(10)
+
+    const currentPage = ref(1)
+    const perPageOptions = [10, 25, 50, 100]
+    const sortBy = ref('id')
+    const isSortDirDesc = ref(true)
+    const statusFilter = ref(null)
+
+    return {
+      tableColumns,
+      // searchQuery,
+      perPage,
+      isSortDirDesc,
+      currentPage,
+      perPageOptions,
+      sortBy,
+      statusFilter,
+    }
   },
 }
 </script>
 
 <style lang="scss">
-@import '@core/scss/vue/libs/vue-good-table.scss';
+@import '@core/scss/vue/libs/vue-select.scss';
 </style>

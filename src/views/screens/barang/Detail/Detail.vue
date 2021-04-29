@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div>
+    <div ref="container">
       <template v-if="dataBarang">
         <!-- First Row -->
         <b-row>
@@ -14,16 +14,18 @@
         <b-card>
           <b-card-body>
             <b-tabs pills>
-              <b-tab title="Transaksi" active>
-                <barang-transaksi-card :title="'Data Transaksi'" :data-barang="dataBarang" />
+              <b-tab title="Transaksi Penjualan" active>
+                <table-transaksi-penjualan :data-transaksi="transaksiPenjualan" :data-temp="transaksiPenjualan" />
+              </b-tab>
+              <b-tab title="Transaksi Pembelian">
+                <table-transaksi-pembelian :data-transaksi="transaksiPembelian" :data-temp="transaksiPembelian" />
               </b-tab>
               <b-tab title="Kartu Persediaan">
-                <kartu-persediaan :data-barang="dataBarang" />
+                <kartu-persediaan :data-persediaan="dataPersediaan" />
               </b-tab>
             </b-tabs>
           </b-card-body>
         </b-card>
-        <!-- <kartu-persediaan /> -->
       </template>
     </div>
     <sidebar-add-harga />
@@ -46,10 +48,10 @@ import {
   // BAlert,
   // BLink
 } from 'bootstrap-vue'
-import BarangTransaksiCard from './BarangTransaksiCard.vue'
-import KartuPersediaan from './KartuPersediaan.vue'
+import KartuPersediaan from '@/views/screens/persediaan/Component/KartuPersediaan.vue'
+import TableTransaksiPenjualan from '@/views/transaksi/penjualan/component/TableTransaksiPenjualan.vue'
+import TableTransaksiPembelian from '@/views/transaksi/pembelian/component/TableTransaksiPembelian.vue'
 
-// import KartuPersediaan from '@/views/screens/persediaan/Component/KartuPersediaan.vue'
 import BarangInfoCard from './BarangInfoCard.vue'
 import BarangHargaJual from './BarangHargaJual.vue'
 import SidebarAddHarga from '../Component/SidebarAddHarga.vue'
@@ -57,6 +59,8 @@ import SidebarAddSatuan from '../Component/SidebarAddSatuan.vue'
 
 export default {
   components: {
+    TableTransaksiPenjualan,
+    TableTransaksiPembelian,
     BRow,
     BCol,
     BCardBody,
@@ -66,7 +70,6 @@ export default {
     BTab,
     BTabs,
     KartuPersediaan,
-    BarangTransaksiCard,
     // KartuPersediaan,
     BarangInfoCard,
     BarangHargaJual,
@@ -76,7 +79,11 @@ export default {
   data() {
     return {
       dataPersediaan: [],
-      dataBarang: {},
+      dataBarang: {
+        kode_barang: '',
+      },
+      transaksiPenjualan: [],
+      transaksiPembelian: [],
     }
   },
   mounted() {
@@ -85,24 +92,36 @@ export default {
   },
   methods: {
     loadMetaData() {
+      const { id } = router.currentRoute.params
+
+      const loader = this.$loading.show({
+        container: this.$refs.container,
+      })
       if (store.getters['app-barang/getListBarang'].length === 0) {
         store.dispatch('app-barang/fetchListBarang').then(res => {
           store.commit('app-barang/SET_LIST_BARANG', res.data)
-        })
-      }
-      if (store.getters['app-transaksi/getListTransaksiPenjualan'].length === 0) {
-        store.dispatch('app-transaksi/fetchListTransaksiPenjualan').then(res => {
-          store.commit('app-transaksi/SET_LIST_TRANSAKSI_PENJUALAN', res.data)
+          this.dataBarang = store.getters['app-barang/getBarangById'](parseInt(id, 10))
           this.loadData()
+          loader.hide()
         })
       } else {
+        this.dataBarang = store.getters['app-barang/getBarangById'](parseInt(id, 10))
         this.loadData()
+        loader.hide()
       }
     },
     loadData() {
       const { id } = router.currentRoute.params
-
-      this.dataBarang = store.getters['app-barang/getBarangById'](parseInt(id, 10))
+      store.dispatch('app-persediaan/fetchKartuPersediaan', { id }).then(res => {
+        store.commit('app-persediaan/SET_KARTU_PERSEDIAAN', res.data)
+        this.dataPersediaan = store.getters['app-persediaan/getKartuPersediaan']
+      })
+      store.dispatch('app-transaksi-penjualan/fetchListTransaksiByBarang', this.dataBarang.kode_barang).then(res => {
+        this.transaksiPenjualan = res.data
+      })
+      store.dispatch('app-transaksi-pembelian/fetchListTransaksiByBarang', this.dataBarang.kode_barang).then(res => {
+        this.transaksiPembelian = res.data
+      })
     },
   },
 }

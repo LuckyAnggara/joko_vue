@@ -1,16 +1,10 @@
 <template>
   <section id="dashboard-analytics">
     <b-row class="match-height">
-      <b-col
-        lg="6"
-        md="12"
-      >
+      <b-col lg="6" md="12">
         <analytics-congratulation :data="data.congratulations" />
       </b-col>
-      <b-col
-        lg="3"
-        sm="6"
-      >
+      <b-col lg="3" sm="6">
         <statistic-card-with-area-chart
           v-if="data.subscribersGained"
           icon="UsersIcon"
@@ -19,10 +13,7 @@
           :chart-data="data.subscribersGained.series"
         />
       </b-col>
-      <b-col
-        lg="3"
-        sm="6"
-      >
+      <b-col lg="3" sm="6">
         <statistic-card-with-area-chart
           v-if="data.ordersRecevied"
           icon="PackageIcon"
@@ -96,8 +87,10 @@ export default {
   },
   created() {
     // data
-    this.$http.get('/analytics/data')
-      .then(response => { this.data = response.data })
+    this.$http.get('/analytics/data').then(response => {
+      this.data = response.data
+    })
+    localStorage.name = 'Lucky'
   },
   methods: {
     kFormatter,

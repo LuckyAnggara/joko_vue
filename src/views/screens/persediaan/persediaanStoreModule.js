@@ -4,18 +4,18 @@ export default {
   namespaced: true,
   state: {
     listPersediaan: [],
-    listDetailPersediaan: [],
+    kartuPersediaan: [],
   },
   getters: {
     getListPersediaan: state => state.listPersediaan,
-    getDetailListPersediaan: state => state.listDetailPersediaan,
+    getKartuPersediaan: state => state.kartuPersediaan,
   },
   mutations: {
     SET_LIST_PERSEDIAAN(state, data) {
       state.listPersediaan = data
     },
-    SET_LIST_DETAIL_PERSEDIAAN(state, data) {
-      state.listDetailPersediaan = data
+    SET_KARTU_PERSEDIAAN(state, data) {
+      state.kartuPersediaan = data
     },
   },
   actions: {
@@ -29,7 +29,7 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchDetailPersediaan(ctx, { id }) {
+    fetchKartuPersediaan(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}persediaan/${id}`)

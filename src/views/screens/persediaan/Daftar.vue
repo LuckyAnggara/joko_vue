@@ -13,7 +13,7 @@
             <!-- Search -->
             <b-col cols="12" md="6">
               <div class="d-flex align-items-center justify-content-end">
-                <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Jurnal, Keterangan)" />
+                <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Kode Barang, Nama Barang)" />
               </div>
             </b-col>
           </b-row>
@@ -67,8 +67,8 @@
                 class="mx-1"
                 @click="
                   $router.push({
-                    name: 'akuntansi-jurnal-detail',
-                    params: { id: data.item.nomor_jurnal },
+                    name: 'screen-persediaan-detail',
+                    params: { id: data.item.id },
                   })
                 "
               />
@@ -116,7 +116,6 @@
 </template>
 
 <script>
-import router from '@/router'
 import { ref } from '@vue/composition-api'
 import {
   BRow,
@@ -184,15 +183,6 @@ export default {
     this.loadData()
   },
   methods: {
-    view(id) {
-      router.push({ name: 'screen-persediaan-detail', params: { id } })
-    },
-    formatFn(value) {
-      if (value === null || value === 0) {
-        return '-'
-      }
-      return value
-    },
     loadData() {
       store.dispatch('app-persediaan/fetchListPersediaan').then(res => {
         store.commit('app-persediaan/SET_LIST_PERSEDIAAN', res.data)
