@@ -1,37 +1,22 @@
 <template>
   <b-card-code title="Basic Examples">
     <b-card-text class="mb-0">
-      SweetAlert automatically centers itself on the page and looks great no matter if you're using a desktop computer, mobile or tablet. It's even highly customizable, as you can see below!
+      SweetAlert automatically centers itself on the page and looks great no matter if you're using a desktop computer, mobile or tablet. It's even highly
+      customizable, as you can see below!
     </b-card-text>
 
     <!-- trigger buttons -->
     <div class="demo-inline-spacing">
-      <b-button
-        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-        variant="outline-primary"
-        @click="showAlert"
-      >
+      <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" @click="showAlert">
         Basic
       </b-button>
-      <b-button
-        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-        variant="outline-primary"
-        @click="withTitle"
-      >
+      <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" @click="withTitle">
         With Title
       </b-button>
-      <b-button
-        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-        variant="outline-primary"
-        @click="withFooter"
-      >
+      <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" @click="withFooter">
         With Footer
       </b-button>
-      <b-button
-        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-        variant="outline-primary"
-        @click="withHtml"
-      >
+      <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" @click="withHtml">
         HTML
       </b-button>
     </div>
@@ -63,7 +48,6 @@ export default {
     }
   },
   methods: {
-
     // basic
     showAlert() {
       this.$swal({
@@ -107,9 +91,9 @@ export default {
         title: '<span class="font-weight-bolder">HTML <u>example</u></span>',
         icon: 'info',
         html:
-          'You can use <span class="font-weight-bolder">bold text</span>, '
-          + '<a href="https://pixinvent.com/" target="_blank">links</a> '
-          + 'and other HTML tags',
+          'You can use <span class="font-weight-bolder">bold text</span>, ' +
+          '<a href="https://pixinvent.com/" target="_blank">links</a> ' +
+          'and other HTML tags',
         showCloseButton: true,
         showCancelButton: true,
         focusConfirm: false,

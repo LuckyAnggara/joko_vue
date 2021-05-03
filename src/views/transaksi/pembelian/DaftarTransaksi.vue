@@ -35,7 +35,7 @@ import store from '@/store'
 
 import { BCard, BRow, BCol, BInputGroupAppend, BFormGroup, BInputGroup, BButton } from 'bootstrap-vue'
 import flatPickr from 'vue-flatpickr-component'
-import Statistik from './Statistik.vue'
+import Statistik from './component/Statistik.vue'
 import TableTransaksiPembelian from './component/TableTransaksiPembelian.vue'
 
 export default {

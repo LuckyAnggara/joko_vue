@@ -1,7 +1,6 @@
 <template>
   <div class="auth-wrapper auth-v2">
     <b-row class="auth-inner m-0">
-
       <!-- Brand logo-->
       <b-link class="brand-logo">
         <vuexy-logo />
@@ -12,45 +11,24 @@
       <!-- /Brand logo-->
 
       <!-- Left Text-->
-      <b-col
-        lg="8"
-        class="d-none d-lg-flex align-items-center p-5"
-      >
+      <b-col lg="8" class="d-none d-lg-flex align-items-center p-5">
         <div class="w-100 d-lg-flex align-items-center justify-content-center px-5">
-          <b-img
-            fluid
-            :src="imgUrl"
-            alt="Login V2"
-          />
+          <b-img fluid :src="imgUrl" alt="Login V2" />
         </div>
       </b-col>
       <!-- /Left Text-->
 
       <!-- Login-->
-      <b-col
-        lg="4"
-        class="d-flex align-items-center auth-bg px-2 p-lg-5"
-      >
-        <b-col
-          sm="8"
-          md="6"
-          lg="12"
-          class="px-xl-2 mx-auto"
-        >
-          <b-card-title
-            class="mb-1 font-weight-bold"
-            title-tag="h2"
-          >
-            Welcome to Vuexy! 👋
+      <b-col lg="4" class="d-flex align-items-center auth-bg px-2 p-lg-5">
+        <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
+          <b-card-title class="mb-1 font-weight-bold" title-tag="h2">
+            Welcome to SSM ! 👋
           </b-card-title>
           <b-card-text class="mb-2">
             Please sign-in to your account and start the adventure
           </b-card-text>
 
-          <b-alert
-            variant="primary"
-            show
-          >
+          <b-alert variant="primary" show>
             <div class="alert-body font-small-2">
               <p>
                 <small class="mr-50"><span class="font-weight-bold">Admin:</span> admin@demo.com | admin</small>
@@ -69,29 +47,15 @@
           </b-alert>
 
           <!-- form -->
-          <validation-observer
-            ref="loginForm"
-            #default="{invalid}"
-          >
-            <b-form
-              class="auth-login-form mt-2"
-              @submit.prevent="login"
-            >
+          <validation-observer ref="loginForm" #default="{invalid}">
+            <b-form class="auth-login-form mt-2" @submit.prevent="login">
               <!-- email -->
-              <b-form-group
-                label="Email"
-                label-for="login-email"
-              >
-                <validation-provider
-                  #default="{ errors }"
-                  name="Email"
-                  vid="email"
-                  rules="required|email"
-                >
+              <b-form-group label="Email" label-for="login-email">
+                <validation-provider #default="{ errors }" name="Email" vid="email" rules="required|email">
                   <b-form-input
                     id="login-email"
                     v-model="userEmail"
-                    :state="errors.length > 0 ? false:null"
+                    :state="errors.length > 0 ? false : null"
                     name="login-email"
                     placeholder="john@example.com"
                   />
@@ -103,35 +67,23 @@
               <b-form-group>
                 <div class="d-flex justify-content-between">
                   <label for="login-password">Password</label>
-                  <b-link :to="{name:'auth-forgot-password'}">
+                  <b-link :to="{ name: 'auth-forgot-password' }">
                     <small>Forgot Password?</small>
                   </b-link>
                 </div>
-                <validation-provider
-                  #default="{ errors }"
-                  name="Password"
-                  vid="password"
-                  rules="required"
-                >
-                  <b-input-group
-                    class="input-group-merge"
-                    :class="errors.length > 0 ? 'is-invalid':null"
-                  >
+                <validation-provider #default="{ errors }" name="Password" vid="password" rules="required">
+                  <b-input-group class="input-group-merge" :class="errors.length > 0 ? 'is-invalid' : null">
                     <b-form-input
                       id="login-password"
                       v-model="password"
-                      :state="errors.length > 0 ? false:null"
+                      :state="errors.length > 0 ? false : null"
                       class="form-control-merge"
                       :type="passwordFieldType"
                       name="login-password"
                       placeholder="Password"
                     />
                     <b-input-group-append is-text>
-                      <feather-icon
-                        class="cursor-pointer"
-                        :icon="passwordToggleIcon"
-                        @click="togglePasswordVisibility"
-                      />
+                      <feather-icon class="cursor-pointer" :icon="passwordToggleIcon" @click="togglePasswordVisibility" />
                     </b-input-group-append>
                   </b-input-group>
                   <small class="text-danger">{{ errors[0] }}</small>
@@ -140,22 +92,13 @@
 
               <!-- checkbox -->
               <b-form-group>
-                <b-form-checkbox
-                  id="remember-me"
-                  v-model="status"
-                  name="checkbox-1"
-                >
+                <b-form-checkbox id="remember-me" v-model="status" name="checkbox-1">
                   Remember Me
                 </b-form-checkbox>
               </b-form-group>
 
               <!-- submit buttons -->
-              <b-button
-                type="submit"
-                variant="primary"
-                block
-                :disabled="invalid"
-              >
+              <b-button type="submit" variant="primary" block :disabled="invalid">
                 Sign in
               </b-button>
             </b-form>
@@ -163,7 +106,7 @@
 
           <b-card-text class="text-center mt-2">
             <span>New on our platform? </span>
-            <b-link :to="{name:'auth-register'}">
+            <b-link :to="{ name: 'auth-register' }">
               <span>&nbsp;Create an account</span>
             </b-link>
           </b-card-text>
@@ -177,34 +120,22 @@
 
           <!-- social buttons -->
           <div class="auth-footer-btn d-flex justify-content-center">
-            <b-button
-              variant="facebook"
-              href="javascript:void(0)"
-            >
+            <b-button variant="facebook" href="javascript:void(0)">
               <feather-icon icon="FacebookIcon" />
             </b-button>
-            <b-button
-              variant="twitter"
-              href="javascript:void(0)"
-            >
+            <b-button variant="twitter" href="javascript:void(0)">
               <feather-icon icon="TwitterIcon" />
             </b-button>
-            <b-button
-              variant="google"
-              href="javascript:void(0)"
-            >
+            <b-button variant="google" href="javascript:void(0)">
               <feather-icon icon="MailIcon" />
             </b-button>
-            <b-button
-              variant="github"
-              href="javascript:void(0)"
-            >
+            <b-button variant="github" href="javascript:void(0)">
               <feather-icon icon="GithubIcon" />
             </b-button>
           </div>
         </b-col>
       </b-col>
-    <!-- /Login-->
+      <!-- /Login-->
     </b-row>
   </div>
 </template>
@@ -214,7 +145,21 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, BAlert, VBTooltip,
+  BRow,
+  BCol,
+  BLink,
+  BFormGroup,
+  BFormInput,
+  BInputGroupAppend,
+  BInputGroup,
+  BFormCheckbox,
+  BCardText,
+  BCardTitle,
+  BImg,
+  BForm,
+  BButton,
+  BAlert,
+  VBTooltip,
 } from 'bootstrap-vue'
 import useJwt from '@/auth/jwt/useJwt'
 import { required, email } from '@validations'
@@ -277,10 +222,11 @@ export default {
     login() {
       this.$refs.loginForm.validate().then(success => {
         if (success) {
-          useJwt.login({
-            email: this.userEmail,
-            password: this.password,
-          })
+          useJwt
+            .login({
+              email: this.userEmail,
+              password: this.password,
+            })
             .then(response => {
               const { userData } = response.data
               useJwt.setToken(response.data.accessToken)
@@ -293,7 +239,8 @@ export default {
               this.$store.commit('app-ecommerce/UPDATE_CART_ITEMS_COUNT', userData.extras.eCommerceCartItemsCount)
 
               // ? This is just for demo purpose. Don't think CASL is role based in this case, we used role in if condition just for ease
-              this.$router.replace(getHomeRouteForLoggedInUser(userData.role))
+              this.$router
+                .replace(getHomeRouteForLoggedInUser(userData.role))
                 .then(() => {
                   this.$toast({
                     component: ToastificationContent,

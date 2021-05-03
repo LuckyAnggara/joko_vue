@@ -70,9 +70,9 @@ import router from '@/router'
 import store from '@/store'
 
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
-import DetailKonsumen from './DetailKonsumen.vue'
-import ReviewOrder from './ReviewOrder.vue'
-import Keranjang from './Keranjang.vue'
+import DetailKonsumen from './component/DetailKonsumen.vue'
+import ReviewOrder from './component/ReviewOrder.vue'
+import Keranjang from './component/Keranjang.vue'
 
 export default {
   components: {
@@ -187,14 +187,6 @@ export default {
       const loader = this.$loading.show({
         // Optional parameters
         container: this.$refs.formContainer,
-        canCancel: true,
-        color: '#000000',
-        loader: 'spinner',
-        width: 64,
-        height: 64,
-        backgroundColor: '#ffffff',
-        opacity: 0.5,
-        zIndex: 999,
       })
       store
         .dispatch('app-transaksi-penjualan/addTransaksi', this.dataOrder)

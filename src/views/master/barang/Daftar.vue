@@ -13,7 +13,7 @@
               <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
                 <label>Entries</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
-                <b-button variant="primary" :to="{ name: 'screen-barang-tambah' }">
+                <b-button variant="primary" :to="{ name: 'master-barang-tambah' }">
                   Tambah Data
                 </b-button>
               </b-col>
@@ -69,7 +69,7 @@
                   class="mx-1"
                   @click="
                     $router.push({
-                      name: 'screen-barang-detail',
+                      name: 'master-barang-detail',
                       params: { id: data.item.id },
                     })
                   "

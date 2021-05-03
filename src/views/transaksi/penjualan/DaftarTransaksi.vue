@@ -36,7 +36,7 @@ import store from '@/store'
 import { BCard, BRow, BCol, BInputGroupAppend, BFormGroup, BInputGroup, BButton } from 'bootstrap-vue'
 
 import flatPickr from 'vue-flatpickr-component'
-import Statistik from './Statistik.vue'
+import Statistik from './component/Statistik.vue'
 import TableTransaksiPenjualan from './component/TableTransaksiPenjualan.vue'
 
 export default {
@@ -60,7 +60,7 @@ export default {
         value: Date.now(),
         config: {
           wrap: true, // set wrap to true only when using 'input-group'
-          altFormat: 'd F Y',
+          altFormat: 'd F y',
           altInput: true,
           dateFormat: 'Y-m-d',
           mode: 'range',

@@ -10,15 +10,16 @@ export default [
     },
   },
   {
-    path: '/screen/barang/tambah',
-    name: 'screen-barang-tambah',
-    component: () => import('@/views/screens/barang/Tambah/Tambah.vue'),
+    path: '/master/barang/tambah',
+    name: 'master-barang-tambah',
+    component: () => import('@/views/master/barang/Tambah/Tambah.vue'),
     meta: {
+      resource: 'ACL',
       pageTitle: 'Tambah',
       breadcrumb: [
         {
           text: 'Barang',
-          to: '/screen/barang/',
+          to: '/master/barang/',
         },
         {
           text: 'Tambah',
@@ -28,30 +29,31 @@ export default [
     },
   },
   {
-    path: '/screen/barang/',
-    name: 'screen-barang',
-    component: () => import('@/views/screens/barang/Daftar.vue'),
+    path: '/master/barang/',
+    name: 'master-barang',
+    component: () => import('@/views/master/barang/Daftar.vue'),
     meta: {
+      resource: 'ACL',
       pageTitle: 'Daftar',
       breadcrumb: [
         {
           active: true,
           text: 'Barang',
-          to: '/screen/barang/',
+          to: '/master/barang/',
         },
       ],
     },
   },
   {
-    path: '/screen/barang/detail/:id',
-    name: 'screen-barang-detail',
-    component: () => import('@/views/screens/barang/Detail/Detail.vue'),
+    path: '/master/barang/detail/:id',
+    name: 'master-barang-detail',
+    component: () => import('@/views/master/barang/Detail/Detail.vue'),
     meta: {
       pageTitle: 'Daftar',
       breadcrumb: [
         {
           text: 'Barang',
-          to: '/screen/barang/',
+          to: '/master/barang/',
         },
         {
           text: 'Detail',
@@ -61,30 +63,30 @@ export default [
     },
   },
   {
-    path: '/screen/kontak/',
-    name: 'screen-kontak',
-    component: () => import('@/views/screens/kontak/Daftar.vue'),
+    path: '/master/kontak/',
+    name: 'master-kontak',
+    component: () => import('@/views/master/kontak/Daftar.vue'),
     meta: {
       pageTitle: 'Daftar',
       breadcrumb: [
         {
           active: true,
           text: 'Kontak',
-          to: '/screen/kontak/',
+          to: '/master/kontak/',
         },
       ],
     },
   },
   {
-    path: '/screen/kontak/tambah',
-    name: 'screen-kontak-tambah',
-    component: () => import('@/views/screens/kontak/Tambah/Tambah.vue'),
+    path: '/master/kontak/tambah',
+    name: 'master-kontak-tambah',
+    component: () => import('@/views/master/kontak/Tambah/Tambah.vue'),
     meta: {
       pageTitle: 'Tambah',
       breadcrumb: [
         {
           text: 'Kontak',
-          to: '/screen/kontak/',
+          to: '/master/kontak/',
         },
         {
           text: 'Tambah',
@@ -94,30 +96,30 @@ export default [
     },
   },
   {
-    path: '/screen/persediaan/',
-    name: 'screen-persediaan',
-    component: () => import('@/views/screens/persediaan/Daftar.vue'),
+    path: '/master/persediaan/',
+    name: 'master-persediaan',
+    component: () => import('@/views/master/persediaan/Daftar.vue'),
     meta: {
       pageTitle: 'Daftar',
       breadcrumb: [
         {
           active: true,
           text: 'Persediaan',
-          to: '/screen/persediaan/',
+          to: '/master/persediaan/',
         },
       ],
     },
   },
   {
-    path: '/screen/persediaan/detail/:id',
-    name: 'screen-persediaan-detail',
-    component: () => import('@/views/screens/persediaan/Detail.vue'),
+    path: '/master/persediaan/detail/:id',
+    name: 'master-persediaan-detail',
+    component: () => import('@/views/master/persediaan/Detail.vue'),
     meta: {
       pageTitle: 'Daftar',
       breadcrumb: [
         {
           text: 'Persediaan',
-          to: '/screen/persediaan/',
+          to: '/master/persediaan/',
         },
         {
           text: 'Detail',

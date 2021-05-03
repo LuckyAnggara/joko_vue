@@ -15,4 +15,13 @@ export default [
       },
     ],
   },
+  {
+    title: 'Login',
+    route: 'auth-login-new',
+    icon: 'ShieldIcon',
+    // acl: {
+    action: 'read',
+    resource: 'ACL',
+    // },
+  },
 ]

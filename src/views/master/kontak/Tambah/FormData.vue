@@ -144,7 +144,7 @@ export default {
         buttonsStyling: false,
       })
       this.$router.push({
-        name: 'screen-barang',
+        name: 'master-barang',
       })
     },
     error() {

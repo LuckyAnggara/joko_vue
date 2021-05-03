@@ -67,7 +67,7 @@
                 class="mx-1"
                 @click="
                   $router.push({
-                    name: 'screen-persediaan-detail',
+                    name: 'master-persediaan-detail',
                     params: { id: data.item.id },
                   })
                 "

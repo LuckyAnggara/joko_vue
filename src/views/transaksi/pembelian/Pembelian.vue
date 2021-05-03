@@ -67,9 +67,9 @@ import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import router from '@/router'
 import store from '@/store'
 
-import DetailSupplier from './DetailSupplier.vue'
-import ReviewOrder from './ReviewOrder.vue'
-import Keranjang from './Keranjang.vue'
+import DetailSupplier from './component/DetailSupplier.vue'
+import ReviewOrder from './component/ReviewOrder.vue'
+import Keranjang from './component/Keranjang.vue'
 
 export default {
   components: {

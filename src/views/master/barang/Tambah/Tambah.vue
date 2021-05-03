@@ -1,10 +1,6 @@
 <template>
   <!-- <b-row class="match-height"> -->
-  <b-form
-    autocomplete="off"
-    @submit.prevent
-    @submit="store"
-  >
+  <b-form autocomplete="off" @submit.prevent @submit="store">
     <b-row>
       <b-col lg="9">
         <b-card>
@@ -13,32 +9,15 @@
         </b-card>
       </b-col>
       <!-- Right Col: Card -->
-      <b-col
-        cols="12"
-        md="4"
-        xl="3"
-        class="invoice-actions mt-md-0 mt-2"
-      >
+      <b-col cols="12" md="4" xl="3" class="invoice-actions mt-md-0 mt-2">
         <!-- Action Buttons -->
         <b-card>
           <!-- Button: Send Invoice -->
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="primary"
-            class="mb-75"
-            block
-            type="submit"
-          >
+          <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="submit">
             Submit
           </b-button>
 
-          <b-button
-            v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-            variant="outline-primary"
-            class="mb-75"
-            type="reset"
-            block
-          >
+          <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" class="mb-75" type="reset" block>
             Reset
           </b-button>
         </b-card>
@@ -48,9 +27,7 @@
 </template>
 
 <script>
-import {
-  BForm, BCard, BRow, BCol, BButton,
-} from 'bootstrap-vue'
+import { BForm, BCard, BRow, BCol, BButton } from 'bootstrap-vue'
 // import { ref } from '@vue/composition-api'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
@@ -88,7 +65,7 @@ export default {
         buttonsStyling: false,
       })
       this.$router.push({
-        name: 'screen-barang',
+        name: 'master-barang',
       })
     },
     error() {

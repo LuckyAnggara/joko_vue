@@ -12,7 +12,7 @@
 import store from '@/store'
 import router from '@/router'
 import { BCard } from 'bootstrap-vue'
-import KartuPersediaan from './Component/KartuPersediaan.vue'
+import KartuPersediaan from './component/KartuPersediaan.vue'
 
 export default {
   components: {

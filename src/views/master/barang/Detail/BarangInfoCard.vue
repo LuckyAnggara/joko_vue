@@ -169,7 +169,7 @@ export default {
                   },
                 })
                 this.$router.push({
-                  name: 'screen-barang',
+                  name: 'master-barang',
                 })
               }
             })

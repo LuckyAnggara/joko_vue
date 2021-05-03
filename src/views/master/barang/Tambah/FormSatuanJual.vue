@@ -7,17 +7,8 @@
     </b-card-header>
     <!-- Items Section -->
     <b-card-body class="invoice-padding form-item-section">
-      <div
-        ref="form"
-        class="repeater-form"
-        :style="{ height: 200 }"
-      >
-        <b-row
-          v-for="(item, index) in harga"
-          :key="index"
-          ref="row"
-          class="pt-2"
-        >
+      <div ref="form" class="repeater-form" :style="{ height: 200 }">
+        <b-row v-for="(item, index) in harga" :key="index" ref="row" class="pt-2">
           <!-- Item Form -->
           <!-- ? This will be in loop => So consider below markup for single item -->
           <b-col cols="12">
@@ -25,22 +16,13 @@
             <div class="d-none d-lg-flex">
               <b-row class="flex-grow-1 px-1">
                 <!-- Single Item Form Headers -->
-                <b-col
-                  cols="12"
-                  lg="3"
-                >
+                <b-col cols="12" lg="3">
                   Satuan
                 </b-col>
-                <b-col
-                  cols="12"
-                  lg="3"
-                >
+                <b-col cols="12" lg="3">
                   Harga Jual
                 </b-col>
-                <b-col
-                  cols="12"
-                  lg="6"
-                >
+                <b-col cols="12" lg="6">
                   Catatan
                 </b-col>
               </b-row>
@@ -52,74 +34,34 @@
             <div class="d-flex border rounded">
               <b-row class="flex-grow-1 p-2">
                 <!-- Single Item Form Headers -->
-                <b-col
-                  cols="12"
-                  lg="3"
-                >
+                <b-col cols="12" lg="3">
                   <label class="d-inline d-lg-none">Item</label>
-                  <v-select
-                    v-model="item.satuan"
-                    placeholder="Satuan Barang"
-                    :reduce="nama => nama.id"
-                    label="nama"
-                    :options="satuanBarang"
-                  >
+                  <v-select v-model="item.satuan" placeholder="Satuan Barang" :reduce="nama => nama.id" label="nama" :options="satuanBarang">
                     <template #list-header>
-                      <li
-                        v-b-toggle.sidebar-add-satuan
-                        class="add-new-data-header d-flex align-items-center my-50"
-                      >
-                        <feather-icon
-                          icon="PlusIcon"
-                          size="16"
-                        />
+                      <li v-b-toggle.sidebar-add-satuan class="add-new-data-header d-flex align-items-center my-50">
+                        <feather-icon icon="PlusIcon" size="16" />
                         <span class="align-middle ml-25">Tambah Satuan</span>
                       </li>
                     </template>
                   </v-select>
                 </b-col>
-                <b-col
-                  cols="12"
-                  lg="3"
-                >
+                <b-col cols="12" lg="3">
                   <label class="d-inline d-lg-none" />
-                  <b-form-input
-                    v-model="item.harga"
-                    type="number"
-                  />
+                  <b-form-input v-model="item.harga" type="number" />
                 </b-col>
-                <b-col
-                  cols="12"
-                  lg="6"
-                >
+                <b-col cols="12" lg="6">
                   <label class="d-inline d-lg-none" />
-                  <b-form-input
-                    v-model="item.catatan"
-                    type="text"
-                  />
+                  <b-form-input v-model="item.catatan" type="text" />
                 </b-col>
               </b-row>
-              <div
-                class="d-flex flex-column bg-gradient-danger justify-content-between border-left py-50 px-25"
-              >
-                <feather-icon
-                  size="16"
-                  icon="XIcon"
-                  class="cursor-pointer"
-                  @click="removeItem(index)"
-                />
+              <div class="d-flex flex-column bg-gradient-danger justify-content-between border-left py-50 px-25">
+                <feather-icon size="16" icon="XIcon" class="cursor-pointer" @click="removeItem(index)" />
               </div>
             </div>
           </b-col>
         </b-row>
       </div>
-      <b-button
-        v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-        class="mt-2"
-        size="sm"
-        variant="primary"
-        @click="addNewItemInItemForm"
-      >
+      <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" class="mt-2" size="sm" variant="primary" @click="addNewItemInItemForm">
         Tambah Harga
       </b-button>
     </b-card-body>
@@ -128,15 +70,7 @@
 </template>
 
 <script>
-import {
-  BRow,
-  BCol,
-  VBToggle,
-  BFormInput,
-  BButton,
-  BCardHeader,
-  BCardBody,
-} from 'bootstrap-vue'
+import { BRow, BCol, VBToggle, BFormInput, BButton, BCardHeader, BCardBody } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import store from '@/store'
@@ -188,7 +122,7 @@ export default {
         buttonsStyling: false,
       })
       this.$router.push({
-        name: 'screen-barang',
+        name: 'master-barang',
       })
     },
     error() {

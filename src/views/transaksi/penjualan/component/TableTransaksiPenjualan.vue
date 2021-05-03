@@ -7,8 +7,11 @@
         <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
           <label>Entries</label>
           <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
-          <b-button variant="primary" :to="{ name: 'transaksi-penjualan-tambah' }">
+          <b-button variant="primary" :to="{ name: 'transaksi-penjualan-tambah' }" class="d-inline-block ml-50 mr-1">
             Tambah Data
+          </b-button>
+          <b-button variant="success" @click="download">
+            Download
           </b-button>
         </b-col>
 
@@ -29,6 +32,7 @@
     </div>
 
     <b-table
+      id="my-table"
       ref="refTable"
       responsive
       primary-key="id"
@@ -175,6 +179,9 @@
 </template>
 
 <script>
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+
 import { ref } from '@vue/composition-api'
 
 import { BRow, BCol, BFormInput, BButton, BTable, BLink, BBadge, BDropdown, BDropdownItem, BPagination, BTooltip } from 'bootstrap-vue'
@@ -234,6 +241,12 @@ export default {
     },
   },
   methods: {
+    download() {
+      console.info('click')
+      const doc = jsPDF()
+      autoTable(doc, { html: '#my-table' })
+      doc.save('table.pdf')
+    },
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },

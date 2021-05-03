@@ -48,7 +48,7 @@ import {
   // BAlert,
   // BLink
 } from 'bootstrap-vue'
-import KartuPersediaan from '@/views/screens/persediaan/Component/KartuPersediaan.vue'
+import KartuPersediaan from '@/views/master/persediaan/component/KartuPersediaan.vue'
 import TableTransaksiPenjualan from '@/views/transaksi/penjualan/component/TableTransaksiPenjualan.vue'
 import TableTransaksiPembelian from '@/views/transaksi/pembelian/component/TableTransaksiPembelian.vue'
 

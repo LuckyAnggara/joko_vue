@@ -70,7 +70,7 @@ export default {
       })
     },
     view(obj) {
-      router.push({ name: 'screen-barang-detail', params: { id: obj } })
+      router.push({ name: 'master-barang-detail', params: { id: obj } })
     },
     edit(id) {
       return id
@@ -107,7 +107,7 @@ export default {
     },
     toTambahScreen() {
       this.$router.push({
-        name: 'screen-kontak-tambah',
+        name: 'master-kontak-tambah',
       })
     },
   },

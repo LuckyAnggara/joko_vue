@@ -31,7 +31,7 @@ tagVariant
 
 */
 import dashboard from './dashboard'
-import persediaan from './persediaan'
+import master from './master'
 import transaksi from './transaksi'
 import keuangan from './keuangan'
 // import others from './others'
@@ -42,7 +42,7 @@ import keuangan from './keuangan'
 // Array of sections
 export default [
   ...dashboard,
-  ...persediaan,
+  ...master,
   ...transaksi,
   ...keuangan,
   // ...appsAndPages,

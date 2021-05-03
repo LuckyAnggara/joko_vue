@@ -4,7 +4,7 @@ export default [
   },
   {
     title: 'Data Barang',
-    route: 'screen-barang',
+    route: 'master-barang',
     icon: 'ShieldIcon',
     // acl: {
     action: 'read',
@@ -13,7 +13,7 @@ export default [
   },
   {
     title: 'Kontak',
-    route: 'screen-kontak',
+    route: 'master-kontak',
     icon: 'ShieldIcon',
     // acl: {
     action: 'read',
@@ -22,7 +22,7 @@ export default [
   },
   {
     title: 'Persediaan',
-    route: 'screen-persediaan',
+    route: 'master-persediaan',
     icon: 'ShieldIcon',
     // acl: {
     action: 'read',

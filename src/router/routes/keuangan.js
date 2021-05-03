@@ -60,6 +60,7 @@ export default [
     name: 'akuntansi-ledger-daftar',
     component: () => import('@/views/keuangan/jurnal/Daftar.vue'),
     meta: {
+      resource: 'ACL',
       pageTitle: 'Ledger',
       breadcrumb: [
         {
