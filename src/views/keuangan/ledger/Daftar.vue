@@ -72,8 +72,6 @@
             :items="dataLedger"
             :current-page="currentPage"
             :per-page="perPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="isSortDirDesc"
             show-empty
             empty-text="Tidak ada data"
             class="position-relative"
@@ -113,8 +111,11 @@
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
                 <b-pagination
                   v-model="currentPage"
+                  :sort-compare="true"
                   :total-rows="totalLedger"
                   :per-page="perPage"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="isSortDirDesc"
                   first-number
                   last-number
                   class="mb-0 mt-1 mt-sm-0"
@@ -234,9 +235,12 @@ export default {
       return this.$moment(value).format('DD MMMM YYYY')
     },
     loadLedger(dateawal = null, dateakhir = null) {
+      const user = JSON.parse(localStorage.getItem('userData'))
+      const cabang = user.cabang.id
       const { id } = router.currentRoute.params
       store
         .dispatch('app-keuangan/fetchLedgerByAkun', {
+          cabang,
           id,
           dateawal,
           dateakhir,
@@ -256,15 +260,18 @@ export default {
 
   setup() {
     const tableColumns = [
-      { key: 'tanggal', sortable: true },
-      { key: 'nomor_jurnal', sortable: true },
-      { label: 'debit', key: 'debit', sortable: true },
-      { label: 'kredit', key: 'kredit', sortable: true },
+      {
+        key: 'tanggal',
+        sortable: false,
+      },
+      { key: 'nomor_jurnal', sortable: false },
+      { label: 'debit', key: 'debit', sortable: false },
+      { label: 'kredit', key: 'kredit', sortable: false },
       {
         label: 'saldo',
         key: 'saldo',
       },
-      { label: 'keterangan', key: 'keterangan', sortable: true },
+      { label: 'keterangan', key: 'keterangan', sortable: false },
     ]
 
     // const searchQuery = ref('')
@@ -272,13 +279,12 @@ export default {
     const totalLedger = ref(0)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
-    const sortBy = ref('id')
-    const isSortDirDesc = ref(true)
+    const sortBy = ref('tanggal')
+    const isSortDirDesc = ref(false)
     const statusFilter = ref(null)
 
     return {
       tableColumns,
-      // searchQuery,
       perPage,
       isSortDirDesc,
       currentPage,
@@ -294,18 +300,6 @@ export default {
 <style lang="scss" scoped>
 .per-page-selector {
   width: 90px;
-}
-
-.keuangan-filter-select {
-  min-width: 190px;
-
-  ::v-deep .vs__selected-options {
-    flex-wrap: nowrap;
-  }
-
-  ::v-deep .vs__selected {
-    width: 100px;
-  }
 }
 </style>
 

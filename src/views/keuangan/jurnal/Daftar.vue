@@ -1,7 +1,7 @@
 <template>
   <section>
     <b-row class="match-height">
-      <b-col lg="6" cols="12">
+      <b-col lg="6" cols="12" md="12">
         <b-card>
           <b-form-group>
             <h5>Filter</h5>
@@ -18,7 +18,7 @@
           </b-form-group>
         </b-card>
       </b-col>
-      <b-col lg="12" cols="12">
+      <b-col lg="12" cols="12" md="12">
         <b-card>
           <div class="mb-2">
             <!-- Table Top -->
@@ -53,6 +53,7 @@
             show-empty
             empty-text="Tidak ada data"
             class="position-relative"
+            foot-clone
           >
             <!-- Column: Tanggal -->
             <template #cell(tanggal)="data">
@@ -77,16 +78,19 @@
 
             <!-- Column: DEBIT KREDIT -->
             <template #cell(debit)="data">
-              <span>
-                {{ data.item.jenis === 'DEBIT' ? formatRupiah(data.item.nominal) : '' }}
+              <span class="text-nowrap">
+                {{ data.item.jenis === 'DEBIT' ? formatRupiah(data.item.nominal) : '-' }}
               </span>
             </template>
 
             <template #cell(kredit)="data">
-              <span>
-                {{ data.item.jenis === 'KREDIT' ? formatRupiah(data.item.nominal) : '' }}
+              <span class="text-nowrap">
+                {{ data.item.jenis === 'KREDIT' ? formatRupiah(data.item.nominal) : '-' }}
               </span>
             </template>
+
+            <!-- FOOTER -->
+
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="text-nowrap">
@@ -101,16 +105,21 @@
                     })
                   "
                 />
-                <!-- <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
-                  <template #button-content>
-                    <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-                  </template>
-                  <b-dropdown-item>
-                    <feather-icon icon="TrashIcon" @click="remove(data.index)" />
-                    <span class="align-middle ml-50">Delete</span>
-                  </b-dropdown-item>
-                </b-dropdown> -->
               </div>
+            </template>
+
+            <!-- Debit -->
+            <template #foot(namaAkun)>
+              <span>Total</span>
+            </template>
+            <template #foot(debit)>
+              <span class="text-success">{{ formatRupiah(totalDebit) }}</span>
+            </template>
+            <template #foot(kredit)>
+              <span class="text-danger">{{ formatRupiah(totalKredit) }}</span>
+            </template>
+            <template #foot(keterangan)>
+              <span class="text-primary">{{ balance }}</span>
             </template>
           </b-table>
           <div class="mx-2 mb-2">
@@ -150,28 +159,12 @@
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import {
-  BLink,
-  BCard,
-  BFormGroup,
-  BRow,
-  BCol,
-  // BDropdown,
-  // BDropdownItem,
-  BFormInput,
-  BTable,
-  BPagination,
-  BButton,
-  BInputGroupAppend,
-  BInputGroup,
-} from 'bootstrap-vue'
+import { BLink, BCard, BFormGroup, BRow, BCol, BFormInput, BTable, BPagination, BButton, BInputGroupAppend, BInputGroup } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
-    // BDropdown,
-    // BDropdownItem,
     BLink,
     vSelect,
     BButton,
@@ -214,6 +207,31 @@ export default {
         of: this.totalJurnal,
       }
     },
+    totalDebit() {
+      let saldoDebit = 0
+      this.dataJurnal.forEach(x => {
+        if (x.jenis === 'DEBIT') {
+          saldoDebit += parseFloat(x.nominal)
+        }
+      })
+      console.log(saldoDebit)
+      return saldoDebit
+    },
+    totalKredit() {
+      let saldoKredit = 0
+      this.dataJurnal.forEach(x => {
+        if (x.jenis === 'KREDIT') {
+          saldoKredit += parseFloat(x.nominal)
+        }
+      })
+      return saldoKredit
+    },
+    balance() {
+      if (this.totalKredit === this.totalDebit) {
+        return 'BALANCE'
+      }
+      return 'TIDAK BALANCE'
+    },
   },
   watch: {
     /* eslint-disable */
@@ -230,7 +248,10 @@ export default {
     /* eslint-disable */
   },
   mounted() {
-    this.loadJurnal(this.moment(Date.now()), this.moment(Date.now()))
+    const d = new Date()
+    const m = d.getMonth()
+    const y = d.getFullYear()
+    this.loadJurnal(this.$moment(new Date(y, m, 1)), this.moment(Date.now()))
   },
   methods: {
     clear() {
@@ -248,8 +269,11 @@ export default {
       return this.$moment(value).format('DD MMMM YYYY')
     },
     loadJurnal(dateawal = null, dateakhir = null) {
+      const user = JSON.parse(localStorage.getItem('userData'))
+      const cabang = user.cabang.id
       store
         .dispatch('app-keuangan/fetchListJurnal', {
+          cabang,
           dateawal,
           dateakhir,
         })

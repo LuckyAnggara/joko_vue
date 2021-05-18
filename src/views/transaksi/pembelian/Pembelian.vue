@@ -26,7 +26,7 @@
         <review-order :data-order="dataOrder" />
       </tab-content>
     </form-wizard>
-    <b-modal
+    <!-- <b-modal
       id="modal-prevent-closing"
       ref="my-modal"
       title="Pembayaran"
@@ -55,14 +55,13 @@
           </b-row>
         </section>
       </b-card-body>
-    </b-modal>
+    </b-modal> -->
   </div>
 </template>
 
 <script>
 import { ref } from '@vue/composition-api'
 import { FormWizard, TabContent } from 'vue-form-wizard'
-import { BCol, BRow, BModal, BFormInput, BFormGroup, BCardBody } from 'bootstrap-vue'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import router from '@/router'
 import store from '@/store'
@@ -73,12 +72,6 @@ import Keranjang from './component/Keranjang.vue'
 
 export default {
   components: {
-    BCol,
-    BRow,
-    BCardBody,
-    BFormInput,
-    BFormGroup,
-    BModal,
     FormWizard,
     DetailSupplier,
     ReviewOrder,
@@ -90,14 +83,6 @@ export default {
       jumlahPembayaran: 0,
       startIndex: 0,
     }
-  },
-  computed: {
-    kembalian() {
-      if (this.jumlahPembayaran === 0) {
-        return this.formatRupiah(0)
-      }
-      return this.formatRupiah(this.jumlahPembayaran - this.dataOrder.invoice.grandTotal)
-    },
   },
   mounted() {
     this.load()
@@ -173,11 +158,7 @@ export default {
       return false
     },
     formSubmitted() {
-      if (this.dataOrder.pembayaran.jenisPembayaran.value === '0' && this.dataOrder.pembayaran.statusPembayaran.value !== '2') {
-        this.showModal()
-      } else {
-        this.store()
-      }
+      this.store()
     },
     resetModal() {
       this.jumlahPembayaran = 0
@@ -192,14 +173,6 @@ export default {
         const loader = this.$loading.show({
           // Optional parameters
           container: this.$refs.formContainer,
-          canCancel: true,
-          color: '#000000',
-          loader: 'spinner',
-          width: 64,
-          height: 64,
-          backgroundColor: '#ffffff',
-          opacity: 0.5,
-          zIndex: 999,
         })
         store
           .dispatch('app-transaksi-pembelian/addTransaksi', this.dataOrder)
@@ -259,6 +232,7 @@ export default {
         statusPembayaran: { title: 'Lunas', value: '0' },
       },
       orders: [],
+      user: JSON.parse(localStorage.getItem('userData')),
     })
     return {
       dataOrder,

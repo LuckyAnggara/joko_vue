@@ -1,7 +1,7 @@
 <template>
   <b-card no-body class="card-statistics">
     <b-card-header>
-      <b-card-title>Statistik Penjualan</b-card-title>
+      <b-card-title>{{ title ? title : 'Statistik Penjualan' }}</b-card-title>
     </b-card-header>
     <b-card-body class="statistics-body">
       <b-row>
@@ -89,6 +89,9 @@ export default {
     dataTransaksi: {
       type: Array,
       required: true,
+    },
+    title: {
+      type: String,
     },
   },
   data() {

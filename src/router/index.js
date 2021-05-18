@@ -49,7 +49,7 @@ router.beforeEach((to, _, next) => {
 
   if (!canNavigate(to)) {
     // Redirect to login if not logged in
-    if (!isLoggedIn) return next({ name: 'auth-login-new' })
+    if (!isLoggedIn) return next({ name: 'auth-login' })
     // If logged in => not authorized
     return next({ name: 'master-barang' })
   }

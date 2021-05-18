@@ -18,14 +18,18 @@
         <!-- Search -->
         <b-col cols="12" md="6">
           <div class="d-flex align-items-center justify-content-end">
-            <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Transaksi , Nama Pelanggan)" />
-            <v-select v-model="filterQuery" :options="filterOptions" class="invoice-filter-select  mr-1" placeholder="Status Pembayaran">
-              <template #selected-option="{ label }">
-                <span class="text-truncate overflow-hidden">
-                  {{ label }}
-                </span>
-              </template>
-            </v-select>
+            <b-col cols="12" md="9">
+              <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Transaksi , Nama Pelanggan)" />
+            </b-col>
+            <b-col cols="12" md="3">
+              <v-select v-model="filterQuery" :options="filterOptions" :clearable="false" placeholder="Status Pembayaran">
+                <template #selected-option="{ label }">
+                  <span class="text-truncate overflow-hidden">
+                    {{ label }}
+                  </span>
+                </template>
+              </v-select>
+            </b-col>
           </div>
         </b-col>
       </b-row>
@@ -34,7 +38,6 @@
     <b-table
       id="my-table"
       ref="refTable"
-      responsive
       primary-key="id"
       :fields="tableColumns"
       :items="dataTransaksi"
@@ -88,7 +91,7 @@
             </b-badge>
           </template>
           <template v-else>
-            <span :id="`transaksi-row-${data.item.id}-tooltip-saldo`">-{{ formatRupiah(data.item.pembayaran.sisaPembayaran) }}</span>
+            <span class="text-danger" :id="`transaksi-row-${data.item.id}-tooltip-saldo`">-{{ formatRupiah(data.item.pembayaran.sisaPembayaran) }}</span>
             <b-tooltip :target="`transaksi-row-${data.item.id}-tooltip-saldo`">
               <span v-if="data.item.pembayaran.statusPembayaran.value === 1">
                 Kredit
@@ -105,6 +108,20 @@
             </b-tooltip>
           </template>
         </div>
+      </template>
+
+      <!-- Column: Maker -->
+      <template #cell(sales)="data">
+        <span>
+          {{ data.item.sales == null ? '' : data.item.sales.nama_lengkap }}
+        </span>
+      </template>
+
+      <!-- Column: Maker -->
+      <template #cell(maker)="data">
+        <span>
+          {{ data.item.user.nama_lengkap }}
+        </span>
       </template>
 
       <!-- Column: Actions -->
@@ -124,23 +141,32 @@
           />
           <b-tooltip title="Preview Invoice" :target="`invoice-row-${data.item.id}-preview-icon`" />
 
-          <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
+          <b-dropdown variant="link" toggle-class="p-0" no-caret>
             <template #button-content>
               <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
             </template>
             <b-dropdown-item>
-              <feather-icon icon="DownloadIcon" />
-              <span class="align-middle ml-50">Download</span>
+              <feather-icon icon="CastIcon" />
+              <span class="align-middle ml-50">Print Invoice</span>
             </b-dropdown-item>
-            <b-dropdown-item :to="{ name: 'transaksi-penjualan-tambah', params: { id: data.item.id } }">
+            <b-dropdown-item>
+              <feather-icon icon="ActivityIcon" />
+              <span class="align-middle ml-50">Timeline</span>
+            </b-dropdown-item>
+            <b-dropdown-item :to="{ name: 'akuntansi-jurnal-detail', params: { id: data.item.nomorJurnal } }">
+              <feather-icon icon="BookIcon" />
+              <span class="align-middle ml-50">Jurnal</span>
+            </b-dropdown-item>
+            <hr />
+            <b-dropdown-item :to="{ name: 'transaksi-penjualan-tambah', params: { id: data.item.id } }" v-if="!typeRetur">
               <feather-icon icon="EditIcon" />
               <span class="align-middle ml-50">Edit</span>
             </b-dropdown-item>
-            <b-dropdown-item>
+            <b-dropdown-item @click="retur(data)" v-if="!typeRetur">
               <feather-icon icon="CornerUpLeftIcon" />
               <span class="align-middle ml-50">Retur</span>
             </b-dropdown-item>
-            <b-dropdown-item>
+            <b-dropdown-item @click="destroy(data)">
               <feather-icon icon="TrashIcon" />
               <span class="align-middle ml-50">Delete</span>
             </b-dropdown-item>
@@ -204,7 +230,7 @@ export default {
   },
   data() {
     return {
-      filterQuery: '',
+      filterQuery: 'Semua',
       searchQuery: '',
       refTable: null,
     }
@@ -229,6 +255,9 @@ export default {
       type: Array,
       required: true,
     },
+    typeRetur: {
+      type: Boolean,
+    },
   },
   computed: {
     dataMeta() {
@@ -241,6 +270,12 @@ export default {
     },
   },
   methods: {
+    destroy(data) {
+      this.$emit('destroy', data)
+    },
+    retur(data) {
+      this.$emit('retur', data)
+    },
     download() {
       console.info('click')
       const doc = jsPDF()
@@ -255,7 +290,7 @@ export default {
     },
   },
   setup() {
-    const filterOptions = ['Lunas', 'COD', 'Kredit']
+    const filterOptions = ['Semua', 'Lunas', 'COD', 'Kredit']
     const tableColumns = [
       { key: 'id', label: '#', sortable: true },
       { key: 'nomorTransaksi', sortable: true },
@@ -263,6 +298,8 @@ export default {
       { key: 'namaPelanggan', sortable: true },
       { key: 'total', sortable: true },
       { key: 'saldo', sortable: true },
+      { key: 'sales', sortable: true },
+      { key: 'maker', sortable: true },
       { key: 'actions' },
     ]
 
@@ -292,18 +329,6 @@ export default {
 <style lang="scss" scoped>
 .per-page-selector {
   width: 90px;
-}
-
-.invoice-filter-select {
-  min-width: 190px;
-
-  ::v-deep .vs__selected-options {
-    flex-wrap: nowrap;
-  }
-
-  ::v-deep .vs__selected {
-    width: 100px;
-  }
 }
 </style>
 

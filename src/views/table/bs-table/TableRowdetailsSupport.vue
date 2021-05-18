@@ -1,23 +1,10 @@
 <template>
-  <b-card-code
-    title="Row details support"
-    no-body
-  >
+  <b-card-code title="Row details support" no-body>
     <div>
-      <b-table
-        :items="items"
-        :fields="fields"
-        striped
-        responsive
-        class="mb-0"
-      >
+      <b-table :items="items" :fields="fields" striped responsive class="mb-0">
         <template #cell(show_details)="row">
-
           <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-          <b-form-checkbox
-            v-model="row.detailsShowing"
-            @change="row.toggleDetails"
-          >
+          <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
             {{ row.detailsShowing ? 'Hide' : 'Show' }}
           </b-form-checkbox>
         </template>
@@ -26,49 +13,15 @@
         <template #row-details="row">
           <b-card>
             <b-row class="mb-2">
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Full Name : </strong>{{ row.item.full_name }}
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Post : </strong>{{ row.item.post }}
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Email : </strong>{{ row.item.email }}
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>City : </strong>{{ row.item.city }}
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Salary : </strong>{{ row.item.salary }}
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Age : </strong>{{ row.item.age }}
-              </b-col>
+              <b-col md="4" class="mb-1"> <strong>Full Name : </strong>{{ row.item.full_name }} </b-col>
+              <b-col md="4" class="mb-1"> <strong>Post : </strong>{{ row.item.post }} </b-col>
+              <b-col md="4" class="mb-1"> <strong>Email : </strong>{{ row.item.email }} </b-col>
+              <b-col md="4" class="mb-1"> <strong>City : </strong>{{ row.item.city }} </b-col>
+              <b-col md="4" class="mb-1"> <strong>Salary : </strong>{{ row.item.salary }} </b-col>
+              <b-col md="4" class="mb-1"> <strong>Age : </strong>{{ row.item.age }} </b-col>
             </b-row>
 
-            <b-button
-              size="sm"
-              variant="outline-secondary"
-              @click="row.toggleDetails"
-            >
+            <b-button size="sm" variant="outline-secondary" @click="row.toggleDetails">
               Hide Details
             </b-button>
           </b-card>
@@ -94,9 +47,7 @@
 
 <script>
 import BCardCode from '@core/components/b-card-code/BCardCode.vue'
-import {
-  BTable, BFormCheckbox, BButton, BCard, BRow, BCol, BAvatar, BBadge,
-} from 'bootstrap-vue'
+import { BTable, BFormCheckbox, BButton, BCard, BRow, BCol, BAvatar, BBadge } from 'bootstrap-vue'
 import { codeRowDetailsSupport } from './code'
 
 export default {
@@ -113,7 +64,20 @@ export default {
   },
   data() {
     return {
-      fields: ['show_details', 'id', { key: 'avatar', label: 'Avatar' }, 'full_name', 'post', 'email', 'city', 'start_date', 'salary', 'age', 'experience', { key: 'status', label: 'Status' }],
+      fields: [
+        'show_details',
+        'id',
+        { key: 'avatar', label: 'Avatar' },
+        'full_name',
+        'post',
+        'email',
+        'city',
+        'start_date',
+        'salary',
+        'age',
+        'experience',
+        { key: 'status', label: 'Status' },
+      ],
       /* eslint-disable global-require */
       items: [
         {
@@ -248,12 +212,22 @@ export default {
         },
       ],
       /* eslint-disable global-require */
-      status: [{
-        1: 'Current', 2: 'Professional', 3: 'Rejected', 4: 'Resigned', 5: 'Applied',
-      },
-      {
-        1: 'light-primary', 2: 'light-success', 3: 'light-danger', 4: 'light-warning', 5: 'light-info',
-      }],
+      status: [
+        {
+          1: 'Current',
+          2: 'Professional',
+          3: 'Rejected',
+          4: 'Resigned',
+          5: 'Applied',
+        },
+        {
+          1: 'light-primary',
+          2: 'light-success',
+          3: 'light-danger',
+          4: 'light-warning',
+          5: 'light-info',
+        },
+      ],
       codeRowDetailsSupport,
     }
   },

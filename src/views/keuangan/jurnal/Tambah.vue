@@ -212,6 +212,7 @@ export default {
           jenis: this.jenis.value,
           namaJenis: this.jenis.title,
           saldo: this.saldo,
+          catatan: '',
         }
         this.dataJurnal.push(data)
         this.clear()
@@ -269,6 +270,7 @@ export default {
       return true
     },
     proses() {
+      const user = JSON.parse(localStorage.getItem('userData'))
       if (this.cekValidasi()) {
         const loader = this.$loading.show({
           container: this.$refs.formContainer,
@@ -279,6 +281,8 @@ export default {
           catatan: this.catatan,
           tanggalTransaksi: this.$moment(this.tanggalTransaksi.value),
           jurnal: this.dataJurnal,
+          user_id: user.id,
+          cabang_id: user.cabang.id,
         }
         store.dispatch('app-keuangan/storeJurnal', output).then(res => {
           loader.hide()

@@ -192,7 +192,6 @@ export default {
         .dispatch('app-transaksi-penjualan/addTransaksi', this.dataOrder)
         .then(res => {
           loader.hide()
-
           if (res.status === 200) {
             this.dataOrder.nomorTransaksi = res.data.nomor_transaksi
             this.dataOrder.tanggalTransaksi = res.data.created_at
@@ -250,6 +249,7 @@ export default {
         statusPembayaran: { title: 'Lunas', value: '0' },
       },
       orders: [],
+      user: JSON.parse(localStorage.getItem('userData')),
     })
     return {
       dataOrder,

@@ -2,7 +2,7 @@
   <section>
     <template>
       <b-card>
-        <kartu-persediaan :data-persediaan="dataPersediaan" />
+        <kartu-persediaan :data-persediaan="dataPersediaan" :id="id" />
       </b-card>
     </template>
   </section>
@@ -28,6 +28,9 @@ export default {
     dataBarang() {
       if (!this.data) return null
       return this.data
+    },
+    id() {
+      return router.currentRoute.params.id
     },
   },
   created() {

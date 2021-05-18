@@ -71,7 +71,7 @@ export default [
     },
   },
   {
-    path: '/akuntansi/ledger/detail',
+    path: '/akuntansi/ledger/detail/:id',
     name: 'akuntansi-ledger-detail',
     component: () => import('@/views/keuangan/ledger/Daftar.vue'),
     meta: {

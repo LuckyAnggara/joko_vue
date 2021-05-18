@@ -1,6 +1,6 @@
 <template>
   <section>
-    <b-card-body :title="header.nama">
+    <b-card :title="header.nama">
       <div class="d-flex mb-2">
         <span> Saldo : {{ formatRupiah(header.saldo) }} </span>
       </div>
@@ -8,7 +8,7 @@
         ref="refTable"
         responsive
         primary-key="id"
-        :fields="tableColumns"
+        :fields="subHeaderColumns"
         :items="dataTable"
         show-empty
         empty-text="Tidak ada data"
@@ -19,6 +19,13 @@
           <span>
             {{ data.index + 1 }}
           </span>
+        </template>
+
+        <template #cell(sub_akun)="row">
+          <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+          <b-form-checkbox v-if="row.item.komponen.length !== 0" v-model="row.detailsShowing" @change="row.toggleDetails">
+            {{ row.detailsShowing ? 'Hide' : 'Show' }}
+          </b-form-checkbox>
         </template>
 
         <!-- Column: Kode Akun -->
@@ -41,21 +48,29 @@
             {{ formatRupiah(data.item.saldo) }}
           </span>
         </template>
+
+        <!-- full detail on click -->
+        <template #row-details="data">
+          <sub-table-component :komponen="data.item.komponen" :namaSubHeader="data.item.nama" />
+        </template>
       </b-table>
-    </b-card-body>
+    </b-card>
   </section>
 </template>
 
 <script>
-import { BCardBody, BTable, BLink } from 'bootstrap-vue'
+import { BCard, BFormCheckbox, BTable, BLink } from 'bootstrap-vue'
+
+import SubTableComponent from './SubTableComponent.vue'
 
 export default {
   components: {
-    BCardBody,
+    SubTableComponent,
+    BCard,
+    BFormCheckbox,
     BTable,
     BLink,
   },
-
   props: {
     dataTable: {
       type: Array,
@@ -66,7 +81,6 @@ export default {
       required: true,
     },
   },
-
   methods: {
     formatRupiah(value) {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
@@ -80,16 +94,17 @@ export default {
   },
 
   setup() {
-    const tableColumns = [
+    const subHeaderColumns = [
       { key: 'no', sortable: true },
       { key: 'kode_akun', sortable: true },
       { label: 'nama akun', key: 'nama', sortable: true },
       { label: 'sifat', key: 'saldo_normal', sortable: true },
       { label: 'saldo', key: 'saldo', sortable: true },
+      { key: 'sub_akun' },
     ]
 
     return {
-      tableColumns,
+      subHeaderColumns,
     }
   },
 }

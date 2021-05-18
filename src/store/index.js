@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 // Modules
 import ecommerceStoreModule from '@/views/apps/e-commerce/eCommerceStoreModule'
+import userStoreModule from '@/views/auth/userStoreModule'
 import keuanganStoreModule from '@/views/keuangan/keuanganStoreModule'
 import barangStoreModule from '@/views/master/barang/barangStoreModule'
 import kontakStoreModule from '@/views/master/kontak/kontakStoreModule'
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     app,
     appConfig,
     verticalMenu,
+    'app-user': userStoreModule,
     'app-keuangan': keuanganStoreModule,
     'app-ecommerce': ecommerceStoreModule,
     'app-barang': barangStoreModule,

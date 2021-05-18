@@ -112,14 +112,18 @@ export default {
     },
     loadData() {
       const { id } = router.currentRoute.params
+      const user = JSON.parse(localStorage.getItem('userData'))
+      const cabang = user.cabang.id
+      const kodeBarang = this.dataBarang.kode_barang
+
       store.dispatch('app-persediaan/fetchKartuPersediaan', { id }).then(res => {
         store.commit('app-persediaan/SET_KARTU_PERSEDIAAN', res.data)
         this.dataPersediaan = store.getters['app-persediaan/getKartuPersediaan']
       })
-      store.dispatch('app-transaksi-penjualan/fetchListTransaksiByBarang', this.dataBarang.kode_barang).then(res => {
+      store.dispatch('app-transaksi-penjualan/fetchListTransaksiByBarang', { kodeBarang, cabang }).then(res => {
         this.transaksiPenjualan = res.data
       })
-      store.dispatch('app-transaksi-pembelian/fetchListTransaksiByBarang', this.dataBarang.kode_barang).then(res => {
+      store.dispatch('app-transaksi-pembelian/fetchListTransaksiByBarang', { kodeBarang, cabang }).then(res => {
         this.transaksiPembelian = res.data
       })
     },

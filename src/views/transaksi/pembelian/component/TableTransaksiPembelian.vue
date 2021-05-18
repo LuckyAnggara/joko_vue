@@ -30,7 +30,6 @@
 
     <b-table
       ref="refTable"
-      responsive
       primary-key="id"
       :fields="tableColumns"
       :items="dataTransaksi"
@@ -114,24 +113,28 @@
             "
           />
           <b-tooltip title="Preview Invoice" :target="`invoice-row-${data.item.id}-preview-icon`" />
-
-          <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
+          <b-dropdown variant="link" toggle-class="p-0" no-caret>
             <template #button-content>
               <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
             </template>
             <b-dropdown-item>
-              <feather-icon icon="DownloadIcon" />
-              <span class="align-middle ml-50">Download</span>
-            </b-dropdown-item>
-            <b-dropdown-item :to="{ name: 'transaksi-penjualan-tambah', params: { id: data.item.id } }">
-              <feather-icon icon="EditIcon" />
-              <span class="align-middle ml-50">Edit</span>
+              <feather-icon icon="CastIcon" />
+              <span class="align-middle ml-50">Print Invoice</span>
             </b-dropdown-item>
             <b-dropdown-item>
+              <feather-icon icon="ActivityIcon" />
+              <span class="align-middle ml-50">Timeline</span>
+            </b-dropdown-item>
+            <b-dropdown-item :to="{ name: 'akuntansi-jurnal-detail', params: { id: data.item.nomorJurnal } }">
+              <feather-icon icon="BookIcon" />
+              <span class="align-middle ml-50">Jurnal</span>
+            </b-dropdown-item>
+            <hr />
+            <b-dropdown-item @click="retur(data)" v-if="!typeRetur">
               <feather-icon icon="CornerUpLeftIcon" />
               <span class="align-middle ml-50">Retur</span>
             </b-dropdown-item>
-            <b-dropdown-item>
+            <b-dropdown-item @click="destroy(data)">
               <feather-icon icon="TrashIcon" />
               <span class="align-middle ml-50">Delete</span>
             </b-dropdown-item>
@@ -217,6 +220,9 @@ export default {
       type: Array,
       required: true,
     },
+    typeRetur: {
+      type: Boolean,
+    },
   },
   computed: {
     dataMeta() {
@@ -229,6 +235,12 @@ export default {
     },
   },
   methods: {
+    destroy(data) {
+      this.$emit('destroy', data)
+    },
+    retur(data) {
+      this.$emit('retur', data)
+    },
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },

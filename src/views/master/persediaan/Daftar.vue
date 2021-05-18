@@ -1,6 +1,6 @@
 <template>
   <b-row>
-    <b-col cols="12">
+    <b-col cols="12" md="9" xl="9">
       <b-card>
         <div class="mb-2">
           <!-- Table Top -->
@@ -30,8 +30,6 @@
           :fields="tableColumns"
           :current-page="currentPage"
           :per-page="perPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="isSortDirDesc"
         >
           <!-- Column: Nomor -->
           <template #cell(no)="data">
@@ -72,15 +70,6 @@
                   })
                 "
               />
-              <b-dropdown variant="link" toggle-class="p-0" no-caret :right="$store.state.appConfig.isRTL">
-                <template #button-content>
-                  <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-                </template>
-                <b-dropdown-item>
-                  <feather-icon icon="TrashIcon" @click="remove(data.index)" />
-                  <span class="align-middle ml-50">Delete</span>
-                </b-dropdown-item>
-              </b-dropdown>
             </div>
           </template>
         </b-table>
@@ -112,19 +101,43 @@
         </div>
       </b-card>
     </b-col>
+
+    <b-col cols="12" md="3" xl="3">
+      <b-card>
+        <!-- Button: Download -->
+        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block>
+          Download Data
+        </b-button>
+
+        <!-- Button: Print -->
+        <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block>
+          Print Data
+        </b-button>
+        <hr />
+
+        <!-- Button: Penyesuaian Stok -->
+        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="outline-secondary" class="mb-75" block :to="{ name: 'master-persediaan-penyesuaian' }">
+          Penyesuaian Stok
+        </b-button>
+
+        <!-- Button: Transafer Gudang -->
+        <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="outline-secondary" class="mb-75" block>
+          Transfer Gudang
+        </b-button>
+      </b-card>
+    </b-col>
   </b-row>
 </template>
 
 <script>
 import { ref } from '@vue/composition-api'
 import {
+  BButton,
   BRow,
   BCol,
   BTable,
   BPagination,
   BFormInput,
-  BDropdown,
-  BDropdownItem,
   // BButton,
   BCard,
 } from 'bootstrap-vue'
@@ -136,11 +149,10 @@ import vSelect from 'vue-select'
 
 export default {
   components: {
+    BButton,
     BRow,
     BCol,
     BTable,
-    BDropdown,
-    BDropdownItem,
     BPagination,
     BFormInput,
     // BButton,
@@ -182,12 +194,16 @@ export default {
   mounted() {
     this.loadData()
   },
+
   methods: {
     loadData() {
       store.dispatch('app-persediaan/fetchListPersediaan').then(res => {
         store.commit('app-persediaan/SET_LIST_PERSEDIAAN', res.data)
 
-        this.dataPersediaan = store.getters['app-persediaan/getListPersediaan'].filter(x => x.persediaan.saldo !== 0)
+        this.dataPersediaan = store.getters['app-persediaan/getListPersediaan'].filter(
+          x => x.persediaan.saldo !== 0 || x.persediaan.saldo_masuk !== 0 || x.persediaan.saldo_keluar !== 0,
+        )
+        this.totalData = this.dataPersediaan.length
       })
     },
   },

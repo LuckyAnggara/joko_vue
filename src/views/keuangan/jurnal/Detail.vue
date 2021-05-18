@@ -1,30 +1,5 @@
 <template>
   <section>
-    <!-- <b-row class="match-height">
-      <b-col lg="6" cols="6">
-        <b-card>
-          <h5>Form Jurnal</h5>
-          <hr />
-          <b-form-group label="Jenis" label-for="jenis" label-cols-md="4">
-            <v-select v-model="jenis" placeholder="Jenis" label="title" :clearable="true" :options="debitKredit" />
-          </b-form-group>
-          <b-form-group label="Nama Akun" label-for="nama-akun" label-cols-md="4">
-            <v-select v-model="akun" placeholder="Nama Akun" label="nama" :clearable="true" :options="dataAkun">
-              <template v-slot:option="option">
-                {{ option.kode_akun }} - <b>{{ option.nama }}</b>
-              </template>
-            </v-select>
-          </b-form-group>
-          <b-form-group label="Saldo" label-for="saldo-debit" label-cols-md="4">
-            <b-form-input placeholder="Saldo" v-model="saldo" type="number" />
-          </b-form-group>
-          <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" type="button" @click="submit" variant="primary" class="mr-1">
-            Submit
-          </b-button>
-        </b-card>
-      </b-col>
-      <b-col lg="6" cols="6"> </b-col>
-    </b-row> -->
     <b-row class="match-height">
       <b-col lg="12" cols="12">
         <b-card>
@@ -105,31 +80,15 @@ import router from '@/router'
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import {
-  BCard,
-  // BButton,
-  // BFormInput,
-  // BFormTextarea,
-  BLink,
-  BFormGroup,
-  BRow,
-  BCol,
-  BTable,
-} from 'bootstrap-vue'
-// import vSelect from 'vue-select'
+import { BCard, BLink, BFormGroup, BRow, BCol, BTable } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
     flatPickr,
-    // BFormTextarea,
-    // BButton,
     BTable,
     BLink,
-
-    // vSelect,
-    // BFormInput,
     BCard,
     BRow,
     BCol,
@@ -164,22 +123,23 @@ export default {
       return id
     },
     totalDebit() {
-      let saldo = 0
-      this.dataJurnal.forEach(x => {
-        if (x.jenis === 'KREDIT') {
-          saldo += parseFloat(x.nominal)
-        }
-      })
-      return saldo
-    },
-    totalKredit() {
-      let saldo = 0
+      let saldoDebit = 0
       this.dataJurnal.forEach(x => {
         if (x.jenis === 'DEBIT') {
-          saldo += parseFloat(x.nominal)
+          saldoDebit += parseFloat(x.nominal)
         }
       })
-      return saldo
+      console.log(saldoDebit)
+      return saldoDebit
+    },
+    totalKredit() {
+      let saldoKredit = 0
+      this.dataJurnal.forEach(x => {
+        if (x.jenis === 'KREDIT') {
+          saldoKredit += parseFloat(x.nominal)
+        }
+      })
+      return saldoKredit
     },
     balance() {
       if (this.totalKredit === this.totalDebit) {
@@ -230,10 +190,20 @@ export default {
       this.total()
     },
     loadAkun() {
-      const { id } = router.currentRoute.params
+      const nomorJurnal = router.currentRoute.params.id
       const data = store.getters['app-keuangan/getListJurnal']
-      this.dataJurnal = data.filter(x => x.nomor_jurnal === id)
-      // console.info(store.getters['app-keuangan/getListJurnal'])
+      if (data.length > 0) {
+        this.dataJurnal = data.filter(x => x.nomor_jurnal === nomorJurnal)
+      } else {
+        store
+          .dispatch(
+            'app-keuangan/fetchListNomorJurnal',
+            nomorJurnal, // Nomor Jurnal bukan ID ya. ini mah cmn tulisannya aja
+          )
+          .then(res => {
+            this.dataJurnal = res.data
+          })
+      }
     },
   },
   setup() {

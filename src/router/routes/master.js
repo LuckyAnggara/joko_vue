@@ -111,9 +111,112 @@ export default [
     },
   },
   {
+    path: '/master/persediaan/penyesuaian',
+    name: 'master-persediaan-tambah',
+    component: () => import('@/views/master/persediaan/penyesuaian/Penyesuaian.vue'),
+    meta: {
+      pageTitle: 'Penyesuaian',
+      breadcrumb: [
+        {
+          text: 'Persediaan',
+          to: '/master/persediaan/',
+        },
+        {
+          text: 'Penyesuaian',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/master/persediaan/penyesuaian',
+    name: 'master-persediaan-penyesuaian',
+    component: () => import('@/views/master/persediaan/penyesuaian/Penyesuaian.vue'),
+    meta: {
+      pageTitle: 'Penyesuaian',
+      breadcrumb: [
+        {
+          text: 'Persediaan',
+          to: '/master/persediaan/',
+        },
+        {
+          text: 'Penyesuaian',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/master/persediaan/penyesuaian/perhitungan-stock',
+    name: 'master-persediaan-penyesuaian-perhitungan-stock',
+    component: () => import('@/views/master/persediaan/penyesuaian/PerhitunganStock.vue'),
+    meta: {
+      pageTitle: 'Perhitungan Stock',
+      breadcrumb: [
+        {
+          text: 'Persediaan',
+          to: '/master/persediaan/',
+        },
+        {
+          text: 'Penyesuaian',
+          to: '/master/persediaan/penyesuaian',
+        },
+        {
+          text: 'Perhitungan Stock',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/master/persediaan/penyesuaian/masuk-keluar',
+    name: 'master-persediaan-penyesuaian-masuk-keluar',
+    component: () => import('@/views/master/persediaan/penyesuaian/MasukKeluar.vue'),
+    meta: {
+      pageTitle: 'Stok Masuk / Keluar',
+      breadcrumb: [
+        {
+          text: 'Persediaan',
+          to: '/master/persediaan/',
+        },
+        {
+          text: 'Penyesuaian',
+          to: '/master/persediaan/penyesuaian',
+        },
+        {
+          text: 'Stock Masuk / Keluar',
+          active: true,
+        },
+      ],
+    },
+  },
+
+  {
+    path: '/master/persediaan/penyesuaian/detail/:id',
+    name: 'master-persediaan-penyesuaian-detail',
+    component: () => import('@/views/master/persediaan/penyesuaian/DetailPenyesuaian.vue'),
+    meta: {
+      pageTitle: 'Detail',
+      breadcrumb: [
+        {
+          text: 'Persediaan',
+          to: '/master/persediaan/',
+        },
+        {
+          text: 'Penyesuaian',
+          to: '/master/persediaan/penyesuaian',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/master/persediaan/detail/:id',
     name: 'master-persediaan-detail',
-    component: () => import('@/views/master/persediaan/Detail.vue'),
+    component: () => import('@/views/master/persediaan/DetailKartuPersediaan.vue'),
     meta: {
       pageTitle: 'Daftar',
       breadcrumb: [

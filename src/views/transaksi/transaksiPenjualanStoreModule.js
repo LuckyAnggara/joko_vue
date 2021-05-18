@@ -9,6 +9,7 @@ export default {
     activeDataInvoice: '',
     activeOrder: '',
     listPenjualan: [],
+    listPenjualanRetur: [],
   },
   getters: {
     // PENJUALAN
@@ -22,6 +23,7 @@ export default {
     getDraftByID: state => nomor => state.draftPenjualan.find(x => x.nomor === nomor),
     // TRANSAKSI PENJUALAN
     getListTransaksiPenjualan: state => state.listPenjualan,
+    getListTransaksiPenjualanRetur: state => state.listPenjualanRetur,
     getTransaksiByBarang: state => kodeBarang => state.listPenjualan.filter(x => x.orders.kode_barang_id === kodeBarang),
   },
   mutations: {
@@ -42,10 +44,6 @@ export default {
       state.activePenjualan.orders = data
     },
 
-    // ADD_ORDER(state, id) {
-    //   // state.penjualan[id].orders.push(data)
-    // },
-
     // DATA DRAFT TRANSAKSI PENJUALAN
     ADD_DRAFT_PENJUALAN(state, data) {
       const exist = state.draftPenjualan.find(x => x.nomor === data.nomor)
@@ -56,13 +54,23 @@ export default {
     REMOVE_DRAFT_PENJUALAN(state, data) {
       state.draftPenjualan.splice(data, 1)
     },
-
     // DATA LIST TRANSAKSI PENJUALAN
     SET_LIST_TRANSAKSI_PENJUALAN(state, data) {
-      state.listPenjualan = data
+      state.listPenjualan = data.filter(x => x.retur === 'Tidak')
+      state.listPenjualanRetur = data.filter(x => x.retur === 'Iya')
     },
     SET_DATA_INVOICE_FROM_DAFTAR(state, data) {
       state.activeDataInvoice = state.listPenjualan.find(x => x.id === data)
+    },
+    REMOVE_DATA_PENJUALAN(state, data) {
+      const index = state.listPenjualan.findIndex(x => x.id === data)
+      state.listPenjualan.splice(index, 1)
+    },
+    RETUR_DATA_PENJUALAN(state, data) {
+      const index = state.listPenjualan.findIndex(x => x.id === data)
+      const dd = state.listPenjualan[index]
+      state.listPenjualan.splice(index, 1)
+      state.listPenjualanRetur.push(dd, 1)
     },
   },
   actions: {
@@ -74,20 +82,36 @@ export default {
           .catch(error => reject(error))
       })
     },
+    deleteTransaksi(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`${axios.defaults.baseURL}penjualan/delete/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    returTransaksi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}penjualan/retur`, data)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchListTransaksiPenjualan(ctx, params) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${axios.defaults.baseURL}penjualan/${params.dateawal}/${params.dateakhir}`)
+          .get(`${axios.defaults.baseURL}penjualan/cabang/${params.cabang}/awal/${params.dateawal}/akhir/${params.dateakhir}`)
           .then(response => {
             resolve(response)
           })
           .catch(error => reject(error))
       })
     },
-    fetchListTransaksiByBarang(ctx, kodeBarang) {
+    fetchListTransaksiByBarang(ctx, params) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${axios.defaults.baseURL}penjualan/detail/barang/${kodeBarang}`)
+          .get(`${axios.defaults.baseURL}penjualan/detail/barang/${params.kodeBarang}/cabang/${params.cabang}`)
           .then(response => {
             resolve(response)
           })

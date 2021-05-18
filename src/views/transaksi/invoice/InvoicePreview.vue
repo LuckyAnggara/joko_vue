@@ -16,7 +16,7 @@
 
     <b-row v-if="dataInvoice" class="invoice-preview">
       <!-- Col: Left (Invoice Container) -->
-      <b-col cols="12" xl="10" md="10">
+      <b-col cols="12" xl="9" md="9">
         <b-card no-body class="invoice-preview-card">
           <!-- Header -->
           <b-card-body class="invoice-padding pb-0">
@@ -178,7 +178,7 @@
                 <br />
                 <br />
                 <br />
-                <span class="font-weight-bold">Lucky Anggara</span>
+                <span class="font-weight-bold">{{ dataInvoice.user.nama_lengkap }}</span>
               </b-col>
 
               <!-- Col: Total -->
@@ -242,11 +242,11 @@
       </b-col>
 
       <!-- Right Col: Card -->
-      <b-col cols="12" md="2" xl="2" class="invoice-actions">
+      <b-col cols="12" md="3" xl="3" class="invoice-actions">
         <b-card>
           <!-- Button: Send Invoice -->
           <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" v-b-toggle.sidebar-send-invoice variant="primary" class="mb-75" block>
-            Send Invoice
+            Print Invoice
           </b-button>
 
           <!-- Button: DOwnload -->
@@ -256,7 +256,7 @@
 
           <!-- Button: Print -->
           <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block @click="printInvoice">
-            Print
+            Retur
           </b-button>
 
           <!-- Button: Edit -->
@@ -272,7 +272,7 @@
 
           <!-- Button: Add Payment -->
           <b-button v-b-toggle.sidebar-invoice-add-payment v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mb-75" block>
-            Add Payment
+            Tambah Pembayaran
           </b-button>
         </b-card>
       </b-col>

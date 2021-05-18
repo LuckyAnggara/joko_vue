@@ -29,31 +29,35 @@
           </b-form-group>
         </b-col>
         <b-col cols="12" class="mb-2">
-          <vue-good-table
-            :columns="columns"
-            :rows="this.dataOrder.orders"
-            :search-options="{
-              enabled: false,
-            }"
-            :pagination-options="{
-              enabled: false,
-            }"
-          >
-            <template slot="table-row" slot-scope="props">
-              <!-- Column: Action -->
-              <span v-if="props.column.field === 'action'">
-                <div>
-                  <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="danger" class="btn-icon" @click="del(props.index)">
-                    <feather-icon icon="TrashIcon" />
-                  </b-button>
-                </div>
-              </span>
-              <!-- Column: Common -->
-              <span v-else>
-                {{ props.formattedRow[props.column.field] }}
+          <b-table responsive primary-key="id" :fields="field" :items="this.dataOrder.orders" show-empty empty-text="Tidak ada data" class="position-relative">
+            <!-- Column: Id -->
+            <template #cell(id)="data">
+              <span>
+                {{ data.index + 1 }}
               </span>
             </template>
-          </vue-good-table>
+
+            <!-- Column: harga -->
+            <template #cell(harga)="data">
+              <span>
+                {{ formatRupiah(data.item.harga) }}
+              </span>
+            </template>
+
+            <!-- Column: Total -->
+            <template #cell(total)="data">
+              <span>
+                {{ formatRupiah(data.item.total) }}
+              </span>
+            </template>
+
+            <!-- Column: Actions -->
+            <template #cell(action)="data">
+              <div class="text-nowrap">
+                <feather-icon icon="TrashIcon" size="16" class="mx-1 text-danger" @click="del(data.index)" />
+              </div>
+            </template>
+          </b-table>
         </b-col>
         <b-col cols="12" md="6">
           <div class="checkout-options">
@@ -197,7 +201,6 @@ import {
   BRow,
   BFormSpinbutton,
   BCol,
-  BButton,
   BModal,
   BFormGroup,
   BForm,
@@ -205,9 +208,9 @@ import {
   BCardBody,
   BInputGroup,
   BFormInput,
+  BTable,
   // BInputGroupAppend,
 } from 'bootstrap-vue'
-import { VueGoodTable } from 'vue-good-table'
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 
@@ -220,12 +223,11 @@ export default {
     BForm,
     BRow,
     BCol,
-    BButton,
     vSelect,
-    VueGoodTable,
     BFormInput,
     BFormGroup,
     BModal,
+    BTable,
   },
   directives: {
     Ripple,
@@ -253,38 +255,6 @@ export default {
         nama: null,
         qty: null,
       },
-      columns: [
-        {
-          label: 'Kode',
-          field: 'kode_barang',
-        },
-        {
-          label: 'Nama Barang',
-          field: 'nama_barang',
-        },
-        {
-          label: 'Qty',
-          field: 'jumlah',
-        },
-        {
-          label: 'Harga Beli',
-          field: 'harga',
-          formatFn: this.formatRupiah,
-        },
-        {
-          label: 'Diskon',
-          field: 'diskon',
-        },
-        {
-          label: 'Total',
-          field: 'total',
-          formatFn: this.formatRupiah,
-        },
-        {
-          label: 'Action',
-          field: 'action',
-        },
-      ],
     }
   },
 
@@ -388,7 +358,7 @@ export default {
       this.dataOrder.invoice.total = parseFloat(this.dataOrder.invoice.total) - parseFloat(order.total)
       this.dataOrder.invoice.diskon = parseFloat(this.dataOrder.invoice.diskon) - parseFloat(order.diskon)
       const totalBeforeTax = parseFloat(this.dataOrder.invoice.total) - parseFloat(this.dataOrder.invoice.diskon)
-      this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * 10) / 100
+      this.dataOrder.invoice.pajak = (parseFloat(totalBeforeTax) * this.pajakpersen) / 100
       this.dataOrder.invoice.grandTotal = parseFloat(totalBeforeTax) + parseFloat(this.dataOrder.invoice.pajak) + parseFloat(this.dataOrder.invoice.ongkir)
     },
     showModal(id) {
@@ -416,11 +386,26 @@ export default {
       return this.$store.getters['app-barang/getListBarang']
     },
   },
+
+  setup() {
+    const field = [
+      { key: 'id', label: '#', sortable: true },
+      { key: 'kode_barang', sortable: true },
+      { key: 'nama_barang', sortable: true },
+      { key: 'jumlah', sortable: true },
+      { label: 'harga jual', key: 'harga', sortable: true },
+      { key: 'diskon', sortable: true },
+      { key: 'total', sortable: true },
+      { key: 'action' },
+    ]
+    return {
+      field,
+    }
+  },
 }
 </script>
 
 <style lang="scss">
-@import '@core/scss/vue/libs/vue-good-table.scss';
 @import '@core/scss/vue/libs/vue-select.scss';
 .add-new-data-header {
   padding: $options-padding-y $options-padding-x;
