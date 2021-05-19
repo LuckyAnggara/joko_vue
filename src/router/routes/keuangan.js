@@ -87,4 +87,12 @@ export default [
       ],
     },
   },
+  {
+    path: '/akuntansi/neraca/',
+    name: 'akuntansi-neraca',
+    component: () => import('@/views/keuangan/neraca/Detail.vue'),
+    meta: {
+      pageTitle: 'Neraca',
+    },
+  },
 ]

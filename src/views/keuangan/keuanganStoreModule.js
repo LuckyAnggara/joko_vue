@@ -6,11 +6,19 @@ export default {
     listJurnal: [],
     listAkun: [],
     dataLedger: [],
+    dataAssets: [],
+    dataLiabilities: [],
+    dataEquity: [],
+    totalAssets: 0,
   },
   getters: {
     getListAkun: state => state.listAkun,
     getListJurnal: state => state.listJurnal,
     getDataLedger: state => state.dataLedger,
+    getNeracaAssets: state => state.dataAssets,
+    getNeracaLiabilities: state => state.dataLiabilities,
+    getNeracaEquity: state => state.dataEquity,
+    getTotalAssets: state => state.totalAssets,
   },
   mutations: {
     SET_LIST_AKUN(state, data) {
@@ -25,8 +33,31 @@ export default {
     SET_DATA_LEDGER(state, data) {
       state.dataLedger = data
     },
+    // NERACA
+
+    SET_NERACA(state, data) {
+      state.dataAssets = data.assets.filter(x => x.saldo !== 0)
+      state.dataLiabilities = data.liabilities.filter(x => x.saldo !== 0)
+      state.dataEquity = data.equity.filter(x => x.saldo !== 0)
+
+      state.totalAssest = data.assets.forEach(x => {
+        let saldo = 0
+        saldo += x.saldo
+        return saldo
+      })
+    },
   },
   actions: {
+    fetchNeraca(ctx, tahun) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`http://127.0.0.1:8080/api/neraca/tahun/${tahun}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchListAkun(ctx, tahun) {
       return new Promise((resolve, reject) => {
         axios

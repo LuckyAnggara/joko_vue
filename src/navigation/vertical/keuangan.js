@@ -18,7 +18,7 @@ export default [
 
       {
         title: 'Neraca',
-        route: 'akuntansi-ledger-daftar',
+        route: 'akuntansi-neraca',
       },
     ],
   },
