@@ -12,9 +12,7 @@
           </b-col>
         </b-card>
       </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Assets`" :dataItem="dataAssets" /> </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Liabilities`" :dataItem="dataLiabilities" /> </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Equity`" :dataItem="dataEquity" /> </b-col>
+      <b-col lg="6" cols="12"> <table-component :title="`Assets`" :dataItem="dataPendapatan" /> </b-col>
     </b-row>
   </section>
 </template>
@@ -52,28 +50,22 @@ export default {
     },
     loadData() {
       const loader = this.$loading.show({})
-      store.dispatch('app-keuangan/fetchNeraca', this.tahun).then(res => {
+      store.dispatch('app-keuangan/fetchLabaRugi', this.tahun).then(res => {
         loader.hide()
-        store.commit('app-keuangan/SET_NERACA', res.data)
-        this.dataAssets = store.getters['app-keuangan/getNeracaAssets']
-        this.dataLiabilities = store.getters['app-keuangan/getNeracaLiabilities']
-        this.dataEquity = store.getters['app-keuangan/getNeracaEquity']
-        this.totalAssets = store.getters['app-keuangan/getTotalAssets']
+        store.commit('app-keuangan/SET_LABA', res.data)
+        this.dataPendapatan = store.getters['app-keuangan/getNeracaEquity']
+        this.dataBeban = store.getters['app-keuangan/getTotalAssets']
       })
     },
   },
 
   setup() {
-    const dataAssets = ref([])
-    const totalAssets = ref([])
-    const dataLiabilities = ref([])
-    const dataEquity = ref([])
+    const dataPendapatan = ref([])
+    const dataBeban = ref([])
 
     return {
-      totalAssets,
-      dataAssets,
-      dataLiabilities,
-      dataEquity,
+      dataPendapatan,
+      dataBeban,
     }
   },
 }

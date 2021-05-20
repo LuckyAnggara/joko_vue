@@ -95,4 +95,12 @@ export default [
       pageTitle: 'Neraca',
     },
   },
+  {
+    path: '/akuntansi/laba-rugi/',
+    name: 'akuntansi-laba-rugi',
+    component: () => import('@/views/keuangan/laba-rugi/Detail.vue'),
+    meta: {
+      pageTitle: 'Laba Rugi',
+    },
+  },
 ]

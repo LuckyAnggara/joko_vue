@@ -15,10 +15,13 @@ export default [
         title: 'Jurnal',
         route: 'akuntansi-jurnal-daftar',
       },
-
       {
         title: 'Neraca',
         route: 'akuntansi-neraca',
+      },
+      {
+        title: 'Laba / Rugi',
+        route: 'akuntansi-laba-rugi',
       },
     ],
   },

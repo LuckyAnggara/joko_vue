@@ -9,7 +9,8 @@ export default {
     dataAssets: [],
     dataLiabilities: [],
     dataEquity: [],
-    totalAssets: 0,
+    dataPendapatan: [],
+    dataBeban: [],
   },
   getters: {
     getListAkun: state => state.listAkun,
@@ -19,6 +20,8 @@ export default {
     getNeracaLiabilities: state => state.dataLiabilities,
     getNeracaEquity: state => state.dataEquity,
     getTotalAssets: state => state.totalAssets,
+    getPendapatan: state => state.dataPendapatan,
+    getBeban: state => state.dataBeban,
   },
   mutations: {
     SET_LIST_AKUN(state, data) {
@@ -39,12 +42,11 @@ export default {
       state.dataAssets = data.assets.filter(x => x.saldo !== 0)
       state.dataLiabilities = data.liabilities.filter(x => x.saldo !== 0)
       state.dataEquity = data.equity.filter(x => x.saldo !== 0)
+    },
 
-      state.totalAssest = data.assets.forEach(x => {
-        let saldo = 0
-        saldo += x.saldo
-        return saldo
-      })
+    SET_LABA(state, data) {
+      state.dataPendapatan = data.pendapatan.filter(x => x.saldo !== 0)
+      state.dataBeban = data.beban.filter(x => x.saldo !== 0)
     },
   },
   actions: {
@@ -52,6 +54,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get(`http://127.0.0.1:8080/api/neraca/tahun/${tahun}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchLabaRugi(ctx, tahun) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`http://127.0.0.1:8080/api/labarugi/tahun/${tahun}`)
           .then(response => {
             resolve(response)
           })
