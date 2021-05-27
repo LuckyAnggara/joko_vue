@@ -3,20 +3,23 @@ import axios from '@axios'
 export default {
   namespaced: true,
   state: {
+    listJabatan: [],
+    listDivisi: [],
     listPegawai: [],
     listSales: [],
   },
   getters: {
     getListPegawai: state => state.listPegawai,
-    getListSales: state => state.listPegawai.filter(x => x.sales === 1),
+    getListSales: state => state.listSales,
   },
   mutations: {
     SET_LIST_PEGAWAI(state, data) {
       state.listPegawai = data
+      state.listSales = state.listPegawai.filter(x => x.jabatan_id === 5)
     },
   },
   actions: {
-    fetchPegawai(ctx, queryParams) {
+    fetchListPegawai(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}pegawai/`, {

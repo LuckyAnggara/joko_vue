@@ -73,6 +73,9 @@ export default {
     },
   },
   methods: {
+    destroy(data) {
+      this.$emit('destroy', data)
+    },
     formatRupiah(value) {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
@@ -86,6 +89,9 @@ export default {
       {
         key: 'tanggal',
       },
+      // {
+      //   key: 'nama',
+      // },
       {
         key: 'nominal',
       },

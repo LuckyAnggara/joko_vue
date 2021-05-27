@@ -4,17 +4,12 @@ import VueRouter from 'vue-router'
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection'
 import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
-// import apps from './routes/apps'
 import dashboard from './routes/dashboard'
 import keuangan from './routes/keuangan'
 import transaksi from './routes/transaksi'
 import auth from './routes/auth'
-// import uiElements from './routes/ui-elements/index'
-// import pages from './routes/pages'
-// import chartsMaps from './routes/charts-maps'
-// import formsTable from './routes/forms-tables'
-// import others from './routes/others'
 import master from './routes/master'
+import kepegawaian from './routes/kepegawaian'
 
 Vue.use(VueRouter)
 
@@ -31,12 +26,7 @@ const router = new VueRouter({
     ...transaksi,
     ...keuangan,
     ...dashboard,
-    // ...apps,
-    // ...pages,
-    // ...chartsMaps,
-    // ...formsTable,
-    // ...uiElements,
-    // ...others,
+    ...kepegawaian,
     {
       path: '*',
       redirect: 'error-404',

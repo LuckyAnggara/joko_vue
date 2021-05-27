@@ -49,10 +49,10 @@
         <b-card>
           <b-tabs pills>
             <b-tab title="Master" lazy>
-              <master-table :data-list="dataMasterBeban" />
+              <master-table :data-list="dataKomponenBeban" />
             </b-tab>
             <b-tab title="Detail" lazy>
-              <detail-table :data-list="dataDetailBeban" />
+              <detail-table @destroy="destroyId" :data-list="dataDetailBeban" />
             </b-tab>
           </b-tabs>
         </b-card>
@@ -60,7 +60,7 @@
     </b-row>
     <b-modal
       id="modal-beban"
-      ok-only
+      ref="modal-beban"
       ok-variant="primary"
       ok-title="Submit"
       modal-class="modal-primary"
@@ -81,7 +81,7 @@
               v-model="formBeban.subAkun"
               label="nama"
               :reduc="x => x.id"
-              :options="dataMasterBeban"
+              :options="dataKomponenBeban"
               placeholder="Pilih Akun Beban Operasional"
               :clearable="false"
             />
@@ -101,7 +101,7 @@
     </b-modal>
     <b-modal
       id="modal-sub-akun"
-      ok-only
+      ref="modal-sub-akun"
       ok-variant="success"
       ok-title="Submit"
       modal-class="modal-success"
@@ -180,7 +180,7 @@ export default {
       tahun: '2021',
       option: ['2021', '2022', '2023'],
       dataMaster: {},
-      dataMasterBeban: [],
+      dataKomponenBeban: [],
       dataDetailBeban: [],
     }
   },
@@ -191,12 +191,16 @@ export default {
   },
   computed: {
     saldo() {
-      return this.formatRupiah(parseFloat(this.dataMaster.saldo))
+      let saldo = 0
+      this.dataDetailBeban.forEach(x => {
+        saldo += x.nominal
+      })
+      return this.formatRupiah(saldo)
     },
     kodeAkun() {
-      if (this.dataMasterBeban.length > 0) {
+      if (this.dataKomponenBeban.length > 0) {
         const headAkun = this.dataMaster.kode_akun
-        const lastElement = this.dataMasterBeban[this.dataMasterBeban.length - 1]
+        const lastElement = this.dataKomponenBeban[this.dataKomponenBeban.length - 1]
         const prefix = lastElement.kode_akun.split('-')
         const kodeAkun = `${headAkun}-${parseFloat(prefix[1]) + parseFloat(1)}`
         return kodeAkun
@@ -260,9 +264,10 @@ export default {
           cabang,
         })
         .then(res => {
-          this.dataMaster = res.data
-          this.dataMasterBeban = res.data.komponen
-          this.dataDetailBeban = res.data.detail
+          store.commit('app-keuangan/SET_DATA_BEBAN_OPERASIONAL', res.data)
+          this.dataMaster = store.getters['app-keuangan/getDataBebanOperasional']
+          this.dataKomponenBeban = store.getters['app-keuangan/getDataBebanOperasional'].komponen
+          this.dataDetailBeban = store.getters['app-keuangan/getDataBebanOperasional'].detail
         })
     },
     success() {
@@ -305,10 +310,12 @@ export default {
           catatan: this.formBeban.catatan,
           tanggal: this.formBeban.tanggal,
         }
-        store.dispatch('app-keuangan/storeBebanOpersional', output).then(res => {
+        store.dispatch('app-keuangan/storeBeban', output).then(res => {
           loader.hide()
           if (res.status === 200) {
+            store.commit('app-keuangan/ADD_DATA_BEBAN_OPERASIONAL', res.data.master)
             this.success()
+            this.$refs['modal-beban'].hide()
           } else {
             this.error()
           }
@@ -331,14 +338,65 @@ export default {
         store.dispatch('app-keuangan/storeAkun', output).then(res => {
           loader.hide()
           if (res.status === 200) {
+            store.commit('app-keuangan/ADD_DATA_KOMPONEN_BEBAN_OPERASIONAL', res.data)
+            this.$refs['modal-sub-akun'].hide()
             this.success()
-            console.info(res.data)
           } else {
             this.error()
           }
         })
       }
       return false
+    },
+    destroyId(data) {
+      const { id } = data.item
+      this.$swal({
+        title: 'Delete data ?',
+        text: 'Data beban akan di hapus',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          store.dispatch('app-keuangan/removeBeban', id).then(x => {
+            if (x.status === 200) {
+              store.commit('app-keuangan/REMOVE_DETAIL_BEBAN_OPERASIONAL', id)
+              store.dispatch('app-keuangan/removeJurnal', x).then(d => {
+                if (d.status === 200) {
+                  this.$swal({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    customClass: {
+                      confirmButton: 'btn btn-success',
+                    },
+                  })
+                } else {
+                  this.$swal({
+                    icon: 'error',
+                    title: 'Oopps!! Kesalahan',
+                    customClass: {
+                      confirmButton: 'btn btn-success',
+                    },
+                  })
+                }
+              })
+            } else {
+              this.$swal({
+                icon: 'error',
+                title: 'Oopps!! Kesalahan',
+                customClass: {
+                  confirmButton: 'btn btn-success',
+                },
+              })
+            }
+          })
+        }
+      })
     },
   },
 }

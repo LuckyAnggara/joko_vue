@@ -13,8 +13,7 @@ export default {
     dataBeban: [],
 
     // BEBAN
-    dataOperasional: '',
-    listOperasional: [],
+    dataBebanOperasional: '',
   },
   getters: {
     getListAkun: state => state.listAkun,
@@ -28,8 +27,7 @@ export default {
     getBeban: state => state.dataBeban,
 
     // BEBAN
-    getDataOpersional: state => state.dataBeban,
-    getListOperasional: state => state.dataBeban.komponen,
+    getDataBebanOperasional: state => state.dataBebanOperasional,
   },
   mutations: {
     SET_LIST_AKUN(state, data) {
@@ -56,8 +54,18 @@ export default {
       state.dataBeban = data.beban.filter(x => x.saldo !== 0)
     },
     // BEBAN
-    SET_OPERASIONAL(state, data) {
-      state.dataBeban = data
+    SET_DATA_BEBAN_OPERASIONAL(state, data) {
+      state.dataBebanOperasional = data
+    },
+    ADD_DATA_BEBAN_OPERASIONAL(state, data) {
+      state.dataBebanOperasional.detail.push(data)
+    },
+    ADD_DATA_KOMPONEN_BEBAN_OPERASIONAL(state, data) {
+      state.dataBebanOperasional.komponen.push(data)
+    },
+    REMOVE_DETAIL_BEBAN_OPERASIONAL(state, data) {
+      const index = state.dataBebanOperasional.detail.findIndex(x => x.id === data)
+      state.dataBebanOperasional.detail.splice(index, 1)
     },
   },
   actions: {
@@ -177,10 +185,20 @@ export default {
           .catch(error => reject(error))
       })
     },
-    storeBebanOpersional(ctx, data) {
+    storeBeban(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
           .post('http://127.0.0.1:8080/api/beban/store', data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    removeBeban(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`http://127.0.0.1:8080/api/beban/delete/${id}`)
           .then(response => {
             resolve(response)
           })

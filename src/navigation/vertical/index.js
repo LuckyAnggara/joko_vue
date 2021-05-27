@@ -34,6 +34,7 @@ import dashboard from './dashboard'
 import master from './master'
 import transaksi from './transaksi'
 import keuangan from './keuangan'
+import kepegawaian from './kepegawaian'
 // import others from './others'
 // import chartsAndMaps from './charts-and-maps'
 // import uiElements from './ui-elements'
@@ -45,6 +46,7 @@ export default [
   ...master,
   ...transaksi,
   ...keuangan,
+  ...kepegawaian,
   // ...appsAndPages,
   // ...uiElements,
   // ...formAndTable,

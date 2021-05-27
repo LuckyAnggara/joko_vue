@@ -28,15 +28,11 @@
 <script>
 import { ref } from '@vue/composition-api'
 import { BLink, BTable } from 'bootstrap-vue'
-// import vSelect from 'vue-select'
-// import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
-    // vSelect,
     BLink,
     BTable,
-    // flatPickr,
   },
   props: {
     dataList: {

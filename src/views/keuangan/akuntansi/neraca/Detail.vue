@@ -113,18 +113,15 @@ export default {
         this.dataAssets = store.getters['app-keuangan/getNeracaAssets']
         this.dataLiabilities = store.getters['app-keuangan/getNeracaLiabilities']
         this.dataEquity = store.getters['app-keuangan/getNeracaEquity']
-        this.totalAssets = store.getters['app-keuangan/getTotalAssets']
       })
     },
   },
   setup() {
     const dataAssets = ref([])
-    const totalAssets = ref([])
     const dataLiabilities = ref([])
     const dataEquity = ref([])
 
     return {
-      totalAssets,
       dataAssets,
       dataLiabilities,
       dataEquity,
