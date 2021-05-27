@@ -11,6 +11,10 @@ export default {
     dataEquity: [],
     dataPendapatan: [],
     dataBeban: [],
+
+    // BEBAN
+    dataOperasional: '',
+    listOperasional: [],
   },
   getters: {
     getListAkun: state => state.listAkun,
@@ -22,6 +26,10 @@ export default {
     getTotalAssets: state => state.totalAssets,
     getPendapatan: state => state.dataPendapatan,
     getBeban: state => state.dataBeban,
+
+    // BEBAN
+    getDataOpersional: state => state.dataBeban,
+    getListOperasional: state => state.dataBeban.komponen,
   },
   mutations: {
     SET_LIST_AKUN(state, data) {
@@ -37,19 +45,34 @@ export default {
       state.dataLedger = data
     },
     // NERACA
-
     SET_NERACA(state, data) {
       state.dataAssets = data.assets.filter(x => x.saldo !== 0)
       state.dataLiabilities = data.liabilities.filter(x => x.saldo !== 0)
       state.dataEquity = data.equity.filter(x => x.saldo !== 0)
     },
-
+    // LABA RUGI
     SET_LABA(state, data) {
       state.dataPendapatan = data.pendapatan.filter(x => x.saldo !== 0)
       state.dataBeban = data.beban.filter(x => x.saldo !== 0)
     },
+    // BEBAN
+    SET_OPERASIONAL(state, data) {
+      state.dataBeban = data
+    },
   },
   actions: {
+    // AKUN
+    storeAkun(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:8080/api/akun/store', data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    // NERACA
     fetchNeraca(ctx, tahun) {
       return new Promise((resolve, reject) => {
         axios
@@ -136,6 +159,28 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post('http://127.0.0.1:8080/api/jurnal/retur', data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+
+    // BEBAN
+    fetchOperasional(ctx, params) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`http://127.0.0.1:8080/api/beban/operasional/cabang/${params.cabang}/tahun/${params.tahun}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeBebanOpersional(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:8080/api/beban/store', data)
           .then(response => {
             resolve(response)
           })

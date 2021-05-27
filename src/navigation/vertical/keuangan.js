@@ -3,6 +3,17 @@ export default [
     header: 'Keuangan',
   },
   {
+    title: 'Beban',
+    icon: 'HomeIcon',
+    tagVariant: 'light-warning',
+    children: [
+      {
+        title: 'Operasional',
+        route: 'beban-operasional-daftar',
+      },
+    ],
+  },
+  {
     title: 'Akuntansi',
     icon: 'HomeIcon',
     tagVariant: 'light-warning',

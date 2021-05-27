@@ -241,6 +241,37 @@
         </b-card>
       </b-col>
 
+      <!-- <b-dropdown variant="link" toggle-class="p-0" no-caret>
+            <template #button-content>
+              <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+            </template>
+            <b-dropdown-item>
+              <feather-icon icon="CastIcon" />
+              <span class="align-middle ml-50">Print Invoice</span>
+            </b-dropdown-item>
+            <b-dropdown-item>
+              <feather-icon icon="ActivityIcon" />
+              <span class="align-middle ml-50">Timeline</span>
+            </b-dropdown-item>
+            <b-dropdown-item :to="{ name: 'akuntansi-jurnal-detail', params: { id: data.item.nomorJurnal } }">
+              <feather-icon icon="BookIcon" />
+              <span class="align-middle ml-50">Jurnal</span>
+            </b-dropdown-item>
+            <hr />
+            <b-dropdown-item :to="{ name: 'transaksi-penjualan-edit', params: { id: data.item.id } }" v-if="!typeRetur">
+              <feather-icon icon="EditIcon" />
+              <span class="align-middle ml-50">Edit</span>
+            </b-dropdown-item>
+            <b-dropdown-item @click="retur(data)" v-if="!typeRetur">
+              <feather-icon icon="CornerUpLeftIcon" />
+              <span class="align-middle ml-50">Retur</span>
+            </b-dropdown-item>
+            <b-dropdown-item @click="destroy(data)">
+              <feather-icon icon="TrashIcon" />
+              <span class="align-middle ml-50">Delete</span>
+            </b-dropdown-item>
+          </b-dropdown> -->
+
       <!-- Right Col: Card -->
       <b-col cols="12" md="3" xl="3" class="invoice-actions">
         <b-card>
@@ -249,26 +280,50 @@
             Print Invoice
           </b-button>
 
-          <!-- Button: DOwnload -->
+          <!-- Button: Download -->
           <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block>
             Download
           </b-button>
 
-          <!-- Button: Print -->
-          <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block @click="printInvoice">
-            Retur
+          <!-- Button: Download -->
+          <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-secondary" class="mb-75" block>
+            Timeline
           </b-button>
 
-          <!-- Button: Edit -->
+          <!-- Button: Jurnal -->
           <b-button
+            :to="{ name: 'akuntansi-jurnal-detail', params: { id: dataInvoice.nomorJurnal } }"
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             variant="outline-secondary"
             class="mb-75"
             block
-            :to="{ name: 'apps-invoice-edit', params: { id: $route.params.id } }"
           >
-            Edit
+            Jurnal
           </b-button>
+          <div v-if="!typeRetur">
+            <hr />
+            <!-- Button: Retur -->
+            <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-danger" class="mb-75" block @click="retur(dataInvoice.id)">
+              Retur
+            </b-button>
+
+            <!-- Button: Retur -->
+            <b-button v-ripple.400="'rgba(186, 191, 199, 0.15)'" variant="outline-danger" class="mb-75" block @click="destroy(dataInvoice.id)">
+              Delete
+            </b-button>
+
+            <!-- Button: Edit -->
+            <b-button
+              v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+              variant="outline-danger"
+              class="mb-75"
+              block
+              :to="{ name: 'transaksi-penjualan-edit', params: { id: dataInvoice.id } }"
+            >
+              Edit
+            </b-button>
+            <hr />
+          </div>
 
           <!-- Button: Add Payment -->
           <b-button v-b-toggle.sidebar-invoice-add-payment v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mb-75" block>
@@ -325,6 +380,13 @@ export default {
       }
       return this.dataInvoice.pembayaran.bank.title
     },
+    typeRetur() {
+      console.info(this.dataInvoice)
+      if (this.dataInvoice.retur === 'Tidak') {
+        return false
+      }
+      return true
+    },
   },
   methods: {
     cekTransfer() {
@@ -337,6 +399,114 @@ export default {
       return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
     printInvoice() {},
+    retur(data) {
+      const { id } = data.item
+      this.$swal({
+        title: 'Retur data ?',
+        text: 'Data transaksi penjualan akan di retur',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          store
+            .dispatch('app-transaksi-penjualan/returTransaksi', {
+              id,
+            })
+            .then(x => {
+              if (x.status === 200) {
+                store.commit('app-transaksi-penjualan/RETUR_DATA_PENJUALAN', id)
+                store.dispatch('app-keuangan/returJurnal', x.data).then(d => {
+                  if (d.status === 200) {
+                    this.$swal({
+                      icon: 'success',
+                      title: 'Transaksi sudah di Retur!',
+                      customClass: {
+                        confirmButton: 'btn btn-success',
+                      },
+                    })
+                  } else {
+                    this.$swal({
+                      icon: 'error',
+                      title: 'Oopps!! Kesalahan',
+                      customClass: {
+                        confirmButton: 'btn btn-success',
+                      },
+                    })
+                  }
+                })
+              } else {
+                this.$swal({
+                  icon: 'error',
+                  title: 'Oopps!! Kesalahan',
+                  customClass: {
+                    confirmButton: 'btn btn-success',
+                  },
+                })
+              }
+            })
+        }
+      })
+    },
+    destroy(data) {
+      const { id } = data.item
+      this.$swal({
+        title: 'Delete data ?',
+        text: 'Data penjualan akan di hapus',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          store
+            .dispatch('app-transaksi-penjualan/deleteTransaksi', {
+              id,
+            })
+            .then(x => {
+              if (x.status === 200) {
+                store.commit('app-transaksi-penjualan/REMOVE_DATA_PENJUALAN', id)
+                store.dispatch('app-keuangan/removeJurnal', x).then(d => {
+                  if (d.status === 200) {
+                    this.$swal({
+                      icon: 'success',
+                      title: 'Deleted!',
+                      customClass: {
+                        confirmButton: 'btn btn-success',
+                      },
+                    })
+                  } else {
+                    this.$swal({
+                      icon: 'error',
+                      title: 'Oopps!! Kesalahan',
+                      customClass: {
+                        confirmButton: 'btn btn-success',
+                      },
+                    })
+                  }
+                })
+              } else {
+                this.$swal({
+                  icon: 'error',
+                  title: 'Oopps!! Kesalahan',
+                  customClass: {
+                    confirmButton: 'btn btn-success',
+                  },
+                })
+              }
+            })
+        }
+      })
+    },
   },
   setup() {
     if (router.currentRoute.params.id !== undefined) {

@@ -158,7 +158,7 @@
               <span class="align-middle ml-50">Jurnal</span>
             </b-dropdown-item>
             <hr />
-            <b-dropdown-item :to="{ name: 'transaksi-penjualan-tambah', params: { id: data.item.id } }" v-if="!typeRetur">
+            <b-dropdown-item :to="{ name: 'transaksi-penjualan-edit', params: { id: data.item.id } }" v-if="!typeRetur">
               <feather-icon icon="EditIcon" />
               <span class="align-middle ml-50">Edit</span>
             </b-dropdown-item>
@@ -177,7 +177,9 @@
     <div class="mx-2 mb-2">
       <b-row>
         <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
-          <span class="text-muted">Showing {{ dataMeta.from }} to {{ dataMeta.to }} of {{ dataMeta.of }} entries</span>
+          <span class="text-muted"
+            >Showing {{ dataMeta.from }} to {{ dataMeta.to }} of {{ dataMeta.of }} entries || From {{ tanggal.awal }} to {{ tanggal.akhir }}</span
+          >
         </b-col>
         <!-- Pagination -->
         <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
@@ -258,8 +260,18 @@ export default {
     typeRetur: {
       type: Boolean,
     },
+    tanggalData: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
+    tanggal() {
+      return {
+        awal: this.$moment(this.tanggalData.awal).format('DD MMMM YYYY'),
+        akhir: this.$moment(this.tanggalData.akhir).format('DD MMMM YYYY'),
+      }
+    },
     dataMeta() {
       const localItemsCount = this.$refs.refTable ? this.$refs.refTable.computedItems.length : 0
       return {

@@ -1,7 +1,50 @@
 <template>
   <section>
     <b-row class="match-height">
-      <b-col lg="6" cols="12" md="12">
+      <b-col lg="6" cols="12">
+        <b-card>
+          <b-row>
+            <b-col lg="6" cols="12">
+              <b-form-group label="Kode Akun" label-cols-md="4">
+                <b-form-input readonly v-model="dataAkun.kode_akun" />
+              </b-form-group>
+              <b-form-group label="Klasifikasi" label-cols-md="4">
+                <b-form-input readonly v-model="dataAkun.nama_jenis" />
+              </b-form-group>
+            </b-col>
+            <b-col lg="6" cols="12">
+              <b-form-group label="Saldo Akun" label-cols-md="4">
+                <b-form-input readonly v-model="saldo" />
+              </b-form-group>
+              <b-form-group label="Sifat Akun" label-cols-md="4">
+                <b-form-input readonly v-model="dataAkun.saldo_normal" />
+              </b-form-group>
+            </b-col>
+            <b-col lg="12" cols="12">
+              <b-form-group label="Nama Akun" label-cols-md="2">
+                <b-form-input readonly v-model="dataAkun.nama" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row v-if="dataAkun.komponen.length > 0 ? true : false">
+            <b-col lg="12" cols="12">
+              <b-form-group label="Sub Akun" label-cols-md="2">
+                <v-select v-model="subKomponen" label="nama" placeholder="Pilih Sub Akun" :reduce="x => x.id" :options="dataAkun.komponen">
+                  <template v-slot:option="option">
+                    {{ option.kode_akun }} - <b>{{ option.nama }}</b>
+                  </template>
+                </v-select>
+              </b-form-group>
+            </b-col>
+            <b-col lg="12" cols="12">
+              <b-form-group label="Saldo Sub Akun" label-cols-md="2">
+                <b-form-input readonly v-model="saldoSub" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-card>
+      </b-col>
+      <b-col lg="6" cols="12">
         <b-card>
           <b-form-group>
             <h5>Filter</h5>
@@ -18,7 +61,7 @@
           </b-form-group>
         </b-card>
       </b-col>
-      <b-col lg="12" cols="12" md="12">
+      <b-col lg="12" cols="12">
         <b-card>
           <div class="mb-2">
             <!-- Table Top -->
@@ -27,14 +70,11 @@
               <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
                 <label>Entries</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
-                <b-button variant="primary" :to="{ name: 'akuntansi-jurnal-tambah' }">
-                  Tambah Data
-                </b-button>
               </b-col>
               <!-- Search -->
               <b-col cols="12" md="6">
                 <div class="d-flex align-items-center justify-content-end">
-                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Jurnal, Keterangan)" />
+                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Jurnal, Nominal, Keterangan)" />
                 </div>
               </b-col>
             </b-row>
@@ -45,15 +85,12 @@
             responsive
             primary-key="id"
             :fields="tableColumns"
-            :items="dataJurnal"
+            :items="dataLedger"
             :current-page="currentPage"
             :per-page="perPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="isSortDirDesc"
             show-empty
-            empty-text="Tidak ada data"
+            :empty-text="emptyText"
             class="position-relative"
-            foot-clone
           >
             <!-- Column: Tanggal -->
             <template #cell(tanggal)="data">
@@ -69,57 +106,23 @@
               </b-link>
             </template>
 
-            <!-- Column: Nama Akun -->
-            <template #cell(nama)="data">
-              <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
-                {{ data.item.kode_akun + ' - ' + data.item.nama_akun }}
-              </b-link>
-            </template>
-
-            <!-- Column: DEBIT KREDIT -->
+            <!-- Column: DEBIT KREDIT SALDO-->
             <template #cell(debit)="data">
-              <span class="text-nowrap">
+              <span>
                 {{ data.item.jenis === 'DEBIT' ? formatRupiah(data.item.nominal) : '-' }}
               </span>
             </template>
 
             <template #cell(kredit)="data">
-              <span class="text-nowrap">
+              <span>
                 {{ data.item.jenis === 'KREDIT' ? formatRupiah(data.item.nominal) : '-' }}
               </span>
             </template>
 
-            <!-- FOOTER -->
-
-            <!-- Column: Actions -->
-            <template #cell(actions)="data">
-              <div class="text-nowrap">
-                <feather-icon
-                  icon="EyeIcon"
-                  size="16"
-                  class="mx-1"
-                  @click="
-                    $router.push({
-                      name: 'akuntansi-jurnal-detail',
-                      params: { id: data.item.nomor_jurnal },
-                    })
-                  "
-                />
-              </div>
-            </template>
-
-            <!-- Debit -->
-            <template #foot(namaAkun)>
-              <span>Total</span>
-            </template>
-            <template #foot(debit)>
-              <span class="text-success">{{ formatRupiah(totalDebit) }}</span>
-            </template>
-            <template #foot(kredit)>
-              <span class="text-danger">{{ formatRupiah(totalKredit) }}</span>
-            </template>
-            <template #foot(keterangan)>
-              <span class="text-primary">{{ balance }}</span>
+            <template #cell(saldo)="data">
+              <span>
+                {{ formatRupiah(data.item.saldo) }}
+              </span>
             </template>
           </b-table>
           <div class="mx-2 mb-2">
@@ -131,8 +134,11 @@
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
                 <b-pagination
                   v-model="currentPage"
-                  :total-rows="totalJurnal"
+                  :sort-compare="true"
+                  :total-rows="totalLedger"
                   :per-page="perPage"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="isSortDirDesc"
                   first-number
                   last-number
                   class="mb-0 mt-1 mt-sm-0"
@@ -156,21 +162,22 @@
 </template>
 
 <script>
+import router from '@/router'
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import { BLink, BCard, BFormGroup, BRow, BCol, BFormInput, BTable, BPagination, BButton, BInputGroupAppend, BInputGroup } from 'bootstrap-vue'
+import { BCard, BFormGroup, BRow, BCol, BLink, BFormInput, BTable, BPagination, BButton, BInputGroupAppend, BInputGroup } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
-    BLink,
     vSelect,
     BButton,
     BCard,
     BRow,
     BCol,
+    BLink,
     BFormInput,
     BTable,
     BPagination,
@@ -194,8 +201,17 @@ export default {
       filterQuery: '',
       searchQuery: '',
       refTable: null,
-      dataJurnal: [],
-      dataTemp: [],
+      subKomponen: '',
+      dataAkun: {
+        kode_akun: '',
+        nama_jenis: '',
+        nama: '',
+        saldo: 0,
+        komponen: [],
+      },
+      dataSubAkun: {
+        saldo: 0,
+      },
     }
   },
   computed: {
@@ -204,120 +220,134 @@ export default {
       return {
         from: this.perPage * (this.currentPage - 1) + (localItemsCount ? 1 : 0),
         to: this.perPage * (this.currentPage - 1) + localItemsCount,
-        of: this.totalJurnal,
+        of: this.totalLedger,
       }
     },
-    totalDebit() {
-      let saldoDebit = 0
-      this.dataJurnal.forEach(x => {
-        if (x.jenis === 'DEBIT') {
-          saldoDebit += parseFloat(x.nominal)
-        }
-      })
-      console.log(saldoDebit)
-      return saldoDebit
+    saldo() {
+      return this.formatRupiah(parseFloat(this.dataAkun.saldo))
     },
-    totalKredit() {
-      let saldoKredit = 0
-      this.dataJurnal.forEach(x => {
-        if (x.jenis === 'KREDIT') {
-          saldoKredit += parseFloat(x.nominal)
-        }
-      })
-      return saldoKredit
+    saldoSub() {
+      return this.formatRupiah(parseFloat(this.dataSubAkun.saldo))
     },
-    balance() {
-      if (this.totalKredit === this.totalDebit) {
-        return 'BALANCE'
+    totalLedger() {
+      return this.dataLedger.length
+    },
+    emptyText() {
+      if (this.subKomponen === '') {
+        return 'Sub-Akun belum di pilih'
       }
-      return 'TIDAK BALANCE'
+      return 'Tidak ada data'
     },
   },
   watch: {
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataJurnal = this.dataTemp
+        this.dataLedger = this.dataTemp
       } else {
-        this.dataJurnal = this.dataTemp.filter(
-          item => item.nomor_jurnal.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.keterangan.toLowerCase().indexOf(query.toLowerCase()) > -1,
+        this.dataLedger = this.dataTemp.filter(
+          item =>
+            item.nomor_jurnal.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+            item.keterangan.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+            item.saldo.toString().indexOf(query) > -1,
         )
       }
-      this.totalJurnal = this.dataJurnal.length
+    },
+    subKomponen(id) {
+      this.fetchSubAkun(id)
     },
     /* eslint-disable */
   },
   mounted() {
-    const d = new Date()
-    const m = d.getMonth()
-    const y = d.getFullYear()
-    this.loadJurnal(this.$moment(new Date(y, m, 1)), this.moment(Date.now()))
+    this.loadAwal()
   },
   methods: {
     clear() {
       this.date.value = null
       this.dateFilter(null)
     },
-    detail(x) {
-      console.info(x)
-    },
     dateFilter(x) {
-      this.loadJurnal(this.moment(x[0]), this.moment(x[1]))
-      this.totalJurnal = this.dataJurnal.length
+      this.loadLedger(this.$moment(x[0]), this.$moment(x[1]))
     },
     moment(value) {
-      return this.$moment(value).format('DD MMMM YYYY')
+      return this.$moment(value).format('DD MMMM YYYY || h:mm:ss')
     },
-    loadJurnal(dateawal = null, dateakhir = null) {
+    fetchSubAkun(id = null) {
+      if (id === null) {
+        this.dataTemp = []
+        this.dataLedger = this.dataTemp
+        this.dataSubAkun.saldo = 0
+      } else {
+        this.dataSubAkun = this.dataAkun.komponen.find(x => x.id === id)
+        this.dataTemp = this.dataSubAkun.ledger
+        this.dataLedger = this.dataTemp
+      }
+    },
+    loadLedger(dateawal = null, dateakhir = null) {
       const user = JSON.parse(localStorage.getItem('userData'))
-      const cabang = user.cabang.id
+      const cabang = user.cabang_id
+      const { id } = router.currentRoute.params
       store
-        .dispatch('app-keuangan/fetchListJurnal', {
+        .dispatch('app-keuangan/fetchLedgerByAkun', {
           cabang,
+          id,
           dateawal,
           dateakhir,
         })
         .then(res => {
-          store.commit('app-keuangan/SET_LIST_JURNAL', res.data)
-          this.dataJurnal = store.getters['app-keuangan/getListJurnal']
-          this.dataTemp = store.getters['app-keuangan/getListJurnal']
-          this.totalJurnal = this.dataJurnal.length
+          this.dataAkun = res.data
+          if (this.dataAkun.komponen.length < 1) {
+            this.dataTemp = this.dataAkun.ledger
+            this.dataLedger = this.dataTemp
+          }
+          if (this.subKomponen !== '') {
+            this.fetchSubAkun(this.subKomponen)
+          }
         })
     },
+    loadAwal() {
+      const d = new Date()
+      const m = d.getMonth()
+      const y = d.getFullYear()
+      this.loadLedger(this.$moment(new Date(y, m, 1)), this.$moment(Date.now()))
+    },
     formatRupiah(value) {
-      return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+      return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
   },
-
   setup() {
-    const filterOptions = ['Lunas', 'COD', 'Kredit']
     const tableColumns = [
-      { key: 'tanggal', sortable: true },
-      { key: 'nomor_jurnal', sortable: true },
-      { label: 'nama akun', key: 'nama', sortable: true },
-      { label: 'debit', key: 'debit', sortable: true },
-      { label: 'kredit', key: 'kredit', sortable: true },
-      { label: 'keterangan', key: 'keterangan', sortable: true },
-      { label: 'actions', key: 'actions', sortable: true },
+      {
+        key: 'tanggal',
+        sortable: false,
+      },
+      { key: 'nomor_jurnal', sortable: false },
+      { label: 'debit', key: 'debit', sortable: false },
+      { label: 'kredit', key: 'kredit', sortable: false },
+      {
+        label: 'saldo',
+        key: 'saldo',
+      },
+      { label: 'keterangan', key: 'keterangan', sortable: false },
     ]
 
     // const searchQuery = ref('')
     const perPage = ref(10)
-    const totalJurnal = ref(0)
+    const dataLedger = ref([])
+    const dataTemp = ref([])
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
-    const sortBy = ref('id')
-    const isSortDirDesc = ref(true)
+    const sortBy = ref('tanggal')
+    const isSortDirDesc = ref(false)
     const statusFilter = ref(null)
 
     return {
-      filterOptions,
+      dataLedger,
+      dataTemp,
       tableColumns,
-      // searchQuery,
       perPage,
       isSortDirDesc,
       currentPage,
-      totalJurnal,
       perPageOptions,
       sortBy,
       statusFilter,
@@ -329,18 +359,6 @@ export default {
 <style lang="scss" scoped>
 .per-page-selector {
   width: 90px;
-}
-
-.keuangan-filter-select {
-  min-width: 190px;
-
-  ::v-deep .vs__selected-options {
-    flex-wrap: nowrap;
-  }
-
-  ::v-deep .vs__selected {
-    width: 100px;
-  }
 }
 </style>
 

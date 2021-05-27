@@ -1,6 +1,6 @@
 <template>
   <section>
-    <b-row class="match-height">
+    <b-row>
       <b-col lg="12" cols="12">
         <b-card>
           <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
@@ -12,10 +12,38 @@
           </b-col>
         </b-card>
       </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Assets`" :dataItem="dataAssets" /> </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Liabilities`" :dataItem="dataLiabilities" /> </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Equity`" :dataItem="dataEquity" /> </b-col>
     </b-row>
+    <div>
+      <b-row>
+        <b-col lg="6" cols="6"> <table-component :title="`Assets`" :dataItem="dataAssets" /> </b-col>
+      </b-row>
+      <b-row>
+        <b-col lg="12" cols="12">
+          <b-card class="text-center">
+            <b-card-text
+              ><h3>
+                Total Aset = <span class="text-primary">{{ totalAssets }}</span>
+              </h3>
+            </b-card-text>
+          </b-card></b-col
+        >
+      </b-row>
+      <b-row>
+        <b-col lg="6" cols="12"> <table-component :title="`Liabilities`" :dataItem="dataLiabilities" /> </b-col>
+        <b-col lg="6" cols="12"> <table-component :title="`Equity`" :dataItem="dataEquity" /> </b-col>
+      </b-row>
+      <b-row>
+        <b-col lg="12" cols="12">
+          <b-card class="text-center">
+            <b-card-text
+              ><h3>
+                Total Liabilities + Equity = <span class="text-primary">{{ totalLiabilities }}</span>
+              </h3></b-card-text
+            >
+          </b-card></b-col
+        >
+      </b-row>
+    </div>
   </section>
 </template>
 
@@ -23,7 +51,7 @@
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import { BButton, BCard, BRow, BCol } from 'bootstrap-vue'
+import { BButton, BCard, BCardText, BRow, BCol } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
 import TableComponent from './component/Table.vue'
@@ -31,6 +59,7 @@ import TableComponent from './component/Table.vue'
 export default {
   components: {
     TableComponent,
+    BCardText,
     vSelect,
     BButton,
     BCard,
@@ -46,7 +75,33 @@ export default {
   mounted() {
     this.loadData()
   },
+  computed: {
+    totalAssets() {
+      let saldo = 0
+      this.dataAssets.forEach(x => {
+        saldo += x.saldo
+      })
+      return this.formatRupiah(saldo)
+    },
+    totalLiabilities() {
+      let saldoEquity = 0
+      let saldoLibilities = 0
+
+      this.dataLiabilities.forEach(x => {
+        saldoLibilities += x.saldo
+      })
+
+      this.dataEquity.forEach(y => {
+        saldoEquity += y.saldo
+      })
+
+      return this.formatRupiah(parseFloat(saldoLibilities) + parseFloat(saldoEquity))
+    },
+  },
   methods: {
+    formatRupiah(value) {
+      return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    },
     setSelected() {
       this.loadData()
     },
@@ -62,7 +117,6 @@ export default {
       })
     },
   },
-
   setup() {
     const dataAssets = ref([])
     const totalAssets = ref([])

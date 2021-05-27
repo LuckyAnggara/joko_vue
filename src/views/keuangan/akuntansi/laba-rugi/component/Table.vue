@@ -11,26 +11,25 @@
         show-empty
         empty-text="Tidak ada data"
         class="position-relative"
-        foot-clone
       >
         <!-- Column: Nama Akun -->
         <template #cell(nama)="data">
-          <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.id } }" class="font-weight-bold">
+          <b-link v-if="data.item.align !== 1" :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.id } }">
             {{ data.item.nama }}
           </b-link>
+          <p v-if="data.item.align === 1" class="font-weight-bold text-right">
+            {{ data.item.nama }}
+          </p>
         </template>
 
         <!-- Column: DEBIT KREDIT SALDO-->
         <template #cell(saldo)="data">
-          <span>
+          <p v-if="data.item.align !== 1">
             {{ formatRupiah(data.item.saldo) }}
-          </span>
-        </template>
-        <template #foot(nama)>
-          <span>Total</span>
-        </template>
-        <template #foot(saldo)>
-          <span class="text-success">{{ formatRupiah(totalSaldo) }}</span>
+          </p>
+          <p v-if="data.item.align === 1" class="font-weight-bold text-right">
+            {{ formatRupiah(data.item.saldo) }}
+          </p>
         </template>
       </b-table>
     </b-card>
@@ -60,15 +59,6 @@ export default {
     title: {
       type: String,
       required: true,
-    },
-  },
-  computed: {
-    totalSaldo() {
-      let saldo = 0
-      this.dataItem.forEach(x => {
-        saldo += parseFloat(x.saldo)
-      })
-      return saldo
     },
   },
   methods: {

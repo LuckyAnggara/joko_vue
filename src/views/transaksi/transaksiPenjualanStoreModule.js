@@ -82,6 +82,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    editTransaksi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .put(`${axios.defaults.baseURL}penjualan/edit/${data.id}`, data)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     deleteTransaksi(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios

@@ -12,8 +12,23 @@
           </b-col>
         </b-card>
       </b-col>
-      <b-col lg="6" cols="12"> <table-component :title="`Assets`" :dataItem="dataPendapatan" /> </b-col>
     </b-row>
+
+    <div>
+      <b-row class="match-height">
+        <b-col lg="6" cols="12"> <table-component :title="`Pendapatan`" :dataItem="dataPendapatan" /> </b-col>
+        <b-col lg="6" cols="12">
+          <b-card title="Total Laba Berjalan" :footer="footerTitle" class="text-center" footer-class="text-muted">
+            <b-card-text>
+              <h3 :class="labaRugiClass">{{ formatRupiah(labaRugi) }}</h3>
+            </b-card-text>
+          </b-card>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col lg="6" cols="12"> <table-component :title="`Beban`" :dataItem="dataBeban" /> </b-col>
+      </b-row>
+    </div>
   </section>
 </template>
 
@@ -21,9 +36,8 @@
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import { BButton, BCard, BRow, BCol } from 'bootstrap-vue'
+import { BButton, BCard, BCardText, BRow, BCol } from 'bootstrap-vue'
 import vSelect from 'vue-select'
-
 import TableComponent from './component/Table.vue'
 
 export default {
@@ -32,6 +46,7 @@ export default {
     vSelect,
     BButton,
     BCard,
+    BCardText,
     BRow,
     BCol,
   },
@@ -39,22 +54,42 @@ export default {
     return {
       tahun: '2021',
       option: ['2021', '2022', '2023'],
+      labaRugi: 0,
     }
+  },
+  computed: {
+    footerTitle() {
+      return `Berdasarkan Data Tahun ${this.tahun} berjalan`
+    },
+    labaRugiClass() {
+      if (this.labaRugi < 0) {
+        return 'text-danger'
+      }
+      return 'text-success'
+    },
   },
   mounted() {
     this.loadData()
   },
+
   methods: {
     setSelected() {
       this.loadData()
     },
+
+    formatRupiah(value) {
+      return `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
+    },
     loadData() {
-      const loader = this.$loading.show({})
+      const loader = this.$loading.show({
+        container: this.$refs.dd,
+      })
       store.dispatch('app-keuangan/fetchLabaRugi', this.tahun).then(res => {
         loader.hide()
         store.commit('app-keuangan/SET_LABA', res.data)
-        this.dataPendapatan = store.getters['app-keuangan/getNeracaEquity']
-        this.dataBeban = store.getters['app-keuangan/getTotalAssets']
+        this.dataPendapatan = store.getters['app-keuangan/getPendapatan']
+        this.dataBeban = store.getters['app-keuangan/getBeban']
+        this.labaRugi = res.data.labaRugi
       })
     },
   },

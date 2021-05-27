@@ -8,7 +8,7 @@
             <hr />
             <h6 class="mb-1">Tanggal Transaksi</h6>
             <b-input-group>
-              <flat-pickr v-model="date.value" class="form-control" :config="date.config" placeholder="Filter By Tanggal" @on-close="dateFilter" />
+              <flat-pickr v-model="date.value" class="form-control" :config="date.config" placeholder="Filter By Tanggal" />
               <b-input-group-append>
                 <b-button variant="outline-primary" @click="clear">
                   Clear
@@ -31,6 +31,7 @@
             :dataTransaksi="dataTransaksi"
             :dataTemp="dataTemp"
             :typeRetur="false"
+            :tanggalData="tanggal"
           />
         </b-card>
       </b-col>
@@ -62,6 +63,10 @@ export default {
   },
   data() {
     return {
+      tanggal: {
+        awal: '',
+        akhir: '',
+      },
       date: {
         value: Date.now(),
         config: {
@@ -78,6 +83,19 @@ export default {
   computed: {
     totalInvoices() {
       return this.dataTransaksi.length
+    },
+    dateFilter() {
+      return this.date.value
+    },
+  },
+  watch: {
+    dateFilter(x) {
+      const d = x.split(' to ')
+      if (d.length > 1) {
+        this.loadTransaksi(this.$moment(d[0]), this.$moment(d[1]))
+      } else {
+        this.loadTransaksi(this.$moment(d[0]), this.$moment(d[0]))
+      }
     },
   },
   methods: {
@@ -210,9 +228,6 @@ export default {
     clear() {
       this.date.value = null
     },
-    dateFilter(x) {
-      this.loadTransaksi(this.moment(x[0]), this.moment(x[1]))
-    },
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },
@@ -220,24 +235,21 @@ export default {
       return `Rp. ${value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
     },
     loadTransaksi(dateawal = null, dateakhir = null) {
+      this.tanggal.awal = dateawal
+      this.tanggal.akhir = dateakhir
       const user = JSON.parse(localStorage.getItem('userData'))
-      const cabang = user.cabang.id
-      if (this.totalInvoices === 0) {
-        store
-          .dispatch('app-transaksi-pembelian/fetchListTransaksiPembelian', {
-            cabang,
-            dateawal,
-            dateakhir,
-          })
-          .then(res => {
-            store.commit('app-transaksi-pembelian/SET_LIST_TRANSAKSI_PEMBELIAN', res.data)
-            this.dataTransaksi = store.getters['app-transaksi-pembelian/getListTransaksiPembelian']
-            this.dataTemp = store.getters['app-transaksi-pembelian/getListTransaksiPembelian']
-          })
-        return
-      }
-      this.dataTransaksi = store.getters['app-transaksi-pembelian/getListTransaksiPembelian']
-      this.dataTemp = store.getters['app-transaksi-pembelian/getListTransaksiPembelian']
+      const cabang = user.cabang_id
+      store
+        .dispatch('app-transaksi-pembelian/fetchListTransaksiPembelian', {
+          cabang,
+          dateawal,
+          dateakhir,
+        })
+        .then(res => {
+          store.commit('app-transaksi-pembelian/SET_LIST_TRANSAKSI_PEMBELIAN', res.data)
+          this.dataTransaksi = store.getters['app-transaksi-pembelian/getListTransaksiPembelian']
+          this.dataTemp = store.getters['app-transaksi-pembelian/getListTransaksiPembelian']
+        })
     },
     loadAwal() {
       const d = new Date()

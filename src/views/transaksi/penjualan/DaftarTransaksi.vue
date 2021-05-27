@@ -29,7 +29,7 @@ export default {
   methods: {
     loadData(dateawal = null, dateakhir = null) {
       const user = JSON.parse(localStorage.getItem('userData'))
-      const cabang = user.cabang.id
+      const cabang = user.cabang_id
       store
         .dispatch('app-transaksi-penjualan/fetchListTransaksiPenjualan', {
           cabang,

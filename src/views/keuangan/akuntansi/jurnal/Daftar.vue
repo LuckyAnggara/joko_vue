@@ -1,34 +1,7 @@
 <template>
   <section>
     <b-row class="match-height">
-      <b-col lg="6" cols="12">
-        <b-card>
-          <b-row>
-            <b-col lg="6" cols="12">
-              <b-form-group label="Kode Akun" label-cols-md="4">
-                <b-form-input readonly v-model="dataAkun.kode_akun" />
-              </b-form-group>
-              <b-form-group label="Klasifikasi" label-cols-md="4">
-                <b-form-input readonly v-model="dataAkun.nama_jenis" />
-              </b-form-group>
-            </b-col>
-            <b-col lg="6" cols="12">
-              <b-form-group label="Saldo Akun" label-cols-md="4">
-                <b-form-input readonly v-model="saldo" />
-              </b-form-group>
-              <b-form-group label="Sifat Akun" label-cols-md="4">
-                <b-form-input readonly v-model="dataAkun.saldo_normal" />
-              </b-form-group>
-            </b-col>
-            <b-col lg="12" cols="12">
-              <b-form-group label="Nama Akun" label-cols-md="2">
-                <b-form-input readonly v-model="dataAkun.nama" />
-              </b-form-group>
-            </b-col>
-          </b-row>
-        </b-card>
-      </b-col>
-      <b-col lg="6" cols="12">
+      <b-col lg="6" cols="12" md="12">
         <b-card>
           <b-form-group>
             <h5>Filter</h5>
@@ -45,7 +18,7 @@
           </b-form-group>
         </b-card>
       </b-col>
-      <b-col lg="12" cols="12">
+      <b-col lg="12" cols="12" md="12">
         <b-card>
           <div class="mb-2">
             <!-- Table Top -->
@@ -54,11 +27,14 @@
               <b-col cols="12" md="6" class="d-flex align-items-center justify-content-start mb-1 mb-md-0">
                 <label>Entries</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" class="per-page-selector d-inline-block ml-50 mr-1" />
+                <b-button variant="primary" :to="{ name: 'akuntansi-jurnal-tambah' }">
+                  Tambah Data
+                </b-button>
               </b-col>
               <!-- Search -->
               <b-col cols="12" md="6">
                 <div class="d-flex align-items-center justify-content-end">
-                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Kode Akun, Nama Akun, Nomor Ledger)" />
+                  <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... (Nomor Jurnal, Keterangan)" />
                 </div>
               </b-col>
             </b-row>
@@ -69,12 +45,15 @@
             responsive
             primary-key="id"
             :fields="tableColumns"
-            :items="dataLedger"
+            :items="dataJurnal"
             :current-page="currentPage"
             :per-page="perPage"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="isSortDirDesc"
             show-empty
             empty-text="Tidak ada data"
             class="position-relative"
+            foot-clone
           >
             <!-- Column: Tanggal -->
             <template #cell(tanggal)="data">
@@ -83,23 +62,64 @@
               </span>
             </template>
 
-            <!-- Column: DEBIT KREDIT SALDO-->
+            <!-- Column: Nomor Jurnal -->
+            <template #cell(nomor_jurnal)="data">
+              <b-link :to="{ name: 'akuntansi-jurnal-detail', params: { id: data.item.nomor_jurnal } }" class="font-weight-bold">
+                {{ data.item.nomor_jurnal }}
+              </b-link>
+            </template>
+
+            <!-- Column: Nama Akun -->
+            <template #cell(nama)="data">
+              <b-link :to="{ name: 'akuntansi-ledger-detail', params: { id: data.item.master_akun_id } }" class="font-weight-bold">
+                {{ data.item.kode_akun + ' - ' + data.item.nama_akun }}
+              </b-link>
+            </template>
+
+            <!-- Column: DEBIT KREDIT -->
             <template #cell(debit)="data">
-              <span>
+              <span class="text-nowrap">
                 {{ data.item.jenis === 'DEBIT' ? formatRupiah(data.item.nominal) : '-' }}
               </span>
             </template>
 
             <template #cell(kredit)="data">
-              <span>
+              <span class="text-nowrap">
                 {{ data.item.jenis === 'KREDIT' ? formatRupiah(data.item.nominal) : '-' }}
               </span>
             </template>
 
-            <template #cell(saldo)="data">
-              <span>
-                {{ formatRupiah(data.item.saldo) }}
-              </span>
+            <!-- FOOTER -->
+
+            <!-- Column: Actions -->
+            <template #cell(actions)="data">
+              <div class="text-nowrap">
+                <feather-icon
+                  icon="EyeIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="
+                    $router.push({
+                      name: 'akuntansi-jurnal-detail',
+                      params: { id: data.item.nomor_jurnal },
+                    })
+                  "
+                />
+              </div>
+            </template>
+
+            <!-- Debit -->
+            <template #foot(namaAkun)>
+              <span>Total</span>
+            </template>
+            <template #foot(debit)>
+              <span class="text-success">{{ formatRupiah(totalDebit) }}</span>
+            </template>
+            <template #foot(kredit)>
+              <span class="text-danger">{{ formatRupiah(totalKredit) }}</span>
+            </template>
+            <template #foot(keterangan)>
+              <span class="text-primary">{{ balance }}</span>
             </template>
           </b-table>
           <div class="mx-2 mb-2">
@@ -111,11 +131,8 @@
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
                 <b-pagination
                   v-model="currentPage"
-                  :sort-compare="true"
-                  :total-rows="totalLedger"
+                  :total-rows="totalJurnal"
                   :per-page="perPage"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="isSortDirDesc"
                   first-number
                   last-number
                   class="mb-0 mt-1 mt-sm-0"
@@ -139,16 +156,16 @@
 </template>
 
 <script>
-import router from '@/router'
 import store from '@/store'
 import { ref } from '@vue/composition-api'
 
-import { BCard, BFormGroup, BRow, BCol, BFormInput, BTable, BPagination, BButton, BInputGroupAppend, BInputGroup } from 'bootstrap-vue'
+import { BLink, BCard, BFormGroup, BRow, BCol, BFormInput, BTable, BPagination, BButton, BInputGroupAppend, BInputGroup } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import flatPickr from 'vue-flatpickr-component'
 
 export default {
   components: {
+    BLink,
     vSelect,
     BButton,
     BCard,
@@ -177,14 +194,8 @@ export default {
       filterQuery: '',
       searchQuery: '',
       refTable: null,
-      dataLedger: [],
+      dataJurnal: [],
       dataTemp: [],
-      dataAkun: {
-        kode_akun: '',
-        nama_jenis: '',
-        nama: '',
-        saldo: 0,
-      },
     }
   },
   computed: {
@@ -193,64 +204,84 @@ export default {
       return {
         from: this.perPage * (this.currentPage - 1) + (localItemsCount ? 1 : 0),
         to: this.perPage * (this.currentPage - 1) + localItemsCount,
-        of: this.totalLedger,
+        of: this.totalJurnal,
       }
     },
-    saldo() {
-      return this.formatRupiah(parseFloat(this.dataAkun.saldo))
+    totalDebit() {
+      let saldoDebit = 0
+      this.dataJurnal.forEach(x => {
+        if (x.jenis === 'DEBIT') {
+          saldoDebit += parseFloat(x.nominal)
+        }
+      })
+      console.log(saldoDebit)
+      return saldoDebit
+    },
+    totalKredit() {
+      let saldoKredit = 0
+      this.dataJurnal.forEach(x => {
+        if (x.jenis === 'KREDIT') {
+          saldoKredit += parseFloat(x.nominal)
+        }
+      })
+      return saldoKredit
+    },
+    balance() {
+      if (this.totalKredit === this.totalDebit) {
+        return 'BALANCE'
+      }
+      return 'TIDAK BALANCE'
     },
   },
   watch: {
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataLedger = this.dataTemp
+        this.dataJurnal = this.dataTemp
       } else {
-        this.dataLedger = this.dataTemp.filter(
-          item =>
-            item.nomor_jurnal.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
-            item.keterangan.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
-            item.kode_akun.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
-            item.nama_akun.toLowerCase().indexOf(query.toLowerCase()) > -1,
+        this.dataJurnal = this.dataTemp.filter(
+          item => item.nomor_jurnal.toLowerCase().indexOf(query.toLowerCase()) > -1 || item.keterangan.toLowerCase().indexOf(query.toLowerCase()) > -1,
         )
       }
-      this.totalLedger = this.dataLedger.length
+      this.totalJurnal = this.dataJurnal.length
     },
     /* eslint-disable */
   },
   mounted() {
-    this.loadLedger(this.moment(), this.moment(Date.now()))
-    // this.loadLedger(this.moment(new Date(year, month, 1)), this.moment(Date.now()))
+    const d = new Date()
+    const m = d.getMonth()
+    const y = d.getFullYear()
+    this.loadJurnal(this.$moment(new Date(y, m, 1)), this.moment(Date.now()))
   },
   methods: {
     clear() {
       this.date.value = null
       this.dateFilter(null)
     },
+    detail(x) {
+      console.info(x)
+    },
     dateFilter(x) {
-      this.loadLedger(this.moment(x[0]), this.moment(x[1]))
-      this.totalInvoices = this.totalLedger.length
+      this.loadJurnal(this.moment(x[0]), this.moment(x[1]))
+      this.totalJurnal = this.dataJurnal.length
     },
     moment(value) {
       return this.$moment(value).format('DD MMMM YYYY')
     },
-    loadLedger(dateawal = null, dateakhir = null) {
+    loadJurnal(dateawal = null, dateakhir = null) {
       const user = JSON.parse(localStorage.getItem('userData'))
-      const cabang = user.cabang.id
-      const { id } = router.currentRoute.params
+      const cabang = user.cabang_id
       store
-        .dispatch('app-keuangan/fetchLedgerByAkun', {
+        .dispatch('app-keuangan/fetchListJurnal', {
           cabang,
-          id,
           dateawal,
           dateakhir,
         })
         .then(res => {
-          store.commit('app-keuangan/SET_DATA_LEDGER', res.data.ledger)
-          this.dataAkun = res.data.master
-          this.dataTemp = store.getters['app-keuangan/getDataLedger']
-          this.dataLedger = this.dataTemp
-          this.totalLedger = this.dataLedger.length
+          store.commit('app-keuangan/SET_LIST_JURNAL', res.data)
+          this.dataJurnal = store.getters['app-keuangan/getListJurnal']
+          this.dataTemp = store.getters['app-keuangan/getListJurnal']
+          this.totalJurnal = this.dataJurnal.length
         })
     },
     formatRupiah(value) {
@@ -259,36 +290,34 @@ export default {
   },
 
   setup() {
+    const filterOptions = ['Lunas', 'COD', 'Kredit']
     const tableColumns = [
-      {
-        key: 'tanggal',
-        sortable: false,
-      },
-      { key: 'nomor_jurnal', sortable: false },
-      { label: 'debit', key: 'debit', sortable: false },
-      { label: 'kredit', key: 'kredit', sortable: false },
-      {
-        label: 'saldo',
-        key: 'saldo',
-      },
-      { label: 'keterangan', key: 'keterangan', sortable: false },
+      { key: 'tanggal', sortable: true },
+      { key: 'nomor_jurnal', sortable: true },
+      { label: 'nama akun', key: 'nama', sortable: true },
+      { label: 'debit', key: 'debit', sortable: true },
+      { label: 'kredit', key: 'kredit', sortable: true },
+      { label: 'keterangan', key: 'keterangan', sortable: true },
+      { label: 'actions', key: 'actions', sortable: true },
     ]
 
     // const searchQuery = ref('')
     const perPage = ref(10)
-    const totalLedger = ref(0)
+    const totalJurnal = ref(0)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
-    const sortBy = ref('tanggal')
-    const isSortDirDesc = ref(false)
+    const sortBy = ref('id')
+    const isSortDirDesc = ref(true)
     const statusFilter = ref(null)
 
     return {
+      filterOptions,
       tableColumns,
+      // searchQuery,
       perPage,
       isSortDirDesc,
       currentPage,
-      totalLedger,
+      totalJurnal,
       perPageOptions,
       sortBy,
       statusFilter,
@@ -300,6 +329,18 @@ export default {
 <style lang="scss" scoped>
 .per-page-selector {
   width: 90px;
+}
+
+.keuangan-filter-select {
+  min-width: 190px;
+
+  ::v-deep .vs__selected-options {
+    flex-wrap: nowrap;
+  }
+
+  ::v-deep .vs__selected {
+    width: 100px;
+  }
 }
 </style>
 

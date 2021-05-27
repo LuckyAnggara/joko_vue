@@ -2,7 +2,7 @@ export default [
   {
     path: '/akuntansi/akun/daftar',
     name: 'akuntansi-akun-daftar',
-    component: () => import('@/views/keuangan/akun/Daftar.vue'),
+    component: () => import('@/views/keuangan/akuntansi/akun/Daftar.vue'),
     meta: {
       pageTitle: 'Akun',
       breadcrumb: [
@@ -16,7 +16,7 @@ export default [
   {
     path: '/akuntansi/jurnal/daftar',
     name: 'akuntansi-jurnal-daftar',
-    component: () => import('@/views/keuangan/jurnal/Daftar.vue'),
+    component: () => import('@/views/keuangan/akuntansi/jurnal/Daftar.vue'),
     meta: {
       pageTitle: 'Jurnal',
       breadcrumb: [
@@ -30,7 +30,7 @@ export default [
   {
     path: '/akuntansi/jurnal/tambah',
     name: 'akuntansi-jurnal-tambah',
-    component: () => import('@/views/keuangan/jurnal/Tambah.vue'),
+    component: () => import('@/views/keuangan/akuntansi/jurnal/Tambah.vue'),
     meta: {
       pageTitle: 'Jurnal',
       breadcrumb: [
@@ -44,7 +44,7 @@ export default [
   {
     path: '/akuntansi/jurnal/detail/:id',
     name: 'akuntansi-jurnal-detail',
-    component: () => import('@/views/keuangan/jurnal/Detail.vue'),
+    component: () => import('@/views/keuangan/akuntansi/jurnal/Detail.vue'),
     meta: {
       pageTitle: 'Jurnal',
       breadcrumb: [
@@ -58,7 +58,7 @@ export default [
   {
     path: '/akuntansi/ledger/daftar',
     name: 'akuntansi-ledger-daftar',
-    component: () => import('@/views/keuangan/jurnal/Daftar.vue'),
+    component: () => import('@/views/keuangan/akuntansi/jurnal/Daftar.vue'),
     meta: {
       resource: 'ACL',
       pageTitle: 'Ledger',
@@ -73,7 +73,7 @@ export default [
   {
     path: '/akuntansi/ledger/detail/:id',
     name: 'akuntansi-ledger-detail',
-    component: () => import('@/views/keuangan/ledger/Daftar.vue'),
+    component: () => import('@/views/keuangan/akuntansi/ledger/Detail.vue'),
     meta: {
       pageTitle: 'Ledger',
       breadcrumb: [
@@ -90,7 +90,7 @@ export default [
   {
     path: '/akuntansi/neraca/',
     name: 'akuntansi-neraca',
-    component: () => import('@/views/keuangan/neraca/Detail.vue'),
+    component: () => import('@/views/keuangan/akuntansi/neraca/Detail.vue'),
     meta: {
       pageTitle: 'Neraca',
     },
@@ -98,9 +98,23 @@ export default [
   {
     path: '/akuntansi/laba-rugi/',
     name: 'akuntansi-laba-rugi',
-    component: () => import('@/views/keuangan/laba-rugi/Detail.vue'),
+    component: () => import('@/views/keuangan/akuntansi/laba-rugi/Detail.vue'),
     meta: {
       pageTitle: 'Laba Rugi',
+    },
+  },
+  {
+    path: '/beban/operasional/',
+    name: 'beban-operasional-daftar',
+    component: () => import('@/views/keuangan/beban/operasional/Daftar.vue'),
+    meta: {
+      pageTitle: 'Operasional',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
     },
   },
 ]

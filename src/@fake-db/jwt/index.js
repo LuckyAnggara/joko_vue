@@ -21,17 +21,8 @@ const data = {
       extras: {
         eCommerceCartItemsCount: 5,
       },
-      cabang: {
-        id: 1,
-        kode_cabang: 'BBM001',
-        nama: 'BBM Limbangan (Pusat)',
-        alamat: 'JL Raya Limbangan',
-      },
-      akun: {
-        id: 46,
-        kode_akun: '1.1.2-1',
-        nama: 'KAS KECIL KASIR LUCKY ANGGARA',
-      },
+      cabang_id: 1,
+      kode_akun_id: 46,
     },
     {
       id: 2,

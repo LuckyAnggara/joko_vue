@@ -22,7 +22,7 @@
 
         <!-- Column: DEBIT KREDIT SALDO-->
         <template #cell(saldo)="data">
-          <span>
+          <span :class="data.item.saldo < 0 ? 'text-danger' : ''">
             {{ formatRupiah(data.item.saldo) }}
           </span>
         </template>

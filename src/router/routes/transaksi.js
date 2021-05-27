@@ -51,6 +51,26 @@ export default [
     },
   },
   {
+    path: '/transaksi/penjualan/edit/:id',
+    name: 'transaksi-penjualan-edit',
+    component: () => import('@/views/transaksi/penjualan/edit/EditPenjualan.vue'),
+    meta: {
+      pageTitle: 'Penjualan',
+      breadcrumb: [
+        {
+          text: 'Transaksi',
+        },
+        {
+          text: 'Penjualan',
+        },
+        {
+          text: 'Edit',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/transaksi/invoice',
     name: 'transaksi-penjualan-invoice',
     component: () => import('@/views/transaksi/invoice/InvoicePreview.vue'),
