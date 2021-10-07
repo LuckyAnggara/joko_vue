@@ -6,8 +6,14 @@
           <div class="mb-2">
             <!-- Table Top -->
             <b-row>
-              <!-- Per Page -->
-              <b-col cols="6" md="2">
+              <b-col cols="6" md="2" class="mb-2">
+                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'kegiatan-tambah' }">
+                  <feather-icon icon="PlusIcon" /> Tambah Data
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6" md="1">
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
@@ -15,11 +21,10 @@
                 <label class="mr-1">Filter Status</label>
                 <v-select v-model="statusFilter" :options="statusOption" :clearable="true" />
               </b-col>
-
               <!-- Search -->
-              <b-col cols="6" md="6">
+              <b-col cols="6" md="4">
                 <label class="mr-1">Cari Data</label>
-                <b-form-input v-model="searchQuery" class="d-inline-block mr-1" placeholder="Cari data... " />
+                <b-form-input v-model="searchQuery" placeholder="Cari data... " />
               </b-col>
             </b-row>
           </div>
@@ -125,11 +130,12 @@
 <script>
 import { ref } from '@vue/composition-api'
 import { formatRupiah } from '@core/utils/filter'
-import { BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
+import { BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
 export default {
   components: {
+    BButton,
     BBadge,
     BSpinner,
     BCard,

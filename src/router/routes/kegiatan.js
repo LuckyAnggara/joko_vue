@@ -5,7 +5,7 @@ export default [
     component: () => import('@/views/kegiatan/Daftar.vue'),
     meta: {
       // resource: 'ACL',
-      pageTitle: 'Realisasi Kegiatan',
+      pageTitle: 'Kegiatan',
       breadcrumb: [
         {
           text: 'Daftar',
@@ -20,7 +20,7 @@ export default [
     component: () => import('@/views/kegiatan/Tambah.vue'),
     meta: {
       // resource: 'ACL',
-      pageTitle: 'Tambah Kegiatan',
+      pageTitle: 'Kegiatan',
       breadcrumb: [
         {
           text: 'Daftar',

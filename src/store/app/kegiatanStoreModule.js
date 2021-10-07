@@ -45,5 +45,25 @@ export default {
           .catch(error => reject(error))
       })
     },
+    storeRealisasiKegiatan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}realisasi/store`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeLampiranRealisasiKegiatan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}realisasi/store-lampiran`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
   },
 }
