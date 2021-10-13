@@ -45,6 +45,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchDetailRealisasiKegiatan(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}realisasi/show?id=${id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     storeRealisasiKegiatan(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
@@ -58,7 +68,38 @@ export default {
     storeLampiranRealisasiKegiatan(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`${axios.defaults.baseURL}realisasi/store-lampiran`, data)
+          .post(`${axios.defaults.baseURL}realisasi/upload-lampiran`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    deleteRealisasiKegiatan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`${axios.defaults.baseURL}realisasi/delete-realisasi?id=${data.id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    updateStatusRealisasiKegiatan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}realisasi/update-status`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    // LAPORAN
+    fetchLaporanRincian(ctx, params) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}realisasi/laporan-rincian?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
           .then(response => {
             resolve(response)
           })

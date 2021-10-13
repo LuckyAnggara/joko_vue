@@ -1,15 +1,20 @@
 <template>
   <section>
     <b-row class="match-height">
+      <b-col lg="3">
+        <b-card>
+          <b-form-group label="Tahun Anggaran">
+            <v-select v-model="tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" />
+          </b-form-group>
+        </b-card>
+      </b-col>
       <b-col lg="12" cols="12">
         <b-card>
           <div class="mb-2">
             <!-- Table Top -->
             <b-row>
               <b-col cols="6" md="2" class="mb-2">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'kegiatan-tambah' }">
-                  <feather-icon icon="PlusIcon" /> Tambah Data
-                </b-button>
+                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'mak-tambah' }"> <feather-icon icon="PlusIcon" /> Tambah Data </b-button>
               </b-col>
             </b-row>
             <b-row>
@@ -17,12 +22,12 @@
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
-              <b-col cols="6" md="2">
-                <label class="mr-1">Filter Status</label>
-                <v-select v-model="statusFilter" :options="statusOption" :clearable="true" />
+              <b-col cols="6" md="5">
+                <label class="mr-1">Filter Bidang</label>
+                <v-select v-model="bidangFilter" :options="bidangOption" label="nama" :clearable="true" />
               </b-col>
               <!-- Search -->
-              <b-col cols="6" md="4">
+              <b-col cols="6" md="6">
                 <label class="mr-1">Cari Data</label>
                 <b-form-input v-model="searchQuery" placeholder="Cari data... " />
               </b-col>
@@ -34,7 +39,7 @@
             responsive
             primary-key="id"
             :fields="tableColumns"
-            :items="dataRealisasi"
+            :items="dataMak"
             :current-page="currentPage"
             :per-page="perPage"
             :sort-by.sync="sortBy"
@@ -54,30 +59,16 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(tanggal)="data">
+            <template #cell(dipa)="data">
               <span>
-                {{ $moment(data.item.tanggal_spb).format('DD-MMMM-YYYY') }}
+                {{ formatRupiah(data.item.dipa) }}
               </span>
             </template>
-            <template #cell(kode_mak)="data">
+
+            <template #cell(bidang)="data">
               <span>
-                {{ data.item.kegiatan.kode }}
+                {{ data.item.bidang.nama }}
               </span>
-            </template>
-            <template #cell(nominal)="data">
-              <span>
-                {{ formatRupiah(data.item.nominal) }}
-              </span>
-            </template>
-            <template #cell(status)="data">
-              <div class="text-nowrap">
-                <template>
-                  <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI'"> VERIFIKASI PPK </b-badge>
-                  <b-badge pill variant="light-primary" v-if="data.item.status === 'PEMBAYARAN'"> {{ data.item.status }} BENDAHARA</b-badge>
-                  <b-badge pill variant="light-danger" v-if="data.item.status === 'DITOLAK'"> {{ data.item.status }} </b-badge>
-                  <b-badge pill variant="light-success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
-                </template>
-              </div>
             </template>
             <!-- Column: Actions -->
             <template #cell(actions)="data">
@@ -97,9 +88,9 @@
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                   </template>
-                  <b-dropdown-item @click="delete_data(data.item.id)" v-if="data.item.status === 'VERIFIKASI'">
+                  <b-dropdown-item @click="delete_data(data.item.id)">
                     <feather-icon icon="" />
-                    <span class="align-middle ml-50">Delete</span>
+                    <span class="align-middle ml-50">Hapus</span>
                   </b-dropdown-item>
                 </b-dropdown>
               </div>
@@ -141,13 +132,13 @@
 <script>
 import { ref } from '@vue/composition-api'
 import { formatRupiah } from '@core/utils/filter'
-import { BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
+import { BFormGroup, BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 
 export default {
   components: {
+    BFormGroup,
     BButton,
-    BBadge,
     BSpinner,
     BCard,
     BRow,
@@ -166,9 +157,9 @@ export default {
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataRealisasi = this.dataTemp
+        this.dataMak = this.dataTemp
       } else {
-        this.dataRealisasi = this.dataTemp.filter(
+        this.dataMak = this.dataTemp.filter(
           item =>
             item.kegiatan.nama.toLowerCase().indexOf(query) > -1 ||
             item.kegiatan.kode.toLowerCase().indexOf(query) > -1 ||
@@ -178,12 +169,15 @@ export default {
       }
     },
     /* eslint-enable */
-    statusFilter(x) {
+    bidangFilter(x) {
       if (x === '' || x === null) {
-        this.dataRealisasi = this.dataTemp
+        this.dataMak = this.dataTemp
       } else {
-        this.dataRealisasi = this.dataTemp.filter(item => item.status === x)
+        this.dataMak = this.dataTemp.filter(item => item.bidang_id === x.id)
       }
+    },
+    tahun() {
+      this.loadMak()
     },
   },
   computed: {
@@ -196,30 +190,30 @@ export default {
       }
     },
     totalData() {
-      return this.dataRealisasi.length
+      return this.dataMak.length
     },
   },
+
   methods: {
     formatRupiah,
-    loadKegiatan() {
+    loadMak() {
       this.isBusy = !this.isBusy
       this.$store
-        .dispatch('app-kegiatan/fetchListRealisasiKegiatan', {
-          tahun_id: this.tahun.id,
-          bidang_id: this.userData.role === 'USER' ? this.userData.bidang_id : 0,
+        .dispatch('app-mak/fetchMak', {
+          tahun_id: this.tahun === null ? 1 : this.tahun.id,
+          bidang_id: 0, // ADMIN AKSES
         })
         .then(res => {
           this.isBusy = !this.isBusy
           this.dataTemp = res.data
-          this.dataRealisasi = this.dataTemp
-          if (this.userData.role === 'BENDAHARA') this.dataRealisasi = this.dataTemp.filter(x => x.status === 'PEMBAYARAN')
-          if (this.userData.role === 'PPK') this.dataRealisasi = this.dataTemp.filter(x => x.status === 'VERIFIKASI')
+          this.dataMak = this.dataTemp
         })
     },
     delete_data(id) {
       this.$swal({
         title: 'Hapus data ?',
-        text: 'Data kegiatan akan di Hapus!',
+        text: 'Menghapus MAK akan menghapus Data Realisasi!!',
+
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -232,12 +226,12 @@ export default {
         if (result.value) {
           this.isBusy = !this.isBusy
           this.$store
-            .dispatch('app-kegiatan/deleteRealisasiKegiatan', {
+            .dispatch('app-mak/deleteMAK', {
               id,
             })
             .then(x => {
               if (x.status === 200) {
-                this.loadKegiatan()
+                this.loadMak()
                 this.$swal({
                   icon: 'success',
                   title: 'Data berhasil di hapus!',
@@ -259,44 +253,42 @@ export default {
         }
       })
     },
+    loadBidang() {
+      this.$store.dispatch('app-mak/fetchBidang').then(res => {
+        this.bidangOption = res.data
+      })
+    },
+    loadTahun() {
+      this.$store.dispatch('app-mak/fetchTahun').then(res => {
+        this.tahunOption = res.data
+      })
+    },
   },
   mounted() {
-    this.loadKegiatan()
+    this.loadBidang()
+    this.loadTahun()
+    this.loadMak()
   },
   setup() {
-    const userData = JSON.parse(localStorage.getItem('userData'))
-    const tahun = {
-      id: 1,
-      nama: 2021,
-    }
+    const tahun = ref(null)
     const isBusy = false
-    const dataRealisasi = ref([])
+    const dataMak = ref([])
     const dataTemp = ref([])
-    const tableColumns = [
-      { key: 'id', label: '#' },
-      { key: 'tanggal' },
-      { key: 'nomor_kwitansi' },
-      { key: 'uraian', label: 'Uraian Kegiatan' },
-      { key: 'kode_mak' },
-      { key: 'nominal' },
-      { key: 'status' },
-      { key: 'actions' },
-    ]
+    const tableColumns = [{ key: 'id', label: '#' }, { key: 'kode' }, { key: 'nama' }, { key: 'bidang' }, { key: 'dipa' }, { key: 'actions' }]
     const searchQuery = ref('')
     const perPage = ref(10)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    // eslint-disable-next-line
-    const statusFilter = ref(userData.role === 'BENDAHARA' ? 'PEMBAYARAN' : userData.role === 'PPK' ? 'VERIFIKASI' : '')
-    const statusOption = ref(['VERIFIKASI', 'PEMBAYARAN', 'DITOLAK', 'SELESAI'])
+    const bidangFilter = ref('')
+    const bidangOption = ref([])
+    const tahunOption = ref([])
     return {
-      userData,
       tahun,
       isBusy,
       tableColumns,
-      dataRealisasi,
+      dataMak,
       dataTemp,
       searchQuery,
       perPage,
@@ -304,8 +296,9 @@ export default {
       perPageOptions,
       sortBy,
       isSortDirDesc,
-      statusFilter,
-      statusOption,
+      bidangFilter,
+      bidangOption,
+      tahunOption,
     }
   },
 }

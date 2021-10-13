@@ -2,6 +2,7 @@ import Vue from 'vue'
 import FeatherIcon from '@core/components/feather-icon/FeatherIcon.vue'
 import Loading from 'vue-loading-overlay'
 import VueMoment from 'vue-moment'
+import BOverlay from 'bootstrap-vue'
 
 Vue.use(Loading, {
   // props
@@ -18,3 +19,4 @@ Vue.use(Loading, {
 })
 Vue.use(VueMoment)
 Vue.component(FeatherIcon.name, FeatherIcon)
+Vue.component('BOverlay', BOverlay)

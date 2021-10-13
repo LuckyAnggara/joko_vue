@@ -30,8 +30,9 @@ tag
 tagVariant
 
 */
+import mak from './mak'
 import dashboard from './dashboard'
 import kegiatan from './kegiatan'
 
 // Array of sections
-export default [...dashboard, ...kegiatan]
+export default [...dashboard, ...kegiatan, ...mak]

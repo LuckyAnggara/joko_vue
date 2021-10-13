@@ -19,7 +19,6 @@ export default [
     name: 'kegiatan-tambah',
     component: () => import('@/views/kegiatan/Tambah.vue'),
     meta: {
-      // resource: 'ACL',
       pageTitle: 'Kegiatan',
       breadcrumb: [
         {
@@ -27,6 +26,23 @@ export default [
         },
         {
           text: 'Tambah Data',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/kegiatan/detail?:id',
+    name: 'kegiatan-detail',
+    component: () => import('@/views/kegiatan/Detail.vue'),
+    meta: {
+      pageTitle: 'Kegiatan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail Data',
           active: true,
         },
       ],

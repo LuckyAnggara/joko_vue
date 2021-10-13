@@ -6,6 +6,8 @@ import { canNavigate } from '@/libs/acl/routeProtection'
 import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 import dashboard from './routes/dashboard'
 import kegiatan from './routes/kegiatan'
+import laporan from './routes/laporan'
+import mak from './routes/mak'
 
 Vue.use(VueRouter)
 
@@ -18,7 +20,9 @@ const router = new VueRouter({
   routes: [
     { path: '/', redirect: { name: 'dashboard-ecommerce' } },
     ...kegiatan,
+    ...laporan,
     ...dashboard,
+    ...mak,
     {
       path: '*',
       redirect: 'error-404',

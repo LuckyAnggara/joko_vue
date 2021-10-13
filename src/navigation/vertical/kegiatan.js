@@ -21,10 +21,11 @@ export default [
     icon: 'ShieldIcon',
     children: [
       {
-        title: 'Laporan MAK',
+        title: 'Laporan Rincian',
+        route: 'laporan-rincian',
       },
       {
-        title: 'Laporan Kegiatan',
+        title: 'Laporan Global',
       },
     ],
   },
