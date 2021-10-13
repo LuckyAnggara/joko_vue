@@ -97,6 +97,16 @@
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                   </template>
+                  <b-dropdown-item
+                    @click="
+                      $router.push({
+                        name: 'print-kwitansi',
+                      })
+                    "
+                  >
+                    <feather-icon icon="" />
+                    <span class="align-middle ml-50">Print</span>
+                  </b-dropdown-item>
                   <b-dropdown-item @click="delete_data(data.item.id)" v-if="data.item.status === 'VERIFIKASI'">
                     <feather-icon icon="" />
                     <span class="align-middle ml-50">Delete</span>

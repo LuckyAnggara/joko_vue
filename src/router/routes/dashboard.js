@@ -10,6 +10,11 @@ export default [
     component: () => import('@/views/dashboard/ecommerce/Ecommerce.vue'),
   },
   {
+    path: '/dashboard/user',
+    name: 'dashboard-user',
+    component: () => import('@/views/dashboard/user/Analytics.vue'),
+  },
+  {
     path: '/login',
     name: 'auth-login',
     component: () => import('@/views/auth/Login.vue'),
@@ -17,6 +22,14 @@ export default [
       layout: 'full',
       resource: 'Auth',
       redirectIfLoggedIn: true,
+    },
+  },
+  {
+    path: '/kwitansi',
+    name: 'print-kwitansi',
+    component: () => import('@/views/print/Kwitansi2.vue'),
+    meta: {
+      layout: 'full',
     },
   },
 ]

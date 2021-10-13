@@ -13,6 +13,10 @@ export default [
         title: 'Analytics',
         route: 'dashboard-analytics',
       },
+      {
+        title: 'User',
+        route: 'dashboard-user',
+      },
     ],
   },
 ]

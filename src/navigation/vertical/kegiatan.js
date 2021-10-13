@@ -1,6 +1,6 @@
 export default [
   {
-    header: 'User',
+    header: 'Layanan Keuangan',
   },
   {
     title: 'Kegiatan',
@@ -10,10 +10,6 @@ export default [
         title: 'Daftar',
         route: 'kegiatan-daftar',
       },
-      {
-        title: 'Tambah',
-        route: 'kegiatan-tambah',
-      },
     ],
   },
   {
@@ -21,11 +17,8 @@ export default [
     icon: 'ShieldIcon',
     children: [
       {
-        title: 'Laporan Rincian',
+        title: 'Laporan Realisasi',
         route: 'laporan-rincian',
-      },
-      {
-        title: 'Laporan Global',
       },
     ],
   },

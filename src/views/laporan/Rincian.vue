@@ -47,12 +47,12 @@
               </b-col>
             </b-row>
           </div>
-          <section v-for="item in dataRealisasi" :key="item.id">
+          <section v-for="(item, index) in dataRealisasi" :key="index">
             <hr />
             <b-row>
               <b-col lg="1">
                 <b-form-group label="No" label-size="sm">
-                  <b-form-input :value="item.id" size="sm" plaintext />
+                  <b-form-input :value="index + 1" size="sm" plaintext />
                 </b-form-group>
               </b-col>
               <b-col lg="2">

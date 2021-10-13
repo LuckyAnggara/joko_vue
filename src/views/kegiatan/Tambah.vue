@@ -116,7 +116,7 @@
             <b-form-group label="Pesentase">
               <b-form-input
                 readonly
-                :value="form.kegiatan === null ? '0%' : `${parseFloat(form.kegiatan.realisasi) / parseFloat(form.kegiatan.dipa)}%`"
+                :value="form.kegiatan === null ? '0%' : `${((parseFloat(form.kegiatan.realisasi) / parseFloat(form.kegiatan.dipa)) * 100).toFixed(2)}%`"
                 placeholder="%"
               />
             </b-form-group>
@@ -228,29 +228,35 @@ export default {
         if (result.value) {
           this.show = !this.show
           this.form.lampiran = this.file
-          this.$store.dispatch('app-kegiatan/storeRealisasiKegiatan', this.form).then(res => {
-            if (res.status === 200) {
-              for (let i = 0; i < this.attachments.length; i += 1) {
-                this.file.append('lampiran[]', this.attachments[i])
-              }
-              this.file.append('id', res.data.id)
-              this.title = 'Upload lampiran ...'
-              this.prosesing = !this.prosesing
-              this.clearInterval()
-              this.$store.dispatch('app-kegiatan/storeLampiranRealisasiKegiatan', this.file).then(x => {
-                if (x.status === 200) {
-                  this.success()
-                  this.prosesing = !this.prosesing
-                } else {
-                  this.error(x.status)
+          this.$store
+            .dispatch('app-kegiatan/storeRealisasiKegiatan', this.form)
+            .then(res => {
+              if (res.status === 200) {
+                for (let i = 0; i < this.attachments.length; i += 1) {
+                  this.file.append('lampiran[]', this.attachments[i])
                 }
-                this.show = !this.show
-                this.$router.push({ name: 'kegiatan-daftar' })
-              })
-            } else {
-              this.error(res.status)
-            }
-          })
+                this.file.append('id', res.data.id)
+                this.title = 'Upload lampiran ...'
+                this.processing = !this.processing
+                this.clearInterval()
+                this.$store.dispatch('app-kegiatan/storeLampiranRealisasiKegiatan', this.file).then(x => {
+                  if (x.status === 200) {
+                    this.success()
+                    this.processing = !this.processing
+                  } else {
+                    this.error(x.status)
+                  }
+                  this.show = !this.show
+                  this.$router.push({ name: 'kegiatan-daftar' })
+                })
+              } else {
+                this.error(res.status)
+              }
+            })
+            .catch(e => {
+              this.error(e)
+              this.show = !this.show
+            })
         }
       })
     },
@@ -289,7 +295,7 @@ export default {
   },
   setup() {
     const title = ref('Membuat relisasi kegiatan .... ')
-    const prosesing = ref(false)
+    const processing = ref(false)
 
     const show = ref(false)
     const file = new FormData()
@@ -313,7 +319,7 @@ export default {
     const tahun = ref({})
 
     return {
-      prosesing,
+      processing,
       title,
       show,
       file,

@@ -11,7 +11,7 @@
     <b-row>
       <b-col lg="8" sm="12">
         <!-- <b-form autocomplete="off" @submit.prevent @submit="store"> -->
-        <b-card title="Data Realisasi" v-if="dataRealisasi === null ? false : true">
+        <b-card :title="`Data Realisasi Nomor : ${dataRealisasi.nomor_kwitansi}`" v-if="dataRealisasi === null ? false : true">
           <b-row>
             <b-col cols="12">
               <b-form-group label="Tahun Anggaran" label-cols-md="3">
