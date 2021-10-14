@@ -9,6 +9,7 @@ import verticalMenu from './vertical-menu'
 import kegiatanStoreModule from './app/kegiatanStoreModule'
 import authStoreModule from './app/authStoreModule'
 import makStoreModule from './app/makStoreModule'
+import generalStoreModul from './app/generalStoreModul'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     'app-auth': authStoreModule,
     'app-admin': adminStoreModule,
     'app-mak': makStoreModule,
+    'app-general': generalStoreModul,
   },
   strict: process.env.DEV,
 })

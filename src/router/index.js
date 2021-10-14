@@ -8,6 +8,7 @@ import dashboard from './routes/dashboard'
 import kegiatan from './routes/kegiatan'
 import laporan from './routes/laporan'
 import mak from './routes/mak'
+import perjadin from './routes/perjadin'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,7 @@ const router = new VueRouter({
     ...laporan,
     ...dashboard,
     ...mak,
+    ...perjadin,
     {
       path: '*',
       redirect: 'error-404',
