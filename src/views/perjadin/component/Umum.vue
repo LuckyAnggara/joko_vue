@@ -28,6 +28,43 @@
             </b-form-group>
           </b-col>
         </b-row>
+        <hr />
+        <b-row>
+          <b-col cols="12">
+            <b-form-group label="Tujuan" label-cols-md="3">
+              <b-form-input v-model="form.umum.tujuan" type="text" placeholder="Tujuan Perjalanan Dinas" required />
+            </b-form-group>
+          </b-col>
+
+          <b-col cols="12">
+            <b-form-group label="Keberangkatan" label-cols-md="3">
+              <b-form-input v-model="form.umum.keberangkatan" type="text" placeholder="Keberangkatan Perjalanan Dinas" required />
+            </b-form-group>
+          </b-col>
+
+          <b-col cols="12">
+            <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
+              <b-row>
+                <b-col md="6">
+                  <b-form-group label="Tanggal Berangkat">
+                    <b-form-datepicker locale="id" v-model="form.umum.tanggal_keberangkatan" placeholder="Tanggal Berangkat" @input="hari()" />
+                  </b-form-group>
+                </b-col>
+                <b-col md="6">
+                  <b-form-group label="Tanggal Kembali">
+                    <b-form-datepicker locale="id" v-model="form.umum.tanggal_kembali" placeholder="Tanggal Kembali" @input="hari()" />
+                  </b-form-group>
+                </b-col>
+              </b-row>
+            </b-form-group>
+          </b-col>
+
+          <b-col cols="12">
+            <b-form-group label="Jumlah Hari" label-cols-md="3">
+              <b-form-input v-model="form.umum.jumlah_hari" type="text" placeholder="Jumlah Hari Pelaksanaan Perjalanan Dinas" />
+            </b-form-group>
+          </b-col>
+        </b-row>
       </b-card-body>
     </b-col>
   </b-row>
@@ -36,6 +73,7 @@
 <script>
 // import { ref } from '@vue/composition-api'
 import { BFormDatepicker, BCardBody, BRow, BCol, BFormInput, BFormGroup, BFormTextarea } from 'bootstrap-vue'
+import Ripple from 'vue-ripple-directive'
 
 import vSelect from 'vue-select'
 
@@ -50,14 +88,18 @@ export default {
     BFormTextarea,
     vSelect,
   },
+  directives: {
+    Ripple,
+  },
+  props: {
+    form: Object,
+  },
   computed: {
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
     },
   },
-  props: {
-    form: Object,
-  },
+
   setup() {
     // const tahunOption = ref()
     return {

@@ -2,9 +2,18 @@
   <section>
     <b-card>
       <b-tabs v-model="tabIndex">
-        <b-tab title="Surat Perintah" active> <surat-perintah :form="form" /> </b-tab>
-        <b-tab title="Susunan Tim"> <susunan-tim :form="form"/></b-tab>
-        <b-tab title="Rencana Anggaran"> </b-tab>
+        <b-tab title="Umum" active>
+          <hr />
+          <umum :form="form" />
+        </b-tab>
+        <b-tab title="Susunan Tim">
+          <hr />
+          <susunan-tim :form="form"
+        /></b-tab>
+        <b-tab title="Rencana Anggaran">
+          <hr />
+          <rencana-anggaran :form="form"
+        /></b-tab>
         <b-tab title="Objek Pemeriksaan"> </b-tab>
       </b-tabs>
 
@@ -27,8 +36,9 @@
 import { ref } from '@vue/composition-api'
 import { BButtonGroup, BButton, BCard, BTab, BTabs } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import SuratPerintah from './component/SuratPerintah.vue'
+import Umum from './component/Umum.vue'
 import SusunanTim from './component/SusunanTim.vue'
+import RencanaAnggaran from './component/RencanaAnggaran.vue'
 
 export default {
   components: {
@@ -37,8 +47,9 @@ export default {
     BCard,
     BTab,
     BTabs,
-    SuratPerintah,
+    Umum,
     SusunanTim,
+    RencanaAnggaran,
   },
   directives: {
     Ripple,
@@ -49,22 +60,35 @@ export default {
   mounted() {
     this.loadTahun()
     this.loadPegawai()
+    this.loadPeran()
   },
   methods: {
     loadTahun() {
-      this.$store.dispatch('app-kegiatan/fetchTahun').then(res => {
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
         this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
     loadPegawai() {
-      this.$store.dispatch('app-kegiatan/fetchPegawai').then(res => {
+      this.$store.dispatch('app-general/fetchPegawai').then(res => {
         this.$store.commit('app-general/SET_PEGAWAI', res.data)
+      })
+    },
+    loadPeran() {
+      this.$store.dispatch('app-general/fetchPeran').then(res => {
+        this.$store.commit('app-general/SET_PERAN', res.data)
       })
     },
   },
   setup() {
     const form = ref({
       tahun: null,
+      umum: {
+        tujuan: null,
+        keberangkatan: 'Jakarta',
+        tanggal_berangkat: null,
+        tanggal_kembali: null,
+        jumlah_hari: 0,
+      },
       surat_perintah: {
         nomor_surat: null,
         tanggal_surat: null,

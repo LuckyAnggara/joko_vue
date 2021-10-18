@@ -2,30 +2,34 @@
   <!-- <b-row class="match-height"> -->
 
   <b-row class="match-height">
-    <b-col lg="8" sm="12">
+    <b-col lg="10" sm="12">
       <b-card-body>
         <b-row>
           <b-col md="3" lg="3" sm="12" class="mb-2">
-            <b-button variant="primary" class="btn-icon" size="md" @click="tambahPegawai()"> Tambah Pegawai </b-button>
+            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="primary" class="btn-icon" size="lg" @click="tambahPegawai()">
+              <feather-icon icon="UserPlusIcon" />
+            </b-button>
           </b-col>
         </b-row>
-        <b-row>
-          <b-col lg="1">
-            <label>No. </label>
-          </b-col>
-          <b-col lg="2">
-            <label>NIP </label>
-          </b-col>
-          <b-col lg="5">
-            <label>Nama Pegawai </label>
-          </b-col>
-          <b-col lg="3">
-            <label>Peran </label>
-          </b-col>
-          <b-col lg="1">
-            <label>Action </label>
-          </b-col>
-        </b-row>
+        <ul style="list-style-type: none;">
+          <b-row>
+            <b-col lg="1">
+              <label>No. </label>
+            </b-col>
+            <b-col lg="2">
+              <label>NIP </label>
+            </b-col>
+            <b-col lg="5">
+              <label>Nama Pegawai </label>
+            </b-col>
+            <b-col lg="3">
+              <label>Peran </label>
+            </b-col>
+            <b-col lg="1">
+              <label>Action </label>
+            </b-col>
+          </b-row>
+        </ul>
         <hr />
         <ul style="list-style-type: none;" v-for="(tim, index) in form.susunan_tim" :key="tim.id">
           <b-row>
@@ -33,16 +37,18 @@
               <b-form-input plaintext :value="index + 1" />
             </b-col>
             <b-col lg="2">
-              <b-form-input value="1" />
+              <b-form-input plaintext :value="form.susunan_tim[index].nip" />
             </b-col>
             <b-col lg="5">
-              <v-select placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
+              <v-select v-model="form.susunan_tim[index]" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
             </b-col>
             <b-col lg="3">
-              <b-form-input value="1" />
+              <v-select v-model="form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
             </b-col>
             <b-col lg="1">
-              <b-form-input value="1" />
+              <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-danger" class="btn-icon rounded-circle" @click="deletePegawai(index)">
+                <feather-icon icon="TrashIcon" />
+              </b-button>
             </b-col>
           </b-row>
         </ul>
@@ -52,38 +58,21 @@
 </template>
 
 <script>
-import {
-  // BOverlay,
-  //  BBadge,
-  BCardBody,
-  // BFormDatepicker,
-  //  BFormFile,
-  // BForm,
-  // BCard,
-  BRow,
-  BCol,
-  BButton,
-  BFormInput,
-  // BFormGroup,
-  // BFormTextarea,
-} from 'bootstrap-vue'
+import { BCardBody, BRow, BCol, BButton, BFormInput } from 'bootstrap-vue'
 import vSelect from 'vue-select'
-
-// import { ref } from '@vue/composition-api'
-// import Ripple from 'vue-ripple-directive'
-// import { formatRupiah } from '@core/utils/filter'
+import Ripple from 'vue-ripple-directive'
 
 export default {
   components: {
-    // BFormDatepicker,
     BRow,
     BCol,
     BCardBody,
     BButton,
     BFormInput,
-    // BFormGroup,
-    // BFormTextarea,
     vSelect,
+  },
+  directives: {
+    Ripple,
   },
   props: {
     form: Object,
@@ -92,15 +81,36 @@ export default {
     pegawaiOption() {
       return this.$store.getters['app-general/getPegawai']
     },
+    peranOption() {
+      return this.$store.getters['app-general/getPeran']
+    },
   },
   methods: {
     tambahPegawai() {
-      const data = {
+      const dataPegawai = {
         nip: null,
         nama_pegawai: null,
         peran: null,
       }
-      this.form.susunan_tim.push(data)
+      const dataRab = {
+        jumlah_hari: this.form.umum.jumlah_hari,
+        uang_harian: 0,
+        jumlah_malam: 0,
+        harga_hotel: 0,
+        udara: 0,
+        laut: 0,
+        darat: 0,
+        taksi_jakarta: 0,
+        taksi_provinsi: 0,
+        representatif: 0,
+      }
+      this.form.susunan_tim.push(dataPegawai)
+      this.form.rencana_anggaran.push(dataRab)
+      console.info(this.form)
+    },
+    deletePegawai(i) {
+      this.form.susunan_tim.splice(i, 1)
+      this.form.rencana_anggaran.splice(i, 1)
     },
   },
 }
