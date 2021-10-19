@@ -2,70 +2,72 @@
   <!-- <b-row class="match-height"> -->
   <b-row>
     <b-col lg="8" sm="12">
-      <b-card-body>
-        <b-row>
-          <b-col cols="12">
-            <b-form-group label="Tahun Anggaran" label-cols-md="3">
-              <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" />
-            </b-form-group>
-          </b-col>
+      <form autocomplete="off">
+        <b-card-body>
+          <b-row>
+            <b-col cols="12">
+              <b-form-group label="Tahun Anggaran" label-cols-md="3">
+                <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" />
+              </b-form-group>
+            </b-col>
 
-          <b-col cols="12">
-            <b-form-group label="Nomor Surat Perintah" label-cols-md="3">
-              <b-form-input v-model="form.surat_perintah.nomor_surat" type="text" placeholder="Nomor Surat Perintah" required />
-            </b-form-group>
-          </b-col>
+            <b-col cols="12">
+              <b-form-group label="Nomor Surat Perintah" label-cols-md="3">
+                <b-form-input v-model="form.surat_perintah.nomor_surat" type="text" placeholder="Nomor Surat Perintah" required />
+              </b-form-group>
+            </b-col>
 
-          <b-col cols="12">
-            <b-form-group label="Tanggal Surat Perintah" label-cols-md="3">
-              <b-form-datepicker v-model="form.surat_perintah.tanggal_surat" placeholder="Tanggal Surat Perintah" />
-            </b-form-group>
-          </b-col>
+            <b-col cols="12">
+              <b-form-group label="Tanggal Surat Perintah" label-cols-md="3">
+                <b-form-datepicker v-model="form.surat_perintah.tanggal_surat" placeholder="Tanggal Surat Perintah" />
+              </b-form-group>
+            </b-col>
 
-          <b-col cols="12">
-            <b-form-group label="Perihal" label-cols-md="3">
-              <b-form-textarea v-model="form.surat_perintah.perihal" placeholder="Perihal" />
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <hr />
-        <b-row>
-          <b-col cols="12">
-            <b-form-group label="Tujuan" label-cols-md="3">
-              <b-form-input v-model="form.umum.tujuan" type="text" placeholder="Tujuan Perjalanan Dinas" required />
-            </b-form-group>
-          </b-col>
+            <b-col cols="12">
+              <b-form-group label="Perihal" label-cols-md="3">
+                <b-form-textarea v-model="form.surat_perintah.perihal" placeholder="Perihal" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <hr />
+          <b-row>
+            <b-col cols="12">
+              <b-form-group label="Tujuan" label-cols-md="3">
+                <b-form-input v-model="form.umum.tujuan" type="text" placeholder="Tujuan Perjalanan Dinas" required />
+              </b-form-group>
+            </b-col>
 
-          <b-col cols="12">
-            <b-form-group label="Keberangkatan" label-cols-md="3">
-              <b-form-input v-model="form.umum.keberangkatan" type="text" placeholder="Keberangkatan Perjalanan Dinas" required />
-            </b-form-group>
-          </b-col>
+            <b-col cols="12">
+              <b-form-group label="Keberangkatan" label-cols-md="3">
+                <b-form-input v-model="form.umum.keberangkatan" type="text" placeholder="Keberangkatan Perjalanan Dinas" required />
+              </b-form-group>
+            </b-col>
 
-          <b-col cols="12">
-            <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
-              <b-row>
-                <b-col md="6">
-                  <b-form-group label="Tanggal Berangkat">
-                    <b-form-datepicker locale="id" v-model="form.umum.tanggal_keberangkatan" placeholder="Tanggal Berangkat" @input="hari()" />
-                  </b-form-group>
-                </b-col>
-                <b-col md="6">
-                  <b-form-group label="Tanggal Kembali">
-                    <b-form-datepicker locale="id" v-model="form.umum.tanggal_kembali" placeholder="Tanggal Kembali" @input="hari()" />
-                  </b-form-group>
-                </b-col>
-              </b-row>
-            </b-form-group>
-          </b-col>
+            <b-col cols="12">
+              <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
+                <b-row>
+                  <b-col md="6">
+                    <b-form-group label="Tanggal Berangkat">
+                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_keberangkatan" placeholder="Tanggal Berangkat" @input="hari()" />
+                    </b-form-group>
+                  </b-col>
+                  <b-col md="6">
+                    <b-form-group label="Tanggal Kembali">
+                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_kembali" placeholder="Tanggal Kembali" @input="hari()" />
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-form-group>
+            </b-col>
 
-          <b-col cols="12">
-            <b-form-group label="Jumlah Hari" label-cols-md="3">
-              <b-form-input v-model="form.umum.jumlah_hari" type="text" placeholder="Jumlah Hari Pelaksanaan Perjalanan Dinas" />
-            </b-form-group>
-          </b-col>
-        </b-row>
-      </b-card-body>
+            <b-col cols="12">
+              <b-form-group label="Jumlah Hari" label-cols-md="3">
+                <b-form-input v-model="form.umum.jumlah_hari" type="text" placeholder="Jumlah Hari Pelaksanaan Perjalanan Dinas" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-card-body>
+      </form>
     </b-col>
   </b-row>
 </template>

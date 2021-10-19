@@ -9,16 +9,71 @@
             <b-col lg="1">
               <label>No. </label>
             </b-col>
-            <b-col lg="4">
+            <b-col lg="11">
               <label>Nama Pegawai </label>
             </b-col>
           </b-row>
         </ul>
         <hr />
-        <ul style="list-style-type: none;" v-for="(tim, i) in form.susunan_tim" :key="tim.id">
+        <b-table small :fields="tableRAB" :items="form.rencana_anggaran" responsive bordered :sticky-header="stickyHeader" :no-border-collapse="noCollapse">
+          <template #thead-top>
+            <b-tr>
+              <b-th class="text-center" sticky-column style="width:15%" rowspan="2">Nama Pegawai</b-th>
+              <b-th class="text-center" colspan="2">Uang Harian</b-th>
+              <b-th class="text-center" colspan="2">Hotel</b-th>
+              <b-th class="text-center" colspan="5">Biaya</b-th>
+              <b-th class="text-center" rowspan="2">representatif</b-th>
+              <b-th class="text-center" rowspan="2">Total</b-th>
+            </b-tr>
+          </template>
+          <template #table-colgroup="scope">
+            <col v-for="field in scope.fields" :key="field.key" :style="{ width: field.key === 'hari' ? '50px' : '50px' }" />
+          </template>
+          <template #cell(nama_pegawai)="data">
+            <span>
+              {{ form.susunan_tim[data.index].nama }}
+            </span>
+          </template>
+          <template #cell(hari)="data">
+            <b-form-input v-model="data.item.jumlah_hari" />
+          </template>
+          <template #cell(uang_harian)="data">
+            <b-form-input v-model="data.item.uang_harian" />
+          </template>
+          <template #cell(malam)="data">
+            <b-form-input v-model="data.item.jumlah_malam" />
+          </template>
+
+          <template #cell(harga)="data">
+            <b-form-input v-model="data.item.harga_hotel" />
+          </template>
+
+          <template #cell(udara)="data">
+            <b-form-input v-model="data.item.udara" />
+          </template>
+
+          <template #cell(laut)="data">
+            <b-form-input v-model="data.item.laut" />
+          </template>
+
+          <template #cell(darat)="data">
+            <b-form-input v-model="data.item.darat" />
+          </template>
+
+          <template #cell(taksi_jakarta)="data">
+            <b-form-input v-model="data.item.taksi_jakarta" />
+          </template>
+          <template #cell(taksi_provinsi)="data">
+            <b-form-input v-model="data.item.taksi_provinsi" />
+          </template>
+          <template #cell(representatif)="data">
+            <b-form-input v-model="data.item.representatif" />
+          </template>
+        </b-table>
+        <!-- <ul style="list-style-type: none;" v-for="(tim, i) in form.susunan_tim" :key="tim.id">
           <b-row>
             <b-col lg="1">
-              <b-form-input plaintext :value="i + 1" />
+              <p>{{ i + 1 }}</p>
             </b-col>
             <b-col lg="11">
               <b-form-input :value="form.susunan_tim[i].nama" plaintext />
@@ -76,21 +131,33 @@
                       <b-form-input v-model="form.rencana_anggaran[i].representatif" />
                     </b-td>
                     <b-td>
-                      <b-form-input :value="total(i)" plaintext />
+                      <b-form-input :value="total" plaintext />
                     </b-td>
                   </b-tr>
                 </b-tbody>
               </b-table-simple>
             </b-col>
           </b-row>
-        </ul>
+        </ul> -->
       </b-card-body>
     </b-col>
   </b-row>
 </template>
 
 <script>
-import { BCardBody, BRow, BCol, BFormInput, BTableSimple, BThead, BTbody, BTr, BTh, BTd } from 'bootstrap-vue'
+import {
+  BCardBody,
+  BRow,
+  BCol,
+  BFormInput,
+  BTable,
+  // BTableSimple,
+  // BThead,
+  // BTbody,
+  BTr,
+  BTh,
+  // BTd,
+} from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 
 export default {
@@ -100,12 +167,13 @@ export default {
     BCardBody,
 
     BFormInput,
-    BTableSimple,
-    BThead,
-    BTbody,
+    BTable,
+    // BTableSimple,
+    // BThead,
+    // BTbody,
     BTr,
     BTh,
-    BTd,
+    // BTd,
 
     // vSelect,
   },
@@ -116,32 +184,41 @@ export default {
     Ripple,
   },
   computed: {
-    total(i) {
-      const a = this.form.rencana_anggaran[i]
-      const total =
-        parseFloat(a.jumlah_hari) * parseFloat(a.uang_harian) +
-        parseFloat(a.jumlah_malam) * parseFloat(a.uang_hotel) +
-        parseFloat(a.laut) +
-        parseFloat(a.darat) +
-        parseFloat(a.taksi_jakarta) +
-        parseFloat(a.taksi_provinsi) +
-        parseFloat(a.representatif)
-      return total
+    total() {
+      // const a = this.form.rencana_anggaran[i]
+      // console.info(a)
+      return 0
+      // const total =
+      //   parseFloat(a.jumlah_hari) * parseFloat(a.uang_harian) +
+      //   parseFloat(a.jumlah_malam) * parseFloat(a.uang_hotel) +
+      //   parseFloat(a.laut) +
+      //   parseFloat(a.darat) +
+      //   parseFloat(a.taksi_jakarta) +
+      //   parseFloat(a.taksi_provinsi) +
+      //   parseFloat(a.representatif)
+      // return total
     },
   },
   setup() {
+    const stickyHeader = true
+    const noCollapse = false
     const tableRAB = [
-      { key: 'uang_harian' },
+      { key: 'nama_Pegawai', label: null, stickyColumn: true, isRowHeader: true, variant: 'primary' },
+      { key: 'hari' },
+      { key: 'uang_harian', label: 'Rp.' },
       { key: 'malam' },
-      { key: 'harga' },
+      { key: 'harga', label: 'Rp.' },
       { key: 'udara' },
       { key: 'laut' },
       { key: 'darat' },
       { key: 'taksi_jakarta' },
       { key: 'taksi_provinsi' },
-      { key: 'representatif' },
+      { key: 'representatif', label: null },
+      { key: 'total', label: null },
     ]
     return {
+      stickyHeader,
+      noCollapse,
       tableRAB,
     }
   },
