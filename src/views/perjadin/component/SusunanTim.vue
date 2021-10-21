@@ -2,7 +2,7 @@
   <!-- <b-row class="match-height"> -->
 
   <b-row class="match-height">
-    <b-col lg="10" sm="12">
+    <b-col lg="12" md="12" sm="12">
       <b-card-body>
         <b-row>
           <b-col md="3" lg="3" sm="12" class="mb-2">
@@ -89,24 +89,24 @@ export default {
     tambahPegawai() {
       const dataPegawai = {
         nip: null,
-        nama_pegawai: null,
+        nama: null,
         peran: null,
       }
       const dataRab = {
         jumlah_hari: this.form.umum.jumlah_hari,
         uang_harian: 0,
         jumlah_malam: 0,
-        harga_hotel: 0,
+        uang_hotel: 0,
         udara: 0,
         laut: 0,
         darat: 0,
         taksi_jakarta: 0,
         taksi_provinsi: 0,
         representatif: 0,
+        total: 0,
       }
       this.form.susunan_tim.push(dataPegawai)
       this.form.rencana_anggaran.push(dataRab)
-      console.info(this.form)
     },
     deletePegawai(i) {
       this.form.susunan_tim.splice(i, 1)

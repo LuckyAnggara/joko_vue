@@ -14,7 +14,7 @@
           <hr />
           <rencana-anggaran :form="form"
         /></b-tab>
-        <b-tab title="Objek Pemeriksaan"> </b-tab>
+        <b-tab title="Objek Pemeriksaan"><obrik :form="form" /> </b-tab>
       </b-tabs>
 
       <!-- Control buttons-->
@@ -39,6 +39,7 @@ import Ripple from 'vue-ripple-directive'
 import Umum from './component/Umum.vue'
 import SusunanTim from './component/SusunanTim.vue'
 import RencanaAnggaran from './component/RencanaAnggaran.vue'
+import Obrik from './component/Obrik.vue'
 
 export default {
   components: {
@@ -50,6 +51,7 @@ export default {
     Umum,
     SusunanTim,
     RencanaAnggaran,
+    Obrik,
   },
   directives: {
     Ripple,
@@ -61,6 +63,18 @@ export default {
     this.loadTahun()
     this.loadPegawai()
     this.loadPeran()
+    this.loadKanwil()
+    this.loadUrusan()
+  },
+  watch: {
+    form: {
+      deep: true,
+      handler() {
+        if (this.form.tahun !== null) {
+          this.loadMak()
+        }
+      },
+    },
   },
   methods: {
     loadTahun() {
@@ -78,11 +92,37 @@ export default {
         this.$store.commit('app-general/SET_PERAN', res.data)
       })
     },
+    loadUrusan() {
+      this.$store.dispatch('app-general/fetchUrusan').then(res => {
+        this.$store.commit('app-general/SET_URUSAN', res.data)
+      })
+    },
+    loadKanwil() {
+      if (this.form.tahun !== null || this.form.tahun !== '') {
+        this.$store.dispatch('app-general/fetchKanwil').then(res => {
+          this.$store.commit('app-general/SET_KANWIL', res.data)
+        })
+      }
+    },
+    loadMak() {
+      if (this.form.tahun !== null || this.form.tahun !== '') {
+        this.$store
+          .dispatch('app-general/fetchMak', {
+            bidang_id: this.userData.bidang_id,
+            tahun_id: this.form.tahun === null ? 0 : this.form.tahun.id,
+          })
+          .then(res => {
+            this.$store.commit('app-general/SET_MAK', res.data)
+          })
+      }
+    },
   },
   setup() {
+    const userData = JSON.parse(localStorage.getItem('userData'))
     const form = ref({
       tahun: null,
       umum: {
+        mak: null,
         tujuan: null,
         keberangkatan: 'Jakarta',
         tanggal_berangkat: null,
@@ -96,10 +136,14 @@ export default {
       },
       susunan_tim: [],
       rencana_anggaran: [],
-      objek_pemeriksaan: [],
+      obrik: {
+        kanwil: {},
+        detail: [],
+      },
       lampiran: [],
     })
     return {
+      userData,
       form,
     }
   },
