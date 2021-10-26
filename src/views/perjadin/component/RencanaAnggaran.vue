@@ -6,7 +6,7 @@
       <b-card-body>
         <b-row>
           <b-col cols="9">
-            <b-form-group label="Mata Anggaran Kegiatan" label-cols-md="2">
+            <b-form-group label="Mata Anggaran Kegiatan" label-cols-md="4">
               <template v-if="form.tahun === null ? false : true">
                 <v-select v-model="form.umum.mak" placeholder="Mata Anggaran Kegiatan" label="kode" :options="makOption">
                   <template v-slot:option="option"> {{ option.kode }} - {{ option.nama }} </template>
@@ -21,16 +21,7 @@
 
         <hr />
         <b-row>
-          <b-table
-            small
-            :fields="tableRAB"
-            fixed
-            :items="form.rencana_anggaran"
-            responsive
-            bordered
-            :sticky-header="stickyHeader"
-            :no-border-collapse="noCollapse"
-          >
+          <b-table small :fields="tableRAB" :items="form.rencana_anggaran" responsive bordered :sticky-header="stickyHeader" :no-border-collapse="noCollapse">
             <template #thead-top>
               <b-tr>
                 <b-th class="text-center" sticky-column style="width:10%"></b-th>

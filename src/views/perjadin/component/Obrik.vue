@@ -1,48 +1,52 @@
 <template>
   <!-- <b-row class="match-height"> -->
-  <b-row>
-    <b-col lg="6" sm="12">
-      <form autocomplete="off">
-        <b-card-body>
-          <b-row>
-            <b-col cols="12" sm="12">
-              <b-form-group label="Kantor Wilayah" label-cols-md="12" label-cols-lg="3" label-cols-sm="12">
-                <v-select v-model="form.obrik.kanwil" placeholder="Pilih Kantor Wilayah" label="nama" :options="kanwilOption" />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" sm="12">
-              <b-row>
-                <b-col cols="6" sm="12">
-                  <b-form-group label="Satuan Kerja">
-                    <v-select v-model="chooseSatker" placeholder="Pilih Satuan Kerja" label="nama" :options="satkerOption" />
-                  </b-form-group>
-                </b-col>
-                <b-col cols="6" sm="12">
-                  <b-form-group label="Urusan">
-                    <v-select v-model="chooseUrusan" placeholder="Pilih Urusan" label="nama" :options="urusanOption" />
-                  </b-form-group>
-                </b-col>
-              </b-row>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12">
-              <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="secondary" @click="tambahObrik()">Tambah</b-button>
-              <b-table small :fields="tableRAB" fixed :items="form.obrik.detail" responsive class="mt-1">
-                <template #cell(nama_satker)="data">
-                  <b-form-input plaintext :value="data.item.satker.nama" />
-                </template>
-                <template #cell(urusan)="data">
-                  <b-form-input plaintext :value="data.item.urusan.nama" />
-                </template>
-              </b-table>
-            </b-col>
-          </b-row>
-          <b-row> </b-row>
-        </b-card-body>
-      </form>
-    </b-col>
-  </b-row>
+  <b-card-body>
+    <b-row>
+      <b-col lg="5" sm="12">
+        <b-row>
+          <b-col cols="12" sm="12">
+            <b-form-group label="Kantor Wilayah">
+              <v-select v-model="form.obrik.kanwil" placeholder="Pilih Kantor Wilayah" label="nama" :options="kanwilOption" />
+            </b-form-group>
+          </b-col>
+          <b-col cols="12" sm="12">
+            <b-form-group label="Satuan Kerja">
+              <v-select v-model="chooseSatker" placeholder="Pilih Satuan Kerja" label="nama" :options="satkerOption" />
+            </b-form-group>
+          </b-col>
+          <b-col cols="12" sm="12">
+            <b-form-group label="Urusan">
+              <v-select v-model="chooseUrusan" placeholder="Pilih Urusan" label="nama" :options="urusanOption" />
+            </b-form-group>
+          </b-col>
+          <b-col cols="12" sm="12" class="mb-5">
+            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="secondary" @click="tambahObrik()">Tambah</b-button>
+          </b-col>
+        </b-row>
+      </b-col>
+      <b-col lg="7" sm="12">
+        <b-col cols="12">
+          <p>Daftar Objek Pemeriksaan</p>
+          <b-table small :fields="tableRAB" :items="form.obrik.detail" responsive class="mt-1">
+            <template #cell(no)="data">
+              {{ data.index + 1 }}
+            </template>
+            <template #cell(nama_satker)="data">
+              <b-form-input plaintext :value="data.item.satker.nama" />
+            </template>
+            <template #cell(urusan)="data">
+              <b-form-input plaintext :value="data.item.urusan.nama" />
+            </template>
+            <template #cell(action)="data">
+              <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-danger" class="btn-icon rounded-circle" @click="deleteObrik(data.index)">
+                <feather-icon icon="TrashIcon" />
+              </b-button>
+            </template>
+          </b-table>
+        </b-col>
+      </b-col>
+    </b-row>
+  </b-card-body>
 </template>
 
 <script>
@@ -88,24 +92,35 @@ export default {
   },
   methods: {
     tambahObrik() {
-      const dataObrik = {
-        satker: this.chooseSatker,
-        urusan: this.chooseUrusan,
+      if (this.chooseSatker !== null || this.chooseUrusan !== null) {
+        const dataObrik = {
+          satker: this.chooseSatker,
+          urusan: this.chooseUrusan,
+        }
+        this.form.obrik.detail.push(dataObrik)
+        this.chooseSatker = null
+        this.chooseUrusan = null
+      } else {
+        this.$swal({
+          title: 'Opss!',
+          text: ' Data belum lengkap!',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        })
       }
-      this.form.obrik.detail.push(dataObrik)
-      this.chooseSatker = null
-      this.chooseUrusan = null
     },
     deleteObrik(i) {
-      this.form.susunan_tim.splice(i, 1)
-      this.form.rencana_anggaran.splice(i, 1)
+      this.form.obrik.detail.splice(i, 1)
     },
   },
   setup() {
     const satkerOption = ref([])
     const chooseSatker = ref(null)
     const chooseUrusan = ref(null)
-    const tableRAB = [{ key: 'nama_satker' }, { key: 'urusan' }]
+    const tableRAB = [{ key: 'no' }, { key: 'nama_satker' }, { key: 'urusan' }, { key: 'action' }]
     return {
       chooseSatker,
       chooseUrusan,

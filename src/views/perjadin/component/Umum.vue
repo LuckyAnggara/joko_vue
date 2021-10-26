@@ -7,7 +7,7 @@
           <b-row>
             <b-col cols="12">
               <b-form-group label="Tahun Anggaran" label-cols-md="3">
-                <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" />
+                <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" @input="loadMak()" />
               </b-form-group>
             </b-col>
 
@@ -19,7 +19,7 @@
 
             <b-col cols="12">
               <b-form-group label="Tanggal Surat Perintah" label-cols-md="3">
-                <b-form-datepicker v-model="form.surat_perintah.tanggal_surat" placeholder="Tanggal Surat Perintah" />
+                <b-form-datepicker v-model="form.surat_perintah.tanggal_surat" locale="id" placeholder="Tanggal Surat Perintah" />
               </b-form-group>
             </b-col>
 
@@ -48,12 +48,12 @@
                 <b-row>
                   <b-col md="6">
                     <b-form-group label="Tanggal Berangkat">
-                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_keberangkatan" placeholder="Tanggal Berangkat" @input="hari()" />
+                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_berangkat" placeholder="Tanggal Berangkat" />
                     </b-form-group>
                   </b-col>
                   <b-col md="6">
                     <b-form-group label="Tanggal Kembali">
-                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_kembali" placeholder="Tanggal Kembali" @input="hari()" />
+                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_kembali" placeholder="Tanggal Kembali" />
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -99,6 +99,13 @@ export default {
   computed: {
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
+    },
+  },
+  methods: {
+    loadMak() {
+      if (this.form.tahun !== '' || this.form.tahun === null) {
+        this.$emit('load-mak')
+      }
     },
   },
 

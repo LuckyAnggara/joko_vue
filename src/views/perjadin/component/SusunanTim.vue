@@ -6,27 +6,27 @@
       <b-card-body>
         <b-row>
           <b-col md="3" lg="3" sm="12" class="mb-2">
-            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="primary" class="btn-icon" size="lg" @click="tambahPegawai()">
-              <feather-icon icon="UserPlusIcon" />
+            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="primary" size="sm" @click="tambahPegawai()">
+              Tambah Data
             </b-button>
           </b-col>
         </b-row>
         <ul style="list-style-type: none;">
           <b-row>
             <b-col lg="1">
-              <label>No. </label>
+              <label>NO </label>
             </b-col>
             <b-col lg="2">
               <label>NIP </label>
             </b-col>
             <b-col lg="5">
-              <label>Nama Pegawai </label>
+              <label>NAMA PEGAWAI </label>
             </b-col>
             <b-col lg="3">
-              <label>Peran </label>
+              <label>PERAN </label>
             </b-col>
             <b-col lg="1">
-              <label>Action </label>
+              <label>ACTION </label>
             </b-col>
           </b-row>
         </ul>
@@ -52,6 +52,7 @@
             </b-col>
           </b-row>
         </ul>
+        <small>Pastikan setiap anggota tim memiliki peran!</small>
       </b-card-body>
     </b-col>
   </b-row>
