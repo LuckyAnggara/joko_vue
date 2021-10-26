@@ -5,9 +5,9 @@
       <b-card-body>
         <b-row>
           <b-col cols="12">
-            <b-form-group label="Surat Perintah" label-cols-md="4">
+            <b-form-group label="Surat Perintah" label-cols-md="3">
               <b-form-file
-                @change="uploadFiles"
+                @change="uploadFilesSuratPerintah"
                 placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
                 drop-placeholder="Drop file disini..."
                 multiple
@@ -21,9 +21,9 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label="Rencana Anggaran Biaya" label-cols-md="4">
+            <b-form-group label="Rencana Anggaran Biaya" label-cols-md="3">
               <b-form-file
-                @change="uploadFiles"
+                @change="uploadFilesRab"
                 placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
                 drop-placeholder="Drop file disini..."
                 multiple
@@ -37,9 +37,9 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label="Lainnya" label-cols-md="4">
+            <b-form-group label="Lainnya" label-cols-md="3">
               <b-form-file
-                @change="uploadFiles"
+                @change="UploadFilesLainnya"
                 placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
                 drop-placeholder="Drop file disini..."
                 multiple
@@ -79,14 +79,31 @@ export default {
   },
   methods: {
     /* eslint-disable */
-
-    uploadFiles(e) {
+    uploadFilesSuratPerintah(e) {
       let selectedFiles = e.target.files
       if (!selectedFiles.length) {
         return false
       }
       for (let i = 0; i < selectedFiles.length; i++) {
-        this.attachments.push(selectedFiles[i])
+        this.form.lampiran.surat_perintah.push(selectedFiles[i])
+      }
+    },
+    uploadFilesRab(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.form.lampiran.rab.push(selectedFiles[i])
+      }
+    },
+    UploadFilesLainnya(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.form.lampiran.lainnya.push(selectedFiles[i])
       }
     },
     /* eslint-enable */

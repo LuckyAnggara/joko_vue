@@ -9,6 +9,7 @@
               <b-form-group label="Tahun Anggaran" label-cols-md="3">
                 <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" @input="loadMak()" />
               </b-form-group>
+              <hr />
             </b-col>
 
             <b-col cols="12">
@@ -63,6 +64,12 @@
             <b-col cols="12">
               <b-form-group label="Jumlah Hari" label-cols-md="3">
                 <b-form-input v-model="form.umum.jumlah_hari" type="text" placeholder="Jumlah Hari Pelaksanaan Perjalanan Dinas" />
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Keterangan" label-cols-md="3">
+                <b-form-textarea v-model="form.umum.keterangan" type="text" placeholder="Keterangan lainnya (Seperti urusan)" />
               </b-form-group>
             </b-col>
           </b-row>

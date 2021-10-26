@@ -1,60 +1,73 @@
 <template>
   <section>
     <b-card>
-      <b-tabs v-model="tabIndex">
-        <b-tab title="Umum" active>
-          <template #title> <feather-icon icon="CheckIcon" class="text-success" /> Umum </template>
-          <hr />
-          <umum :form="form" @load-mak="loadMak()" />
-        </b-tab>
-        <b-tab title="Susunan Tim" :title-item-class="{ disabledTab: tabIndex < 1 }">
-          <hr />
-          <susunan-tim :form="form"
-        /></b-tab>
-        <b-tab title="Rencana Anggaran" :title-item-class="{ disabledTab: tabIndex < 2 }">
-          <hr />
-          <rencana-anggaran :form="form"
-        /></b-tab>
-        <b-tab title="Objek Pemeriksaan" :title-item-class="{ disabledTab: tabIndex < 3 }"
-          ><hr />
-          <obrik :form="form" />
-        </b-tab>
-        <b-tab title="Lampiran" :title-item-class="{ disabledTab: tabIndex < 4 }"
-          ><hr />
-          <lampiran :form="form" />
-        </b-tab>
-      </b-tabs>
+      <b-overlay :show="show" rounded="sm" variant="transparent" blur="5px" opacity="0.95">
+        <b-tabs v-model="tabIndex">
+          <b-tab title="Umum" active>
+            <template #title> Umum </template>
+            <hr />
+            <umum :form="form" @load-mak="loadMak()" />
+          </b-tab>
+          <b-tab title="Susunan Tim" :title-item-class="{ disabledTab: tabIndex < 1 }">
+            <hr />
+            <susunan-tim :form="form"
+          /></b-tab>
+          <b-tab title="Rencana Anggaran" :title-item-class="{ disabledTab: tabIndex < 2 }">
+            <hr />
+            <rencana-anggaran :form="form"
+          /></b-tab>
+          <b-tab title="Objek Pemeriksaan" :title-item-class="{ disabledTab: tabIndex < 3 }"
+            ><hr />
+            <obrik :form="form" />
+          </b-tab>
+          <b-tab title="Lampiran"
+            ><hr />
+            <lampiran :form="form" />
+          </b-tab>
+        </b-tabs>
 
-      <!-- Control buttons-->
-      <div>
-        <b-button-group class="mt-1">
-          <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" :disabled="tabIndex === 0 ? true : false" @click="tabIndex--">
-            Previous
-          </b-button>
-          <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" @click="next()" v-if="tabIndex === 3 ? false : true">
-            Next
-          </b-button>
-          <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-success" @click="submit()" v-if="tabIndex === 3 ? true : false">
-            Submit
-          </b-button>
-        </b-button-group>
-      </div>
+        <!-- Control buttons-->
+        <div>
+          <b-button-group class="mt-1">
+            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" :disabled="tabIndex === 0 ? true : false" @click="tabIndex--">
+              Previous
+            </b-button>
+            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-primary" @click="next()" v-if="tabIndex === 4 ? false : true">
+              Next
+            </b-button>
+            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-success" @click="submit()" v-if="tabIndex === 4 ? true : false">
+              Submit
+            </b-button>
+          </b-button-group>
+        </div>
+        <template #overlay>
+          <div v-if="!processing" class="text-center">
+            <feather-icon icon="Edit3Icon" size="2x" />
+            <p>{{ title }}</p>
+          </div>
+          <div v-if="processing" class="text-center rounded">
+            <feather-icon icon="UploadIcon" size="2x" />
+            <p>{{ title }}</p>
+          </div>
+        </template>
+      </b-overlay>
     </b-card>
   </section>
 </template>
 
 <script>
 import { ref } from '@vue/composition-api'
-import { BButtonGroup, BButton, BCard, BTab, BTabs } from 'bootstrap-vue'
+import { BOverlay, BButtonGroup, BButton, BCard, BTab, BTabs } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import Umum from './component/Umum.vue'
-import SusunanTim from './component/SusunanTim.vue'
-import RencanaAnggaran from './component/RencanaAnggaran.vue'
-import Obrik from './component/Obrik.vue'
-import Lampiran from './component/Lampiran.vue'
+import Umum from './component/tambah/Umum.vue'
+import SusunanTim from './component/tambah/SusunanTim.vue'
+import RencanaAnggaran from './component/tambah/RencanaAnggaran.vue'
+import Obrik from './component/tambah/Obrik.vue'
+import Lampiran from './component/tambah/Lampiran.vue'
 
 export default {
   components: {
+    BOverlay,
     BButtonGroup,
     BButton,
     BCard,
@@ -81,6 +94,7 @@ export default {
   },
   methods: {
     submit() {
+      this.show = !this.show
       this.$swal({
         title: 'Proses ?',
         text: 'Apa anda yakin Data Perjadin sudah sesuai ?',
@@ -94,20 +108,48 @@ export default {
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          this.$store.dispatch('app-perjadin/storePerjadin', this.form).then(x => {
-            if (x.status === 200) {
-              this.$swal({
-                title: 'Sukses!',
-                text: 'Perjadin berhasil dibuat',
-                icon: 'success',
-                customClass: {
-                  confirmButton: 'btn btn-primary',
-                },
-                buttonsStyling: false,
+          this.$store.dispatch('app-perjadin/storePerjadin', this.form).then(res => {
+            if (res.status === 200) {
+              for (let i = 0; i < this.form.lampiran.surat_perintah.length; i += 1) {
+                this.file.append('lampiran_sp[]', this.form.lampiran.surat_perintah[i])
+              }
+              for (let i = 0; i < this.form.lampiran.rab.length; i += 1) {
+                this.file.append('lampiran_rab[]', this.form.lampiran.rab[i])
+              }
+              for (let i = 0; i < this.form.lampiran.lainnya.length; i += 1) {
+                this.file.append('lampiran_lainnya[]', this.form.lampiran.lainnya[i])
+              }
+              this.file.append('id', res.data.id)
+              this.titleLoading = 'Upload lampiran ...'
+              this.processing = !this.processing
+              this.$store.dispatch('app-perjadin/storeLampiranPerjadin', this.file).then(x => {
+                if (x.status === 200) {
+                  this.$swal({
+                    title: 'Sukses!',
+                    text: 'Berhasil!',
+                    icon: 'success',
+                    customClass: {
+                      confirmButton: 'btn btn-primary',
+                    },
+                    buttonsStyling: false,
+                  })
+                } else {
+                  this.$swal({
+                    title: 'Opss!',
+                    text: ' Data belum lengkap!',
+                    icon: 'error',
+                    customClass: {
+                      confirmButton: 'btn btn-primary',
+                    },
+                    buttonsStyling: false,
+                  })
+                }
+                this.show = !this.show
+                this.file = new FormData()
+                // this.$router.push({ name: 'kegiatan-daftar' })
               })
             }
             // this.show = !this.show
-            this.$router.push({ name: 'perjadin-daftar' })
           })
         }
       })
@@ -245,6 +287,10 @@ export default {
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))
+    const titleLoading = 'Pembuatan Data Perjalanan Dinas'
+    const processing = ref(false)
+    const file = new FormData()
+    const show = ref(false)
     const form = ref({
       tahun: null,
       umum: {
@@ -254,6 +300,7 @@ export default {
         tanggal_berangkat: null,
         tanggal_kembali: null,
         jumlah_hari: 0,
+        keterangan: null,
       },
       surat_perintah: {
         nomor_surat: null,
@@ -266,10 +313,18 @@ export default {
         kanwil: null,
         detail: [],
       },
-      lampiran: [],
+      lampiran: {
+        surat_perintah: ref([]),
+        rab: ref([]),
+        lainnya: ref([]),
+      },
       user_data: JSON.parse(localStorage.getItem('userData')),
     })
     return {
+      file,
+      processing,
+      show,
+      titleLoading,
       userData,
       form,
     }
