@@ -86,9 +86,10 @@
                 <template>
                   <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI KEUANGAN'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="light-warning" v-if="data.item.status === 'REVISI'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI PPK'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="light-primary" v-if="data.item.status === 'PELAKSANAAN'"> {{ data.item.status }} </b-badge>
-                  <b-badge pill variant="light-danger" v-if="data.item.status === 'DITOLAK'"> {{ data.item.status }} </b-badge>
+                  <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI PPK'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="light-success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
                 </template>
               </div>
@@ -100,7 +101,7 @@
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                   </template>
-                  <b-dropdown-item @click="kirim_keuangan(data.item.id)" v-if="data.item.status === 'PENGAJUAN'">
+                  <b-dropdown-item @click="kirim_keuangan(data.item.id)" v-if="data.item.status === 'PENGAJUAN' || data.item.status === 'REVISI KEUANGAN'">
                     <feather-icon icon="" />
                     <span class="align-middle ml-50">Kirim</span>
                   </b-dropdown-item>

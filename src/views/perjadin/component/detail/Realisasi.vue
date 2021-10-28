@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col lg="12" sm="12">
-      <b-card title="Rincian Anggaran" footer-tag="footer">
+      <b-card title="Realisasi Anggaran" footer-tag="footer">
         <b-card-body>
           <b-row>
             <b-col>

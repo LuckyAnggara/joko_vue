@@ -137,6 +137,8 @@ export default {
                         },
                         buttonsStyling: false,
                       })
+                      this.show = !this.show
+                      this.file = new FormData()
                       this.$router.push({ name: 'perjadin-daftar' })
                     }
                   })
@@ -154,8 +156,6 @@ export default {
                     })
                   })
               }
-              this.show = !this.show
-              this.file = new FormData()
             })
             .catch(err => {
               this.show = !this.show

@@ -22,6 +22,7 @@ export default [
       pageTitle: 'Perjadin',
       breadcrumb: [
         {
+          to: 'perjadin-daftar',
           text: 'Daftar',
         },
         {
