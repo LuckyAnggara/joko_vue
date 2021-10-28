@@ -36,7 +36,7 @@
               <col v-for="field in scope.fields" :key="field.key" :style="{ width: field.size === 'sm' ? '5%' : '' }" />
             </template>
             <template #cell(nama_pegawai)="data">
-              <b-form-input v-model="form.susunan_tim[data.index].nama" size="sm" plaintext />
+              <b-form-input v-model="form.susunan_tim[data.index].pegawai.nama" size="sm" plaintext />
             </template>
             <template #cell(hari)="data">
               <b-form-input v-model="data.item.jumlah_hari" size="sm" type="number" />
@@ -154,9 +154,16 @@ export default {
       this.form.rencana_anggaran.forEach(x => {
         total += x.total
       })
-
       return total
     },
+    // grandTotal() {
+    //   let total = 0
+    //   this.form.rencana_anggaran.forEach(x => {
+    //     total += x.total
+    //   })
+    //   this.form.umum.total_anggaran = total
+    //   return total
+    // },
     sisa() {
       const a = parseFloat(this.form.umum.mak.dipa) - parseFloat(this.form.umum.mak.realisasi)
       return a - this.grandTotal

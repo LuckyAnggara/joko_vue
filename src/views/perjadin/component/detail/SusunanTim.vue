@@ -1,92 +1,65 @@
 <template>
-  <!-- <b-row class="match-height"> -->
-
-  <b-row class="match-height">
-    <b-col lg="12" md="12" sm="12">
-      <b-card-body>
-        <b-row>
-          <b-col md="3" lg="3" sm="12" class="mb-2">
-            <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="primary" size="sm" @click="tambahPegawai()">
-              Tambah Data
-            </b-button>
-          </b-col>
-        </b-row>
-        <ul style="list-style-type: none;">
+  <b-row>
+    <b-col lg="12" sm="12">
+      <b-card title="Susunan Tim" footer-tag="footer">
+        <b-card-body>
           <b-row>
-            <b-col lg="1">
-              <label>NO </label>
-            </b-col>
-            <b-col lg="2">
-              <label>NIP </label>
-            </b-col>
-            <b-col lg="5">
-              <label>NAMA PEGAWAI </label>
-            </b-col>
-            <b-col lg="3">
-              <label>PERAN </label>
-            </b-col>
-            <b-col lg="1">
-              <label>ACTION </label>
-            </b-col>
+            <b-col>
+              <ul v-for="tim in form.susunan_tim" :key="tim.id">
+                <li class="mb-1">
+                  <span
+                    ><b>{{ tim.pegawai.nama }}</b></span
+                  >
+                  - <span>{{ tim.peran.nama }}</span>
+                </li>
+              </ul></b-col
+            >
           </b-row>
-        </ul>
-        <hr />
-        <ul style="list-style-type: none;" v-for="(tim, index) in form.susunan_tim" :key="tim.id">
-          <b-row>
-            <b-col lg="1">
-              <b-form-input plaintext :value="index + 1" />
-            </b-col>
-            <b-col lg="2">
-              <b-form-input plaintext :value="form.susunan_tim[index].nip" />
-            </b-col>
-            <b-col lg="5">
-              <v-select v-model="form.susunan_tim[index]" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
-            </b-col>
-            <b-col lg="3">
-              <v-select v-model="form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
-            </b-col>
-            <b-col lg="1">
-              <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-danger" class="btn-icon rounded-circle" @click="deletePegawai(index)">
-                <feather-icon icon="TrashIcon" />
-              </b-button>
-            </b-col>
-          </b-row>
-        </ul>
-        <small>Pastikan setiap anggota tim memiliki peran!</small>
-      </b-card-body>
+        </b-card-body>
+        <template #footer>
+          <small
+            ><em
+              >Created By {{ form.user.pegawai.nama }} - {{ form.bidang.nama }} at <strong>{{ $moment(form.created_at).format('DD MMMM YYYY') }}</strong></em
+            ></small
+          >
+        </template>
+      </b-card>
     </b-col>
   </b-row>
 </template>
 
 <script>
-import { BCardBody, BRow, BCol, BButton, BFormInput } from 'bootstrap-vue'
-import vSelect from 'vue-select'
-import Ripple from 'vue-ripple-directive'
+import {
+  BCard,
+  BCardBody,
+  BRow,
+  BCol,
+  // BTable,
+  // BButton,
+  // BFormInput,
+  // BFormGroup,
+} from 'bootstrap-vue'
+// import vSelect from 'vue-select'
+// import Ripple from 'vue-ripple-directive'
+import { formatRupiah } from '@core/utils/filter'
 
 export default {
   components: {
+    BCard,
     BRow,
     BCol,
     BCardBody,
-    BButton,
-    BFormInput,
-    vSelect,
-  },
-  directives: {
-    Ripple,
-  },
-  props: {
-    form: Object,
   },
   computed: {
-    pegawaiOption() {
-      return this.$store.getters['app-general/getPegawai']
+    form() {
+      return this.$store.getters['app-perjadin/getDetail']
     },
-    peranOption() {
-      return this.$store.getters['app-general/getPeran']
+    lampiran_sp() {
+      return this.form.lampiran.filter(x => x.jenis === 'SP')
     },
   },
   methods: {
+    formatRupiah,
     tambahPegawai() {
       const dataPegawai = {
         nip: null,
@@ -113,6 +86,23 @@ export default {
       this.form.susunan_tim.splice(i, 1)
       this.form.rencana_anggaran.splice(i, 1)
     },
+  },
+  setup() {
+    const tableCol = [
+      { key: 'uang_harian' },
+      { key: 'uang_hotel' },
+      { key: 'udara' },
+      { key: 'laut' },
+      { key: 'darat' },
+      { key: 'taksi_jakarta' },
+      { key: 'taksi_provinsi' },
+      { key: 'representatif' },
+      { key: 'total' },
+      { key: 'actions' },
+    ]
+    return {
+      tableCol,
+    }
   },
 }
 </script>

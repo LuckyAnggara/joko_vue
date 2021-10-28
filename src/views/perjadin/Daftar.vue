@@ -13,11 +13,11 @@
               </b-col>
             </b-row>
             <b-row>
-              <b-col cols="6" md="1" sm="6">
+              <b-col cols="6" md="2" sm="6">
                 <label>Tahun Data</label>
                 <v-select v-model="tahun" label="nama" :options="tahunOption" :clearable="false" />
               </b-col>
-              <b-col cols="6" md="1" sm="6">
+              <b-col cols="6" md="2" sm="6">
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
@@ -84,20 +84,15 @@
             <template #cell(status)="data">
               <div class="text-nowrap">
                 <template>
-                  <b-badge pill variant="light-warning" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
+                  <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI KEUANGAN'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-warning" v-if="data.item.status === 'REVISI'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-primary" v-if="data.item.status === 'PELAKSANAAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-danger" v-if="data.item.status === 'DITOLAK'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
                 </template>
               </div>
             </template>
-            <!-- Column: Actions -->
-            <!-- @click="
-                    $router.push({
-                      name: 'perjadin-detail',
-                      params: { id: data.item.id },
-                    })
-                  " -->
             <template #cell(actions)="data">
               <div class="text-nowrap">
                 <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
@@ -105,14 +100,14 @@
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                   </template>
-                  <b-dropdown-item @click="kirim_keuangan(data.item.id)">
+                  <b-dropdown-item @click="kirim_keuangan(data.item.id)" v-if="data.item.status === 'PENGAJUAN'">
                     <feather-icon icon="" />
                     <span class="align-middle ml-50">Kirim</span>
                   </b-dropdown-item>
-                  <!-- <b-dropdown-item @click="delete_data(data.item.id)" v-if="data.item.status === 'VERIFIKASI'">
+                  <b-dropdown-item @click="log(data.item.log)">
                     <feather-icon icon="" />
-                    <span class="align-middle ml-50">Delete</span>
-                  </b-dropdown-item> -->
+                    <span class="align-middle ml-50">Log</span>
+                  </b-dropdown-item>
                 </b-dropdown>
               </div>
             </template>
@@ -147,6 +142,7 @@
         </b-card>
       </b-col>
     </b-row>
+    <timeline />
   </section>
 </template>
 
@@ -155,6 +151,7 @@ import { ref } from '@vue/composition-api'
 import { formatRupiah } from '@core/utils/filter'
 import { BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
 import vSelect from 'vue-select'
+import Timeline from './component/Timeline.vue'
 
 export default {
   components: {
@@ -170,6 +167,7 @@ export default {
     BDropdown,
     BDropdownItem,
     vSelect,
+    Timeline,
   },
   data() {
     return {}
@@ -224,6 +222,10 @@ export default {
       this.$store.commit('app-perjadin/SET_DETAIL', data)
       this.$router.push({ name: 'perjadin-detail' })
     },
+    log(data) {
+      this.$store.commit('app-perjadin/SET_LOG', data)
+      this.$bvModal.show('modal-log')
+    },
     loadTahun() {
       this.$store.dispatch('app-general/fetchTahun').then(res => {
         this.$store.commit('app-general/SET_TAHUN', res.data)
@@ -238,7 +240,7 @@ export default {
         })
         .then(res => {
           this.isBusy = !this.isBusy
-          this.dataTemp = res.data
+          this.dataTemp = this.userData.role === 'USER' ? res.data : res.data.filter(x => x.status !== 'PENGAJUAN')
           this.dataPerjadin = this.dataTemp
         })
     },
@@ -260,6 +262,9 @@ export default {
             .dispatch('app-perjadin/statusPerjadin', {
               id,
               status: 'VERIFIKASI KEUANGAN',
+              status_log: 'KIRIM KEUANGAN',
+              message_log: 'perjadin telah di kirim ke keuangan oleh ',
+              user_data: this.userData,
             })
             .then(x => {
               if (x.status === 200) {
@@ -272,6 +277,7 @@ export default {
                   },
                   buttonsStyling: false,
                 })
+                this.loadKegiatan()
               }
             })
         }

@@ -37,10 +37,10 @@
               <b-form-input plaintext :value="index + 1" />
             </b-col>
             <b-col lg="2">
-              <b-form-input plaintext :value="form.susunan_tim[index].nip" />
+              <b-form-input plaintext :value="form.susunan_tim[index].pegawai.nip" />
             </b-col>
             <b-col lg="5">
-              <v-select v-model="form.susunan_tim[index]" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
+              <v-select v-model="form.susunan_tim[index].pegawai" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
             </b-col>
             <b-col lg="3">
               <v-select v-model="form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
@@ -89,8 +89,10 @@ export default {
   methods: {
     tambahPegawai() {
       const dataPegawai = {
-        nip: null,
-        nama: null,
+        pegawai: {
+          nip: null,
+          nama: null,
+        },
         peran: null,
       }
       const dataRab = {

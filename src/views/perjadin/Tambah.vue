@@ -1,7 +1,7 @@
 <template>
   <section>
     <b-card>
-      <b-overlay :show="show" rounded="sm" variant="transparent" blur="5px" opacity="0.95">
+      <b-overlay :show="show" rounded="lg" variant="transparent" blur="15px" opacity="0.70">
         <b-tabs v-model="tabIndex">
           <b-tab title="Umum" active>
             <template #title> Umum </template>
@@ -42,12 +42,12 @@
         </div>
         <template #overlay>
           <div v-if="!processing" class="text-center">
-            <feather-icon icon="Edit3Icon" size="2x" />
-            <p>{{ title }}</p>
+            <feather-icon icon="Edit3Icon" size="4x" />
+            <h4>{{ titleLoading }}</h4>
           </div>
           <div v-if="processing" class="text-center rounded">
-            <feather-icon icon="UploadIcon" size="2x" />
-            <p>{{ title }}</p>
+            <feather-icon icon="UploadIcon" size="4x" />
+            <h4>{{ titleLoading }}</h4>
           </div>
         </template>
       </b-overlay>
@@ -108,49 +108,68 @@ export default {
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          this.$store.dispatch('app-perjadin/storePerjadin', this.form).then(res => {
-            if (res.status === 200) {
-              for (let i = 0; i < this.form.lampiran.surat_perintah.length; i += 1) {
-                this.file.append('lampiran_sp[]', this.form.lampiran.surat_perintah[i])
-              }
-              for (let i = 0; i < this.form.lampiran.rab.length; i += 1) {
-                this.file.append('lampiran_rab[]', this.form.lampiran.rab[i])
-              }
-              for (let i = 0; i < this.form.lampiran.lainnya.length; i += 1) {
-                this.file.append('lampiran_lainnya[]', this.form.lampiran.lainnya[i])
-              }
-              this.file.append('id', res.data.id)
-              this.titleLoading = 'Upload lampiran ...'
-              this.processing = !this.processing
-              this.$store.dispatch('app-perjadin/storeLampiranPerjadin', this.file).then(x => {
-                if (x.status === 200) {
-                  this.$swal({
-                    title: 'Sukses!',
-                    text: 'Berhasil!',
-                    icon: 'success',
-                    customClass: {
-                      confirmButton: 'btn btn-primary',
-                    },
-                    buttonsStyling: false,
-                  })
-                } else {
-                  this.$swal({
-                    title: 'Opss!',
-                    text: ' Data belum lengkap!',
-                    icon: 'error',
-                    customClass: {
-                      confirmButton: 'btn btn-primary',
-                    },
-                    buttonsStyling: false,
-                  })
+          this.$store
+            .dispatch('app-perjadin/storePerjadin', this.form)
+            .then(res => {
+              if (res.status === 200) {
+                for (let i = 0; i < this.form.lampiran.surat_perintah.length; i += 1) {
+                  this.file.append('lampiran_sp[]', this.form.lampiran.surat_perintah[i])
                 }
-                this.show = !this.show
-                this.file = new FormData()
-                // this.$router.push({ name: 'kegiatan-daftar' })
+                for (let i = 0; i < this.form.lampiran.rab.length; i += 1) {
+                  this.file.append('lampiran_rab[]', this.form.lampiran.rab[i])
+                }
+                for (let i = 0; i < this.form.lampiran.lainnya.length; i += 1) {
+                  this.file.append('lampiran_lainnya[]', this.form.lampiran.lainnya[i])
+                }
+                this.file.append('id', res.data.id)
+                this.titleLoading = 'Upload lampiran ...'
+                this.processing = !this.processing
+                this.$store
+                  .dispatch('app-perjadin/storeLampiranPerjadin', this.file)
+                  .then(x => {
+                    if (x.status === 200) {
+                      this.$swal({
+                        title: 'Sukses!',
+                        text: 'Data perjalanan dinas berhasil dibuat!',
+                        icon: 'success',
+                        customClass: {
+                          confirmButton: 'btn btn-primary',
+                        },
+                        buttonsStyling: false,
+                      })
+                      this.$router.push({ name: 'perjadin-daftar' })
+                    }
+                  })
+                  .catch(err => {
+                    this.show = !this.show
+                    this.file = new FormData()
+                    this.$swal({
+                      title: 'Error!',
+                      text: err,
+                      icon: 'error',
+                      customClass: {
+                        confirmButton: 'btn btn-primary',
+                      },
+                      buttonsStyling: false,
+                    })
+                  })
+              }
+              this.show = !this.show
+              this.file = new FormData()
+            })
+            .catch(err => {
+              this.show = !this.show
+              this.file = new FormData()
+              this.$swal({
+                title: 'Error!',
+                text: err,
+                icon: 'error',
+                customClass: {
+                  confirmButton: 'btn btn-primary',
+                },
+                buttonsStyling: false,
               })
-            }
-            // this.show = !this.show
-          })
+            })
         }
       })
     },
@@ -196,7 +215,7 @@ export default {
         } else {
           for (let i = 0; i < a.susunan_tim.length; i += 1) {
             const b = a.susunan_tim[i]
-            if (b.nip === '' || b.nip === null || b.peran === '' || b.peran === null) {
+            if (b.pegawai.nip === '' || b.pegawai.nip === null || b.peran === '' || b.peran === null) {
               this.$swal({
                 title: 'Opss!',
                 text: 'Lengkapi data Tim',
@@ -287,7 +306,7 @@ export default {
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))
-    const titleLoading = 'Pembuatan Data Perjalanan Dinas'
+    const titleLoading = 'Pembuatan Data Perjalanan Dinas ...'
     const processing = ref(false)
     const file = new FormData()
     const show = ref(false)

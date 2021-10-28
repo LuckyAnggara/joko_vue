@@ -32,11 +32,11 @@ export default [
     },
   },
   {
-    path: '/perjadin/detail/:id',
+    path: '/perjadin/detail/',
     name: 'perjadin-detail',
     component: () => import('@/views/perjadin/Detail.vue'),
     meta: {
-      pageTitle: 'perjadin',
+      pageTitle: 'Perjadin',
       breadcrumb: [
         {
           text: 'Daftar',

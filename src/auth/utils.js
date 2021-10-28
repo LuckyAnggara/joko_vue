@@ -27,6 +27,7 @@ export const getHomeRouteForLoggedInUser = userRole => {
   if (userRole === 'PPK') return '/'
   if (userRole === 'ADMIN') return '/'
   if (userRole === 'BENDAHARA') return '/'
+  if (userRole === 'VERIFIKATOR KEUANGAN') return '/'
   if (userRole === 'client') return { name: 'access-control' }
   return { name: 'auth-login-new' }
 }

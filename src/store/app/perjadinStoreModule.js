@@ -4,13 +4,18 @@ export default {
   namespaced: true,
   state: {
     detail: {},
+    log: [],
   },
   getters: {
     getDetail: state => state.detail,
+    getLog: state => state.log,
   },
   mutations: {
     SET_DETAIL(state, data) {
       state.detail = data
+    },
+    SET_LOG(state, data) {
+      state.log = data
     },
   },
   actions: {
@@ -24,10 +29,11 @@ export default {
           .catch(error => reject(error))
       })
     },
-    detailPerjadin(ctx, params) {
+
+    deletePerjadin(ctx, id) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${axios.defaults.baseURL}detail?perjadin_id=${params.id}`)
+          .delete(`${axios.defaults.baseURL}perjadin/delete-perjadin?perjadin_id=${id}`)
           .then(response => {
             resolve(response)
           })

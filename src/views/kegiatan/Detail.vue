@@ -120,7 +120,7 @@
             </template>
             <template #cell(nama_file)="data">
               <span>
-                <b-link :href="urlGet(data.item.id)" class="font-weight-bold" target="_blank"> {{ data.item.nama }} </b-link>
+                <b-link :href="urlGet(data.item.id, 'realisasi')" class="font-weight-bold" target="_blank"> {{ data.item.nama }} </b-link>
               </span>
             </template>
           </b-table>
@@ -148,7 +148,7 @@ import {
 
 import { ref } from '@vue/composition-api'
 import Ripple from 'vue-ripple-directive'
-import { formatRupiah } from '@core/utils/filter'
+import { formatRupiah, urlGet } from '@core/utils/filter'
 
 export default {
   components: {
@@ -182,6 +182,7 @@ export default {
   },
   methods: {
     formatRupiah,
+    urlGet,
     loadData() {
       this.show = !this.show
       this.busy = !this.busy
@@ -194,9 +195,9 @@ export default {
         }
       })
     },
-    urlGet(id) {
-      return `${this.url}?id=${id}`
-    },
+    // urlGet(id) {
+    //   return `${this.url}?id=${id}`
+    // },
     approve() {
       this.$swal({
         title: 'Setuju ?',
@@ -349,8 +350,6 @@ export default {
     },
   },
   setup() {
-    const url = 'http://127.0.0.1:8000/api/realisasi/download-lampiran'
-
     const busy = ref(false)
     const show = ref(false)
     const userData = JSON.parse(localStorage.getItem('userData'))
@@ -359,7 +358,6 @@ export default {
     const dataRealisasi = ref(null)
 
     return {
-      url,
       tableColumns,
       busy,
       show,
