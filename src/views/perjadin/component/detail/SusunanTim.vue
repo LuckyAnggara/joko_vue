@@ -5,12 +5,16 @@
         <b-card-body>
           <b-row>
             <b-col>
-              <ul v-for="tim in form.susunan_tim" :key="tim.id">
+              <ul v-for="(tim, index) in form.susunan_tim" :key="tim.id">
                 <li class="mb-1">
                   <span
                     ><b>{{ tim.pegawai.nama }}</b></span
                   >
-                  - <span>{{ tim.peran.nama }}</span>
+                  - <span>{{ tim.peran.nama }}</span> -
+                  <span>
+                    <feather-icon :id="`spd-${index}`" icon="PrinterIcon" size="24" class="mx-1" @click="print_spd(data.item.id)" />
+                    <b-tooltip :target="`spd-${index}`" noninteractive>Print SPD</b-tooltip>
+                  </span>
                 </li>
               </ul></b-col
             >
@@ -30,6 +34,7 @@
 
 <script>
 import {
+  BTooltip,
   BCard,
   BCardBody,
   BRow,
@@ -45,6 +50,8 @@ import { formatRupiah } from '@core/utils/filter'
 
 export default {
   components: {
+    BTooltip,
+
     BCard,
     BRow,
     BCol,

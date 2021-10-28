@@ -96,6 +96,8 @@ export default {
         peran: null,
       }
       const dataRab = {
+        tanggal_berangkat: this.form.umum.tanggal_berangkat,
+        tanggal_kembali: this.form.umum.tanggal_kembali,
         jumlah_hari: this.form.umum.jumlah_hari,
         uang_harian: 0,
         jumlah_malam: 0,

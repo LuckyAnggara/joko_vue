@@ -49,12 +49,22 @@
                 <b-row>
                   <b-col md="6">
                     <b-form-group label="Tanggal Berangkat">
-                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_berangkat" placeholder="Tanggal Berangkat" />
+                      <b-form-datepicker
+                        locale="id"
+                        :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                        v-model="form.umum.tanggal_berangkat"
+                        placeholder="Tanggal Berangkat"
+                      />
                     </b-form-group>
                   </b-col>
                   <b-col md="6">
                     <b-form-group label="Tanggal Kembali">
-                      <b-form-datepicker locale="id" v-model="form.umum.tanggal_kembali" placeholder="Tanggal Kembali" />
+                      <b-form-datepicker
+                        locale="id"
+                        :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                        v-model="form.umum.tanggal_kembali"
+                        placeholder="Tanggal Kembali"
+                      />
                     </b-form-group>
                   </b-col>
                 </b-row>

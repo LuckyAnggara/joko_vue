@@ -11,7 +11,7 @@
                     ><b>{{ tim.pegawai.nama }}</b></span
                   >
                   <br />
-                  <b-table small :fields="tableCol" :items="[...tim.anggaran]" responsive>
+                  <b-table small :fields="tableCol" :items="[...tim.anggaran]" responsive bordered>
                     <template #cell(uang_harian)="data">
                       <span>{{ formatRupiah(parseFloat(data.item.uang_harian) * parseFloat(data.item.jumlah_hari)) }}</span>
                     </template>
@@ -41,7 +41,7 @@
                     </template>
                     <template #cell(actions)="data">
                       <div class="text-nowrap">
-                        <feather-icon icon="PrinterIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
+                        <feather-icon icon="PrinterIcon" size="24" class="mx-1" @click="detail(data.item.id)" />
                       </div>
                     </template>
                   </b-table>

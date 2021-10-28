@@ -20,81 +20,61 @@
         </b-row>
 
         <hr />
-        <b-row v-for="(tim, index) in form.susunan_tim" :key="tim.id" class="mb-2">
-          <h5>{{ tim.pegawai.nama }}</h5>
-
-          <b-table small :fields="tableRAB" :items="[...form.rencana_anggaran[index]]" bordered responsive>
+        <b-row>
+          <b-table small :fields="tableRAB" :items="form.rencana_anggaran" responsive bordered :sticky-header="stickyHeader" :no-border-collapse="noCollapse">
             <template #thead-top>
               <b-tr>
-                <b-th class="text-center" colspan="2" style="width:15%">Tanggal</b-th>
-                <b-th class="text-center" colspan="2" style="width:12%">Uang Harian</b-th>
-                <b-th class="text-center" colspan="2" style="width:12%">Hotel</b-th>
-                <b-th class="text-center" colspan="5" style="width:36%">Biaya</b-th>
+                <b-th class="text-center" sticky-column style="width:10%"></b-th>
+                <b-th class="text-center" colspan="2" style="width:15%">Uang Harian</b-th>
+                <b-th class="text-center" colspan="2" style="width:15%">Hotel</b-th>
+                <b-th class="text-center" colspan="5" style="width:40%">Biaya</b-th>
                 <b-th class="text-center" style="width:10%"></b-th>
                 <b-th class="text-center" style="width:10%"></b-th>
               </b-tr>
             </template>
             <template #table-colgroup="scope">
-              <col v-for="field in scope.fields" :key="field.key" :style="{ width: field.size === 'sm' ? '4%' : '' }" />
+              <col v-for="field in scope.fields" :key="field.key" :style="{ width: field.size === 'sm' ? '5%' : '' }" />
             </template>
-            <template #cell(tanggal_berangkat)>
-              <b-form-datepicker
-                boundary="window"
-                locale="id"
-                :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                v-model="form.rencana_anggaran[index].tanggal_berangkat"
-                size="sm"
-                placeholder="-"
-              />
+            <template #cell(nama_pegawai)="data">
+              <b-form-input v-model="form.susunan_tim[data.index].pegawai.nama" size="sm" plaintext />
             </template>
-            <template #cell(tanggal_kembali)>
-              <b-form-datepicker
-                boundary="window"
-                locale="id"
-                :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                v-model="form.rencana_anggaran[index].tanggal_kembali"
-                size="sm"
-                placeholder="-"
-              />
+            <template #cell(hari)="data">
+              <b-form-input v-model="data.item.jumlah_hari" size="sm" type="number" />
+            </template>
+            <template #cell(uang_harian)="data">
+              <b-form-input v-model="data.item.uang_harian" size="sm" type="number" />
+            </template>
+            <template #cell(malam)="data">
+              <b-form-input v-model="data.item.jumlah_malam" size="sm" type="number" />
             </template>
 
-            <template #cell(hari)>
-              <b-form-input v-model="form.rencana_anggaran[index].jumlah_hari" size="sm" type="number" />
-            </template>
-            <template #cell(uang_harian)>
-              <b-form-input v-model="form.rencana_anggaran[index].uang_harian" size="sm" type="number" />
-            </template>
-            <template #cell(malam)>
-              <b-form-input v-model="form.rencana_anggaran[index].jumlah_malam" size="sm" type="number" />
+            <template #cell(uang_hotel)="data">
+              <b-form-input v-model="data.item.uang_hotel" size="sm" type="number" />
             </template>
 
-            <template #cell(uang_hotel)>
-              <b-form-input v-model="form.rencana_anggaran[index].uang_hotel" size="sm" type="number" />
+            <template #cell(udara)="data">
+              <b-form-input v-model="data.item.udara" size="sm" type="number" />
             </template>
 
-            <template #cell(udara)>
-              <b-form-input v-model="form.rencana_anggaran[index].udara" size="sm" type="number" />
+            <template #cell(laut)="data">
+              <b-form-input v-model="data.item.laut" size="sm" type="number" />
             </template>
 
-            <template #cell(laut)>
-              <b-form-input v-model="form.rencana_anggaran[index].laut" size="sm" type="number" />
+            <template #cell(darat)="data">
+              <b-form-input v-model="data.item.darat" size="sm" type="number" />
             </template>
 
-            <template #cell(darat)>
-              <b-form-input v-model="form.rencana_anggaran[index].darat" size="sm" type="number" />
+            <template #cell(taksi_jakarta)="data">
+              <b-form-input v-model="data.item.taksi_jakarta" size="sm" type="number" />
             </template>
-
-            <template #cell(taksi_jakarta)>
-              <b-form-input v-model="form.rencana_anggaran[index].taksi_jakarta" size="sm" type="number" />
+            <template #cell(taksi_provinsi)="data">
+              <b-form-input v-model="data.item.taksi_provinsi" size="sm" type="number" />
             </template>
-            <template #cell(taksi_provinsi)>
-              <b-form-input v-model="form.rencana_anggaran[index].taksi_provinsi" size="sm" type="number" />
+            <template #cell(representatif)="data">
+              <b-form-input v-model="data.item.representatif" size="sm" type="number" />
             </template>
-            <template #cell(representatif)>
-              <b-form-input v-model="form.rencana_anggaran[index].representatif" size="sm" type="number" />
-            </template>
-            <template #cell(total)>
-              {{ formatRupiah(total(form.rencana_anggaran[index], index)) }}
+            <template #cell(total)="data">
+              {{ formatRupiah(total(data.item, data.index)) }}
             </template>
           </b-table>
         </b-row>
@@ -136,7 +116,6 @@
 
 <script>
 import {
-  BFormDatepicker,
   BCardBody,
   BRow,
   BCol,
@@ -156,7 +135,6 @@ import vSelect from 'vue-select'
 
 export default {
   components: {
-    BFormDatepicker,
     BRow,
     BCol,
     BCardBody,
@@ -215,8 +193,7 @@ export default {
     const stickyHeader = true
     const noCollapse = false
     const tableRAB = [
-      { key: 'tanggal_berangkat', label: 'berangkat' },
-      { key: 'tanggal_kembali', label: 'kembali' },
+      { key: 'nama_pegawai', label: null, stickyColumn: true, isRowHeader: true, variant: 'primary' },
       { key: 'hari', size: 'sm' },
       { key: 'uang_harian', label: 'Rp.' },
       { key: 'malam', size: 'sm' },
