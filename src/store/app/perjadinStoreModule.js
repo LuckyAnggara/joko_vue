@@ -5,10 +5,12 @@ export default {
   state: {
     detail: {},
     log: [],
+    realisasiDone: false,
   },
   getters: {
     getDetail: state => state.detail,
     getLog: state => state.log,
+    getRealisasi: state => state.realisasiDone,
   },
   mutations: {
     SET_DETAIL(state, data) {
@@ -16,6 +18,15 @@ export default {
     },
     SET_LOG(state, data) {
       state.log = data
+    },
+    UPDATE_LAMPIRAN(state, data) {
+      state.detail.lampiran.push(...data)
+    },
+    DELETE_LAMPIRAN(state, i) {
+      state.detail.lampiran.splice(i, 1)
+    },
+    UPDATE_STATUS_REALISASI(state, x) {
+      state.realisasiDone = x
     },
   },
   actions: {
@@ -73,6 +84,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post(`${axios.defaults.baseURL}perjadin/status`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    deleteLampiran(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`${axios.defaults.baseURL}perjadin/delete-lampiran?id=${id}`)
           .then(response => {
             resolve(response)
           })

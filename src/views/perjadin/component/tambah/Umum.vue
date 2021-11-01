@@ -51,6 +51,12 @@
             </b-col>
 
             <b-col cols="12">
+              <b-form-group label="Output Kegiatan" label-cols-md="3">
+                <b-form-textarea v-model="form.umum.output" type="text" placeholder="Output Kegiatan" />
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
               <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
                 <b-row>
                   <b-col md="6">

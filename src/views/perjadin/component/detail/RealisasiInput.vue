@@ -381,6 +381,7 @@ export default {
                       },
                       buttonsStyling: false,
                     }),
+                    this.$store.commit('app-perjadin/UPDATE_STATUS_REALISASI', 'SUDAH'),
                   )
                 })
                 this.show = !this.show
@@ -438,6 +439,18 @@ export default {
       this.realisasi.lampiran = []
     },
     tambahRealisasi() {
+      if (this.realisasi.tanggal_berangkat === null || this.realisasi.tanggal_kembali === null) {
+        this.$swal({
+          title: 'Oopss!',
+          text: 'Tanggal belum di lengkapi',
+          icon: 'warning',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        })
+        return
+      }
       const realisasi = {
         pegawai: this.selectedPegawai,
         tanggal_berangkat: this.realisasi.tanggal_berangkat,

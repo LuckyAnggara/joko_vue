@@ -8,22 +8,22 @@
           <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button>
           <b-button variant="outline-primary" class="ml-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
         </template>
-        <template v-if="userData.role === 'VERIFIKATOR KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
+        <template
+          v-if="userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false"
+        >
           <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
           <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
         </template>
-        <template v-if="userData.role === 'VERIFIKATOR KEUANGAN' ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
+        <!-- <template v-if="userData.role === 'VERIFIKATOR KEUANGAN'  ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
           <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
           <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>
-        </template>
+        </template> -->
         <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
           <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
           <b-button variant="outline-primary" class="ml-1" @click="realisasi()" v-if="!inputRealisasi"> Realisasi </b-button>
+          <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="realisasiDone"> Kirim </b-button>
         </template>
-        <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
-          <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="!inputRealisasi"> Kirim </b-button>
-          <!-- <b-button variant="outline-success" class="mr-1" @click="submitRealisasi()" v-if="inputRealisasi"> Submit </b-button> -->
-        </template>
+
         <template v-if="userData.role === 'USER' && data.status === 'REVISI KEUANGAN' ? true : false">
           <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
           <b-button variant="outline-danger" class="ml-1" @click="destroy()"> Delete </b-button>
@@ -92,6 +92,9 @@ export default {
   computed: {
     data() {
       return this.$store.getters['app-perjadin/getDetail']
+    },
+    realisasiDone() {
+      return this.$store.getters['app-perjadin/getRealisasi']
     },
   },
   methods: {

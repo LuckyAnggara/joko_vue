@@ -69,6 +69,11 @@
                 <b-form-textarea :value="form.maksud" type="text" placeholder="-" readonly />
               </b-form-group>
             </b-col>
+            <b-col cols="12">
+              <b-form-group label="Output Kegiatan" label-cols-md="3">
+                <b-form-textarea :value="form.output" type="text" placeholder="-" readonly />
+              </b-form-group>
+            </b-col>
 
             <b-col cols="12">
               <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">

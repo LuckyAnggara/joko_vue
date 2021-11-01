@@ -122,6 +122,7 @@ export default {
                   this.file.append('lampiran_lainnya[]', this.form.lampiran.lainnya[i])
                 }
                 this.file.append('id', res.data.id)
+                this.file.append('user_id', this.userData.id)
                 this.titleLoading = 'Upload lampiran ...'
                 this.processing = !this.processing
                 this.$store
@@ -187,6 +188,7 @@ export default {
           a.umum.tanggal_kembali === null ||
           a.umum.jumlah_hari === null ||
           a.umum.maksud === null ||
+          a.umum.output === null ||
           a.umum.ppk === null ||
           a.umum.bendahara === null
         ) {
@@ -323,6 +325,7 @@ export default {
         tanggal_kembali: null,
         jumlah_hari: 0,
         maksud: null,
+        output: null,
         ppk: null,
         bendahara: null,
       },
