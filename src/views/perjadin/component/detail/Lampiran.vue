@@ -48,6 +48,10 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <hr />
+          <b-row class="mt-2" v-if="form.status !== 'PENGAJUAN' && form.status !== 'SELESAI'">
+            <b-button variant="outline-primary" class="ml-1" @click="showModalLampiran()"> Tambah Lampiran </b-button>
+          </b-row>
         </b-card-body>
         <template #footer>
           <small
@@ -58,34 +62,85 @@
         </template>
       </b-card>
     </b-col>
+    <b-modal
+      id="modal-lampiran"
+      size="md"
+      scrollable
+      hide-backdrop
+      ok-only
+      centered
+      no-close-on-backdrop
+      content-class="shadow"
+      title="Tambah Lampiran "
+      ok-variant="success"
+      ok-title="Submit"
+      @ok="tambahLampiran()"
+      @hidden="resetModal"
+      lazy
+    >
+      <b-row>
+        <b-col cols="12">
+          <b-form-group label="Jenis Lampiran">
+            <v-select v-model="upload.jenis" placeholder="Jenis Lampiran" label="name" :options="jenisOption" />
+          </b-form-group>
+          <hr />
+        </b-col>
+        <b-col cols="12">
+          <b-form-group label="Lampiran / Bukti">
+            <b-form-file
+              @change="uploadLampiran"
+              placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+              drop-placeholder="Drop file disini..."
+              multiple
+              ref="file_input"
+            >
+              <template slot="file-name" slot-scope="{ names }">
+                <b-badge variant="dark">{{ names[0] }}</b-badge>
+                <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+              </template>
+            </b-form-file>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
   </b-row>
 </template>
 
 <script>
-// import { ref } from '@vue/composition-api'
+import { ref } from '@vue/composition-api'
 import {
+  BModal,
+  BBadge,
+  BButton,
   BLink,
   BCard,
   BCardBody,
   BRow,
   BCol,
   // BFormInput,
+  BFormFile,
   BFormGroup,
   // BFormTextarea,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { urlGet, formatRupiah } from '@core/utils/filter'
+import vSelect from 'vue-select'
 
 export default {
   components: {
+    BModal,
+    BBadge,
+    BButton,
     BLink,
     BCard,
     BCardBody,
     BRow,
     BCol,
+    BFormFile,
     // BFormInput,
     BFormGroup,
     // BFormTextarea,
+    vSelect,
   },
   directives: {
     Ripple,
@@ -108,6 +163,43 @@ export default {
   methods: {
     urlGet,
     formatRupiah,
+    resetModal() {
+      this.upload.jenis = null
+      this.upload.lampiran = []
+    },
+    showModalLampiran() {
+      this.$bvModal.show('modal-lampiran')
+    },
+    /* eslint-disable */
+    uploadLampiran(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.upload.lampiran.push(selectedFiles[i])
+      }
+      /* eslint-enable */
+    },
+  },
+  setup() {
+    const upload = ref({
+      jenis: {},
+      lampiran: [],
+    })
+    const jenisOption = [
+      { key: 'SP', name: 'SURAT PERINTAH' },
+      { key: 'RAB', name: 'RANCANGAN ANGGARAN BIAYA' },
+      { key: 'LAINNYA', name: 'LAINNYA' },
+    ]
+    return {
+      upload,
+      jenisOption,
+    }
   },
 }
 </script>
+
+<style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
+</style>

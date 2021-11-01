@@ -8,9 +8,16 @@
               <b-form-group label="Tahun Anggaran" label-cols-md="3" label-cols-sm="12">
                 <b-form-input :value="form.tahun.nama" placeholder="-" readonly />
               </b-form-group>
-              <hr />
             </b-col>
+            <b-col cols="12">
+              <b-form-group label="Nomor Perjadin" label-cols-md="3" label-cols-sm="12">
+                <b-form-input :value="form.no_perjadin" placeholder="-" readonly />
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <hr />
 
+          <b-row>
             <b-col cols="12">
               <b-form-group label="Nomor Surat Perintah" label-cols-md="3">
                 <b-form-input :value="form.surat_perintah.nomor_surat" type="text" placeholder="-" readonly />
@@ -57,6 +64,11 @@
                 <b-form-input :value="form.keberangkatan" type="text" placeholder="-" readonly />
               </b-form-group>
             </b-col>
+            <b-col cols="12">
+              <b-form-group label="Maksud Perjalanan Dinas" label-cols-md="3">
+                <b-form-textarea :value="form.maksud" type="text" placeholder="-" readonly />
+              </b-form-group>
+            </b-col>
 
             <b-col cols="12">
               <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
@@ -78,12 +90,6 @@
             <b-col cols="12">
               <b-form-group label="Jumlah Hari" label-cols-md="3">
                 <b-form-input :value="form.jumlah_hari" type="text" placeholder="-" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Keterangan" label-cols-md="3">
-                <b-form-textarea :value="form.keterangan" type="text" placeholder="-" readonly />
               </b-form-group>
             </b-col>
           </b-row>

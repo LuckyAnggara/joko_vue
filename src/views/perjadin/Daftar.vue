@@ -13,30 +13,33 @@
               </b-col>
             </b-row>
             <b-row>
-              <b-col cols="6" md="2" sm="6">
+              <b-col cols="6" md="2" sm="3" lg="2">
                 <label>Tahun Data</label>
                 <v-select v-model="tahun" label="nama" :options="tahunOption" :clearable="false" />
               </b-col>
-              <b-col cols="6" md="2" sm="6">
+              <b-col cols="6" lg="2" md="2" sm="3">
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
-              <b-col cols="6" md="2" sm="6">
+              <b-col cols="6" lg="2" md="3" sm="3">
                 <label class="mr-1">Filter Status</label>
                 <v-select v-model="statusFilter" :options="statusOption" :clearable="false" />
               </b-col>
+              <b-col cols="6" lg="3" md="3" sm="3" v-if="userData.role !== 'USER' ? true : false">
+                <label class="mr-1">Bagian / Wilayah</label>
+                <v-select v-model="bidangFilter" label="nama" :options="bidangOption" :clearable="false" />
+              </b-col>
               <!-- Search -->
-              <b-col cols="6" md="4" sm="12">
+              <b-col cols="6" lg="3" md="5" sm="12">
                 <label class="mr-1">Cari Data</label>
                 <b-form-input v-model="searchQuery" placeholder="Cari data... " />
               </b-col>
             </b-row>
           </div>
           <b-table
+            small
             :busy="isBusy"
-            ref="refTable"
             responsive
-            primary-key="id"
             :fields="tableColumns"
             :items="dataPerjadin"
             :current-page="currentPage"
@@ -44,6 +47,7 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="isSortDirDesc"
             show-empty
+            bordered
             empty-text="Tidak ada data"
             class="position-relative"
           >
@@ -58,27 +62,35 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(nomor_surat_perintah)="data">
+            <template #cell(surat_perintah)="data">
               <span>
                 {{ data.item.surat_perintah.nomor_surat }}
               </span>
             </template>
-            <template #cell(tanggal_berangkat)="data">
+            <template #cell(tanggal_pelaksanaan)="data">
               <span>
                 {{
                   $moment(data.item.tanggal_berangkat)
                     .locale('id')
-                    .format('DD MMMM YYYY')
+                    .format('DD/MM/YYYY')
                 }}
-              </span>
-            </template>
-            <template #cell(tanggal_kembali)="data">
-              <span>
+                -
                 {{
                   $moment(data.item.tanggal_kembali)
                     .locale('id')
-                    .format('DD MMMM YYYY')
+                    .format('DD/MM/YYYY')
                 }}
+              </span>
+            </template>
+            <template #cell(maksud)="data">
+              <b-tooltip :target="`tooltip_${data.item.id}`">{{ data.item.maksud }}</b-tooltip>
+              <span :id="`tooltip_${data.item.id}`">
+                {{ truncate(data.item.maksud, 30) }}
+              </span>
+            </template>
+            <template #cell(maker)="data" v-if="userData.role !== 'USER' ? true : false">
+              <span>
+                {{ data.item.bidang.nama }}
               </span>
             </template>
             <template #cell(status)="data">
@@ -86,18 +98,20 @@
                 <template>
                   <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI KEUANGAN'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI PPK'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="light-primary" v-if="data.item.status === 'PELAKSANAAN'"> {{ data.item.status }} </b-badge>
+                  <b-badge pill variant="warning" v-if="data.item.status === 'VERIFIKASI REALISASI'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="danger" v-if="data.item.status === 'REVISI PPK'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="primary" v-if="data.item.status === 'PELAKSANAAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI PPK'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="light-success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
+                  <b-badge pill variant="primary" v-if="data.item.status === 'VERIFIED PPK'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
                 </template>
               </div>
             </template>
             <template #cell(actions)="data">
               <div class="text-nowrap">
                 <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
-                <b-dropdown variant="link" toggle-class="p-0" no-caret>
+                <b-dropdown variant="link" toggle-class="p-0" no-caret boundary="window">
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                   </template>
@@ -143,19 +157,34 @@
         </b-card>
       </b-col>
     </b-row>
-    <timeline />
+    <b-modal
+      id="modal-log"
+      scrollable
+      hide-backdrop
+      ok-only
+      no-close-on-backdrop
+      content-class="shadow"
+      title="Log Pengajuan Perjadin"
+      ok-variant="danger"
+      ok-title="Tutup"
+      lazy
+    >
+      <timeline />
+    </b-modal>
   </section>
 </template>
 
 <script>
 import { ref } from '@vue/composition-api'
-import { formatRupiah } from '@core/utils/filter'
-import { BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
+import { formatRupiah, truncate } from '@core/utils/filter'
+import { BModal, BTooltip, BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
 import vSelect from 'vue-select'
-import Timeline from './component/Timeline.vue'
+import Timeline from './component/LogTimeline.vue'
 
 export default {
   components: {
+    BModal,
+    BTooltip,
     BButton,
     BBadge,
     BSpinner,
@@ -190,6 +219,13 @@ export default {
         )
       }
     },
+    bidangFilter(x) {
+      if (x.nama === '' || x.id === null || x.id === 0) {
+        this.dataPerjadin = this.dataTemp
+      } else {
+        this.dataPerjadin = this.dataTemp.filter(item => item.bidang.id === x.id)
+      }
+    },
     /* eslint-enable */
     statusFilter(x) {
       if (x === '' || x === null || x === 'SEMUA') {
@@ -198,7 +234,6 @@ export default {
         this.dataPerjadin = this.dataTemp.filter(item => item.status === x)
       }
     },
-    /* eslint-disable */
   },
   computed: {
     dataMeta() {
@@ -215,9 +250,19 @@ export default {
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
     },
+    bidangOption() {
+      return [
+        {
+          id: 0,
+          nama: 'SEMUA',
+        },
+        ...this.$store.getters['app-general/getBidang'],
+      ]
+    },
   },
   methods: {
     formatRupiah,
+    truncate,
     detail(id) {
       const data = this.dataTemp.find(x => x.id === id)
       this.$store.commit('app-perjadin/SET_DETAIL', data)
@@ -232,6 +277,11 @@ export default {
         this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
+    loadBidang() {
+      this.$store.dispatch('app-general/fetchBidang').then(res => {
+        this.$store.commit('app-general/SET_BIDANG', res.data)
+      })
+    },
     loadKegiatan() {
       this.isBusy = !this.isBusy
       this.$store
@@ -241,7 +291,15 @@ export default {
         })
         .then(res => {
           this.isBusy = !this.isBusy
-          this.dataTemp = this.userData.role === 'USER' ? res.data : res.data.filter(x => x.status !== 'PENGAJUAN')
+          if (this.userData.role === 'USER') {
+            this.dataTemp = res.data
+          } else if (this.userData.role === 'PPK') {
+            this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI PPK')
+          } else if (this.userData.role === 'VERIFIKATOR KEUANGAN') {
+            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN')
+          } else if (this.userData.role === 'BENDAHARA') {
+            this.dataTemp = res.data.filter(x => x.status === 'VERIFIED PPK')
+          }
           this.dataPerjadin = this.dataTemp
         })
     },
@@ -250,6 +308,12 @@ export default {
         title: 'Kirim Keuangan ?',
         text: 'Berkas perjadin akan di kirim ke keuangan !',
         icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
         showCancelButton: true,
         confirmButtonText: 'Proses!',
         customClass: {
@@ -258,14 +322,15 @@ export default {
         },
         buttonsStyling: false,
       }).then(result => {
-        if (result.value) {
+        if (result.isConfirmed) {
           this.$store
             .dispatch('app-perjadin/statusPerjadin', {
               id,
               status: 'VERIFIKASI KEUANGAN',
               status_log: 'KIRIM KEUANGAN',
-              message_log: 'perjadin telah di kirim ke keuangan oleh ',
+              message_log: 'perjadin telah di kirim ke keuangan ',
               user_data: this.userData,
+              catatan: result.value,
             })
             .then(x => {
               if (x.status === 200) {
@@ -279,6 +344,7 @@ export default {
                   buttonsStyling: false,
                 })
                 this.loadKegiatan()
+                this.catatan = ''
               }
             })
         }
@@ -288,8 +354,10 @@ export default {
   mounted() {
     this.loadKegiatan()
     this.loadTahun()
+    this.loadBidang()
   },
   setup() {
+    const catatan = ref('aaa')
     const userData = JSON.parse(localStorage.getItem('userData'))
     const tahun = ref({
       id: 1,
@@ -300,12 +368,13 @@ export default {
     const dataTemp = ref([])
     const tableColumns = [
       { key: 'id', label: 'NO' },
-      { key: 'nomor_surat_perintah' },
+      { key: 'no_perjadin', label: 'kode' },
+      { key: 'surat_perintah' },
       { key: 'tujuan' },
-      { key: 'tanggal_berangkat' },
-      { key: 'tanggal_kembali' },
-      { key: 'keterangan' },
+      { key: 'tanggal_pelaksanaan' },
+      { key: 'maksud' },
       { key: 'status' },
+      { key: 'maker', thClass: userData.role !== 'USER' ? '' : 'd-none', tdClass: userData.role !== 'USER' ? '' : 'd-none' },
       { key: 'actions' },
     ]
     const searchQuery = ref('')
@@ -314,10 +383,11 @@ export default {
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    // eslint-disable-next-line
     const statusFilter = ref('SEMUA')
-    const statusOption = ref(['SEMUA', 'PENGAJUAN', 'REVISI', 'VERIFIKASI KEUANGAN', 'PELAKSANAAN', 'VERIFIKASI PPK', 'SELESAI'])
+    const bidangFilter = ref({ nama: 'SEMUA', id: 0 })
+    const statusOption = ref(['SEMUA', 'PENGAJUAN', 'REVISI', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'SELESAI'])
     return {
+      catatan,
       userData,
       tahun,
       isBusy,
@@ -331,6 +401,7 @@ export default {
       sortBy,
       isSortDirDesc,
       statusFilter,
+      bidangFilter,
       statusOption,
     }
   },

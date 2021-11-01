@@ -1,8 +1,14 @@
+import axios from '@axios'
+
 import { isToday } from './utils'
 
 export const kFormatter = num => (num > 999 ? `${(num / 1000).toFixed(1)}k` : num)
 export const formatRupiah = value => `Rp. ${value.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')}`
-export const urlGet = (id, url) => `http://127.0.0.1:8000/api/${url}/download-lampiran?id=${id}`
+// eslint-disable-next-line
+export const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + '...' : str)
+// eslint-enable-next-line
+export const urlGet = (id, url, jenis = null) => `${axios.defaults.baseURL}${url}/download-lampiran?id=${id}&jenis=${jenis}`
+export const spdGet = id => `${axios.defaults.baseURL}print/download-spd?id=${id}`
 
 export const title = (value, replacer = ' ') => {
   if (!value) return ''

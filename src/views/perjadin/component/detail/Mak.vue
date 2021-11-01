@@ -62,6 +62,15 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <b-row class="mt-2" v-if="form.status !== 'PENGAJUAN'">
+            <b-col cols="12">
+              <b-button variant="outline-primary" class="ml-1" @click="showModalLampiran()"> Cek MAK </b-button>
+            </b-col>
+
+            <b-col cols="12">
+              <small>Cek Daftar MAK pada {{ form.bidang.nama }}</small>
+            </b-col>
+          </b-row>
         </b-card-body>
         <template #footer>
           <small
@@ -78,6 +87,7 @@
 <script>
 // import { ref } from '@vue/composition-api'
 import {
+  BButton,
   BLink,
   BCard,
   BCardBody,
@@ -92,6 +102,7 @@ import { urlGet, formatRupiah } from '@core/utils/filter'
 
 export default {
   components: {
+    BButton,
     BLink,
     BCard,
     BCardBody,

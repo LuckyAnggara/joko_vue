@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col lg="12" sm="12">
-      <b-card title="Rincian Anggaran" footer-tag="footer">
+      <b-card title="Rincian Realisasi" footer-tag="footer">
         <b-card-body>
           <b-row v-for="tim in form.susunan_tim" :key="tim.id">
             <b-col cols="3" lg="3" md="3" sm="12">
@@ -10,12 +10,12 @@
             </b-col>
             <b-col cols="6" lg="6" md="6" sm="12">
               <p class="mt-2">
-                {{ $moment(tim.anggaran.tanggal_berangkat).format('DD MMMM YYYY') }} - {{ $moment(tim.anggaran.tanggal_kembali).format('DD MMMM YYYY') }}
+                {{ $moment(tim.realisasi.tanggal_berangkat).format('DD MMMM YYYY') }} - {{ $moment(tim.realisasi.tanggal_kembali).format('DD MMMM YYYY') }}
               </p>
             </b-col>
 
             <b-col cols="12" lg="12" md="12" sm="12">
-              <b-table small :fields="tableCol" :items="[...tim.anggaran]" responsive bordered>
+              <b-table small :fields="tableCol" :items="[...tim.realisasi]" responsive bordered>
                 <template #cell(hari)="data">
                   <span>{{ data.item.jumlah_hari }}</span>
                 </template>
@@ -51,7 +51,8 @@
                 </template>
                 <template #cell(actions)="data">
                   <div class="text-nowrap">
-                    <feather-icon icon="PrinterIcon" size="24" class="mx-1" @click="detail(data.item.id)" />
+                    <feather-icon icon="PaperclipIcon" size="24" class="mx-1" @click="showLampiran(data.item.lampiran)" />
+                    <feather-icon icon="PrinterIcon" size="24" class="mx-1" @click="showPrint(data.item.id)" />
                   </div>
                 </template>
               </b-table>
@@ -60,10 +61,10 @@
           <hr />
           <b-row class="mt-2">
             <b-col cols="3">
-              <h4>Total Anggaran</h4>
+              <h4>Total Realisasi</h4>
             </b-col>
             <b-col cols="3">
-              <h4>{{ formatRupiah(form.total_anggaran) }}</h4>
+              <h4>{{ formatRupiah(form.total_realisasi) }}</h4>
             </b-col>
           </b-row>
         </b-card-body>
@@ -76,16 +77,61 @@
         </template>
       </b-card>
     </b-col>
+    <b-modal
+      id="modal-lampiran-realisasi"
+      size="md"
+      centered
+      scrollable
+      hide-backdrop
+      ok-only
+      no-close-on-backdrop
+      content-class="shadow"
+      title="Lampiran Realisasi"
+      ok-variant="danger"
+      ok-title="Tutup"
+      lazy
+    >
+      <b-row>
+        <b-col>
+          <ol>
+            <li v-for="item in lampiran" :key="item.id" class="mb-1">
+              <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
+                <feather-icon icon="FileIcon" size="18" class="ml-1" @click="showLampiran(data.item.lampiran)" />
+                {{ item.nama }}
+              </b-link>
+            </li>
+          </ol>
+        </b-col>
+      </b-row>
+    </b-modal>
+    <b-modal
+      id="modal-print"
+      size="md"
+      centered
+      scrollable
+      hide-backdrop
+      ok-only
+      no-close-on-backdrop
+      content-class="shadow"
+      title="Print"
+      ok-variant="danger"
+      ok-title="Tutup"
+      lazy
+    >
+    </b-modal>
   </b-row>
 </template>
 
 <script>
-import { BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
+import { ref } from '@vue/composition-api'
+import { BLink, BModal, BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import { formatRupiah } from '@core/utils/filter'
+import { formatRupiah, urlGet } from '@core/utils/filter'
 
 export default {
   components: {
+    BLink,
+    BModal,
     BCard,
     BRow,
     BCol,
@@ -100,40 +146,21 @@ export default {
     form() {
       return this.$store.getters['app-perjadin/getDetail']
     },
-    lampiran_sp() {
-      return this.form.lampiran.filter(x => x.jenis === 'SP')
-    },
   },
   methods: {
+    urlGet,
     formatRupiah,
-    tambahPegawai() {
-      const dataPegawai = {
-        nip: null,
-        nama: null,
-        peran: null,
-      }
-      const dataRab = {
-        jumlah_hari: this.form.umum.jumlah_hari,
-        uang_harian: 0,
-        jumlah_malam: 0,
-        uang_hotel: 0,
-        udara: 0,
-        laut: 0,
-        darat: 0,
-        taksi_jakarta: 0,
-        taksi_provinsi: 0,
-        representatif: 0,
-        total: 0,
-      }
-      this.form.susunan_tim.push(dataPegawai)
-      this.form.rencana_anggaran.push(dataRab)
+    showLampiran(x) {
+      this.lampiran = x
+      console.info(this.lampiran)
+      this.$bvModal.show('modal-lampiran-realisasi')
     },
-    deletePegawai(i) {
-      this.form.susunan_tim.splice(i, 1)
-      this.form.rencana_anggaran.splice(i, 1)
+    showPrint() {
+      this.$bvModal.show('modal-print')
     },
   },
   setup() {
+    const lampiran = ref([])
     const tableCol = [
       { key: 'hari' },
       { key: 'uang_harian' },
@@ -149,12 +176,9 @@ export default {
       { key: 'actions' },
     ]
     return {
+      lampiran,
       tableCol,
     }
   },
 }
 </script>
-
-<style lang="scss">
-@import '@core/scss/vue/libs/vue-select.scss';
-</style>

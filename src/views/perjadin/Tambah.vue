@@ -185,7 +185,10 @@ export default {
           a.umum.keberangkatan === null ||
           a.umum.tanggal_berangkat === null ||
           a.umum.tanggal_kembali === null ||
-          a.umum.jumlah_hari === null
+          a.umum.jumlah_hari === null ||
+          a.umum.maksud === null ||
+          a.umum.ppk === null ||
+          a.umum.bendahara === null
         ) {
           this.$swal({
             title: 'Opss!',
@@ -319,7 +322,9 @@ export default {
         tanggal_berangkat: null,
         tanggal_kembali: null,
         jumlah_hari: 0,
-        keterangan: null,
+        maksud: null,
+        ppk: null,
+        bendahara: null,
       },
       surat_perintah: {
         nomor_surat: null,

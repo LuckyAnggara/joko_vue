@@ -1,7 +1,7 @@
 <template>
   <!-- <b-row class="match-height"> -->
   <b-row>
-    <b-col lg="8" sm="12">
+    <b-col lg="12" sm="12">
       <form autocomplete="off">
         <b-card-body>
           <b-row>
@@ -45,6 +45,12 @@
             </b-col>
 
             <b-col cols="12">
+              <b-form-group label="Maksud Perjalanan Dinas" label-cols-md="3">
+                <b-form-textarea v-model="form.umum.maksud" type="text" placeholder="Maksud Perjalanan Dinas" />
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
               <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
                 <b-row>
                   <b-col md="6">
@@ -76,10 +82,17 @@
                 <b-form-input v-model="form.umum.jumlah_hari" type="text" placeholder="Jumlah Hari Pelaksanaan Perjalanan Dinas" />
               </b-form-group>
             </b-col>
-
+          </b-row>
+          <hr />
+          <b-row>
             <b-col cols="12">
-              <b-form-group label="Keterangan" label-cols-md="3">
-                <b-form-textarea v-model="form.umum.keterangan" type="text" placeholder="Keterangan lainnya (Seperti urusan)" />
+              <b-form-group label="Pejabat Pembuat Komitmen" label-cols-md="3">
+                <v-select v-model="form.umum.ppk" placeholder="Pejabat Pembuat Komitmen" label="nama" :options="pegawaiOption" />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Bendahara" label-cols-md="3">
+                <v-select v-model="form.umum.bendahara" placeholder="Bendahara" label="nama" :options="pegawaiOption" />
               </b-form-group>
             </b-col>
           </b-row>
@@ -116,6 +129,9 @@ export default {
   computed: {
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
+    },
+    pegawaiOption() {
+      return this.$store.getters['app-general/getPegawai']
     },
   },
   methods: {

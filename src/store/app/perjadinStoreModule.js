@@ -29,7 +29,6 @@ export default {
           .catch(error => reject(error))
       })
     },
-
     deletePerjadin(ctx, id) {
       return new Promise((resolve, reject) => {
         axios
@@ -44,6 +43,26 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post(`${axios.defaults.baseURL}perjadin/store`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeRealisasi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}perjadin/store-realisasi`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storePerjadinRealisasiLampiran(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}perjadin/upload-perjadin-realisasi-lampiran`, data)
           .then(response => {
             resolve(response)
           })
@@ -74,6 +93,17 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .delete(`${axios.defaults.baseURL}realisasi/delete-realisasi?id=${data.id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    // PRINT
+    printSPD(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}print/download-spd?id=${id}`)
           .then(response => {
             resolve(response)
           })

@@ -5,6 +5,7 @@ export default {
   state: {
     tahun: [],
     pegawai: [],
+    bidang: [],
     peran: [],
     urusan: [],
     mak: [],
@@ -13,6 +14,7 @@ export default {
   getters: {
     getTahun: state => state.tahun,
     getPegawai: state => state.pegawai,
+    getBidang: state => state.bidang,
     getPeran: state => state.peran,
     getUrusan: state => state.urusan,
     getMak: state => state.mak,
@@ -24,6 +26,9 @@ export default {
     },
     SET_PEGAWAI(state, data) {
       state.pegawai = data
+    },
+    SET_BIDANG(state, data) {
+      state.bidang = data
     },
     SET_PERAN(state, data) {
       state.peran = data
@@ -53,6 +58,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}pegawai/`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchBidang(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}bidang/`, data)
           .then(response => {
             resolve(response)
           })
