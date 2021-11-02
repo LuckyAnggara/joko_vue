@@ -32,7 +32,28 @@ export default [
     },
   },
   {
-    path: '/kegiatan/detail?:id',
+    path: '/kegiatan/rencana',
+    name: 'kegiatan-rencana',
+    component: () => import('@/views/kegiatan/TambahRencana.vue'),
+    meta: {
+      pageTitle: 'Kegiatan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Rencana Kegiatan',
+          active: true,
+        },
+        {
+          text: 'Tambah Data',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/kegiatan/detail',
     name: 'kegiatan-detail',
     component: () => import('@/views/kegiatan/Detail.vue'),
     meta: {

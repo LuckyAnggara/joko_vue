@@ -98,8 +98,13 @@ export default {
           urusan: this.chooseUrusan,
         }
         this.form.obrik.detail.push(dataObrik)
-        this.chooseSatker = null
-        this.chooseUrusan = null
+
+        // eslint-disable-next-line
+        setTimeout(() => {
+          this.chooseSatker = null
+          this.chooseUrusan = null
+        }, 200)
+        // eslint-enable-next-line
       } else {
         this.$swal({
           title: 'Opss!',

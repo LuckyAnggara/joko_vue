@@ -4,22 +4,29 @@
     <b-col lg="8" sm="12">
       <b-overlay :show="show" rounded="sm" variant="transparent" blur="5px" opacity="0.95">
         <b-form autocomplete="off" @submit.prevent @submit="store">
-          <b-card title="Data Realisasi">
+          <b-card title="Data Rencana Kegiatan">
             <b-row>
               <b-col cols="12">
                 <b-form-group label="Tahun Anggaran" label-cols-md="3">
-                  <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" @input="changeTahun()" />
+                  <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" @input="changeTahun()"></v-select>
                 </b-form-group>
               </b-col>
               <b-col cols="12">
                 <b-form-group label="Mata Anggaran Kegiatan" label-cols-md="3">
-                  <v-select v-model="form.mak" placeholder="Mata Anggaran Kegiatan" label="kode" :options="makOption" />
+                  <v-select v-model="form.mak" placeholder="Mata Anggaran Kegiatan" label="kode" :options="makOption">
+                    <template v-slot:option="option"> {{ option.kode }} - {{ option.nama }} </template>
+                  </v-select>
                 </b-form-group>
                 <hr />
               </b-col>
               <b-col cols="12">
-                <b-form-group label="Tanggal SPB" label-cols-md="3">
-                  <b-form-datepicker v-model="form.tanggal_spb" placeholder="Tanggal SPB" />
+                <b-form-group label="Tanggal Rencana Kegiatan" label-cols-md="3">
+                  <b-form-datepicker locale="id" v-model="form.tanggal_rencana_kegiatan" placeholder="Tanggal Rencana Kegiatan" />
+                </b-form-group>
+              </b-col>
+              <b-col cols="12">
+                <b-form-group label="Lokasi Kegiatan" label-cols-md="3">
+                  <b-form-input v-model="form.lokasi" placeholder="Lokasi Kegiatan" required />
                 </b-form-group>
               </b-col>
 
@@ -30,23 +37,24 @@
               </b-col>
 
               <b-col cols="12">
-                <b-form-group label="Nominal Bayar" label-cols-md="3">
-                  <b-form-input v-model="form.nominal" type="number" placeholder="Nominal Bayar" required />
+                <b-form-group label="Output Kegiatan" label-cols-md="3">
+                  <b-form-textarea v-model="form.output" placeholder="Uraian Kegiatan" required rows="3" />
+                </b-form-group>
+              </b-col>
+
+              <b-col cols="12">
+                <b-form-group label="Jenis Kegiatan" label-cols-md="3">
+                  <v-select v-model="form.jenis_kegiatan" placeholder="Jenis Kegiatan" label="nama" :options="jenisKegiatanOption" />
+                </b-form-group>
+              </b-col>
+
+              <b-col cols="12">
+                <b-form-group label="Anggaran Kegiatan" label-cols-md="3">
+                  <b-form-input v-model="form.total_anggaran" type="number" placeholder="Rp. 0" required />
                 </b-form-group>
                 <hr />
               </b-col>
 
-              <b-col cols="12">
-                <b-form-group label="Pembuat SPB" label-cols-md="3">
-                  <v-select v-model="form.maker" placeholder="Pembuat SPB" label="nama" :options="pegawaiOption" />
-                </b-form-group>
-              </b-col>
-
-              <b-col cols="12">
-                <b-form-group label="Checker SPB" label-cols-md="3">
-                  <v-select v-model="form.checker" placeholder="Maker SPB" label="nama" :options="pegawaiOption" />
-                </b-form-group>
-              </b-col>
               <b-col cols="12">
                 <b-form-group label="Upload Lampiran" label-cols-md="3">
                   <b-form-file
@@ -165,6 +173,7 @@ export default {
   mounted() {
     this.loadTahun()
     this.loadPegawai()
+    this.loadJenisKegiatan()
   },
   methods: {
     /* eslint-disable */
@@ -215,7 +224,7 @@ export default {
     store() {
       this.$swal({
         title: 'Proses ?',
-        text: 'Data realisasi mak akan di Proses!',
+        text: 'Rencana kegiatan akan dibuat!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -229,25 +238,26 @@ export default {
           this.show = !this.show
           this.form.lampiran = this.file
           this.$store
-            .dispatch('app-kegiatan/storeRealisasiKegiatan', this.form)
+            .dispatch('app-kegiatan/storeRencanaKegiatan', this.form)
             .then(res => {
               if (res.status === 200) {
                 for (let i = 0; i < this.attachments.length; i += 1) {
                   this.file.append('lampiran[]', this.attachments[i])
                 }
                 this.file.append('id', res.data.id)
-                this.title = 'Upload lampiran ...'
+                this.file.append('user_id', this.userData.id)
+                this.title = 'Upload data pendukung ...'
                 this.processing = !this.processing
                 this.clearInterval()
-                this.$store.dispatch('app-kegiatan/storeLampiranRealisasiKegiatan', this.file).then(x => {
+                this.$store.dispatch('app-kegiatan/storeLampiranRencanaKegiatan', this.file).then(x => {
                   if (x.status === 200) {
                     this.success()
-                    this.processing = !this.processing
                   } else {
                     this.error(x.status)
                   }
+                  this.processing = !this.processing
                   this.show = !this.show
-                  this.$router.push({ name: 'mak-daftar' })
+                  this.$router.push({ name: 'kegiatan-daftar' })
                 })
               } else {
                 this.error(res.status)
@@ -267,14 +277,14 @@ export default {
       }
     },
     loadTahun() {
-      this.$store.dispatch('app-kegiatan/fetchTahun').then(res => {
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
         this.tahunOption = res.data
       })
     },
     loadMak() {
       if (this.form.tahun !== null || this.form.tahun !== '') {
         this.$store
-          .dispatch('app-kegiatan/fetchMak', {
+          .dispatch('app-general/fetchMak', {
             bidang_id: this.userData.bidang_id,
             tahun_id: this.form.tahun === null ? 0 : this.form.tahun.id,
           })
@@ -284,8 +294,13 @@ export default {
       }
     },
     loadPegawai() {
-      this.$store.dispatch('app-kegiatan/fetchPegawai').then(res => {
+      this.$store.dispatch('app-general/fetchPegawai').then(res => {
         this.pegawaiOption = res.data
+      })
+    },
+    loadJenisKegiatan() {
+      this.$store.dispatch('app-general/fetchJenisKegiatan').then(res => {
+        this.jenisKegiatanOption = res.data
       })
     },
     reset() {
@@ -294,7 +309,7 @@ export default {
     },
   },
   setup() {
-    const title = ref('Membuat relisasi mak .... ')
+    const title = ref('Membuat rencana kegiatan .... ')
     const processing = ref(false)
 
     const show = ref(false)
@@ -304,21 +319,24 @@ export default {
     const lampiran = ref(null)
     const form = ref({
       tahun: null,
+      jenis_kegiatan: null,
+      lokasi: null,
       mak: null,
       uraian: null,
-      nominal: 0,
-      maker: null,
-      checker: null,
-      tanggal_spb: null,
+      total_anggaran: null,
+      tanggal_rencana_kegiatan: null,
+      output: null,
       lampiran: null,
-      userData,
+      user_data: userData,
     })
     const makOption = ref([])
     const tahunOption = ref([])
+    const jenisKegiatanOption = ref([])
     const pegawaiOption = ref([])
     const tahun = ref({})
 
     return {
+      jenisKegiatanOption,
       processing,
       title,
       show,

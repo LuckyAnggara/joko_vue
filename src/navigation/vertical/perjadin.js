@@ -5,7 +5,7 @@ export default [
   {
     title: 'Daftar',
     icon: 'ShieldIcon',
-    route: 'perjadin-daftar',
+    // route: 'perjadin-daftar',
   },
   {
     title: 'Rencana',

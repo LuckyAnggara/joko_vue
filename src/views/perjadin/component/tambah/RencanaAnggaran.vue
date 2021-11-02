@@ -6,6 +6,9 @@
       <b-card-body>
         <b-row>
           <b-col cols="12">
+            <b-form-group label="Tahun Anggaran" label-cols-md="3">
+              <b-form-input :value="form.tahun === null ? '' : form.tahun.nama" readonly />
+            </b-form-group>
             <b-form-group label="Mata Anggaran Kegiatan" label-cols-md="3">
               <template v-if="form.tahun === null ? false : true">
                 <v-select v-model="form.umum.mak" placeholder="Mata Anggaran Kegiatan" label="kode" :options="makOption">
@@ -136,12 +139,12 @@
               <b-form-input readonly :value="form.umum.mak === null ? '' : `${form.umum.mak.kode} - ${form.umum.mak.nama}`" placeholder="Nama MAK" />
             </b-form-group>
             <b-form-group label="DIPA" label-cols-md="3">
-              <b-form-input readonly :value="form.umum.mak === null ? 'Rp. 0' : formatRupiah(form.umum.mak.dipa)" placeholder="Rp.0" />
+              <b-form-input readonly :value="form.umum.mak === null ? 'Rp. 0' : formatRupiah(form.umum.mak.pagu)" placeholder="Rp.0" />
             </b-form-group>
             <b-form-group label="Saldo Tersedia" label-cols-md="3">
               <b-form-input
                 readonly
-                :value="form.umum.mak === null ? 'Rp. 0' : formatRupiah(parseFloat(form.umum.mak.dipa) - parseFloat(form.umum.mak.realisasi))"
+                :value="form.umum.mak === null ? 'Rp. 0' : formatRupiah(parseFloat(form.umum.mak.pagu) - parseFloat(form.umum.mak.realisasi))"
                 placeholder="Rp.0"
               />
             </b-form-group>
@@ -195,7 +198,7 @@ export default {
       return total
     },
     sisa() {
-      const a = parseFloat(this.form.umum.mak.dipa) - parseFloat(this.form.umum.mak.realisasi)
+      const a = parseFloat(this.form.umum.mak.pagu) - parseFloat(this.form.umum.mak.realisasi)
       return a - this.grandTotal
     },
   },

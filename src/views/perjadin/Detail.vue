@@ -1,44 +1,57 @@
 <template>
   <section>
     <b-row no-gutters>
-      <b-col sm="12" lg="12" no-gutters class="text-right">
+      <b-col lg="6" sm="12" class="text-left">
+        <p>STATUS : {{ data.status }}</p>
+      </b-col>
+      <b-col sm="12" lg="6" no-gutters class="text-right">
         <!-- <b-card> -->
-        <template v-if="userData.role === 'USER' && data.status === 'PENGAJUAN' ? true : false">
-          <b-button variant="outline-danger" class="mr-1" @click="destroy()"> Delete </b-button>
-          <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button>
-          <b-button variant="outline-primary" class="ml-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
-        </template>
-        <template
-          v-if="userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false"
-        >
-          <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
-          <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
-        </template>
-        <!-- <template v-if="userData.role === 'VERIFIKATOR KEUANGAN'  ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
-          <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
-          <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>
-        </template> -->
-        <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
-          <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
-          <b-button variant="outline-primary" class="ml-1" @click="realisasi()" v-if="!inputRealisasi"> Realisasi </b-button>
-          <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="realisasiDone"> Kirim </b-button>
-        </template>
 
-        <template v-if="userData.role === 'USER' && data.status === 'REVISI KEUANGAN' ? true : false">
-          <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
-          <b-button variant="outline-danger" class="ml-1" @click="destroy()"> Delete </b-button>
-        </template>
-
-        <template v-if="userData.role === 'PPK' && data.status === 'VERIFIKASI PPK' ? true : false">
-          <b-button variant="danger" class="mr-1" @click="retur2()"> Tolak </b-button>
-          <b-button variant="outline-danger" class="mr-1" @click="retur2()"> Retur </b-button>
-          <b-button variant="primary" class="ml-1" @click="verifikasiPPK('VERIFIED PPK')"> Setuju </b-button>
-        </template>
-        <template v-if="userData.role === 'BENDAHARA' && data.status === 'VERIFIED PPK' ? true : false">
-          <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
-          <b-button variant="success" class="ml-1" @click="bayar('SELESAI')"> Bayar </b-button>
-        </template>
-        <!-- </b-card> -->
+        <div>
+          <template v-if="userData.role === 'USER' && data.status === 'PENGAJUAN' ? true : false">
+            <b-button variant="outline-danger" class="mr-1" @click="destroy()"> Delete </b-button>
+            <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
+          </template>
+          <template
+            v-if="
+              userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false
+            "
+          >
+            <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
+          </template>
+          <template
+            v-if="
+              userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI REALISASI' ? (data.status_realisasi === 'SUDAH' ? true : false) : false
+            "
+          >
+            <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>
+          </template>
+          <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
+            <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="realisasi()" v-if="!inputRealisasi"> Realisasi </b-button>
+            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="realisasiDone"> Kirim </b-button>
+          </template>
+          <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
+            <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
+            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')"> Kirim </b-button>
+          </template>
+          <template v-if="userData.role === 'USER' && data.status === 'REVISI KEUANGAN' ? true : false">
+            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
+            <b-button variant="outline-danger" class="ml-1" @click="destroy()"> Delete </b-button>
+          </template>
+          <template v-if="userData.role === 'PPK' && data.status === 'VERIFIKASI PPK' ? true : false">
+            <b-button variant="danger" class="mr-1" @click="tolak()"> Tolak </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur2()"> Retur </b-button>
+            <b-button variant="primary" class="ml-1" @click="verifikasiPPK('VERIFIED PPK')"> Setuju </b-button>
+          </template>
+          <template v-if="userData.role === 'BENDAHARA' && data.status === 'VERIFIED PPK' ? true : false">
+            <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
+            <b-button variant="success" class="ml-1" @click="bayar('SELESAI')"> Bayar </b-button>
+          </template>
+        </div>
       </b-col>
       <b-tabs v-model="index" class="mt-1" pills>
         <b-tab title="Umum" active> <umum /></b-tab>
@@ -230,6 +243,53 @@ export default {
         }
       })
     },
+    tolak() {
+      this.$swal({
+        title: 'Tolak ?',
+        text: 'Pengajuan perjadin akan di hentikan dengan status Tolak!',
+        icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Tolak!',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        console.info(result)
+        if (result.isConfirmed) {
+          this.$store
+            .dispatch('app-perjadin/statusPerjadin', {
+              id: this.data.id,
+              status: 'TOLAK PPK',
+              status_log: 'TOLAK PERJADIN PPK',
+              message_log: 'Perjadin di Tolak PPK ',
+              user_data: this.userData,
+              catatan: result.value,
+            })
+            .then(x => {
+              if (x.status === 200) {
+                this.$swal({
+                  title: 'Sukses!',
+                  text: 'Perjadin berhasil di Tolak !',
+                  icon: 'success',
+                  customClass: {
+                    confirmButton: 'btn btn-primary',
+                  },
+                  buttonsStyling: false,
+                })
+                this.$router.push({ name: 'perjadin-daftar' })
+              }
+            })
+        }
+      })
+    },
     verifikasiKeuangan(status) {
       this.$swal({
         title: 'Verifikasi Keuangan Selesai ?',
@@ -255,7 +315,7 @@ export default {
               id: this.data.id,
               status,
               status_log: 'VERIFIED KEUANGAN',
-              message_log: 'perjadin telah di verifikasi oleh ',
+              message_log: 'perjadin telah di verifikasi ',
               user_data: this.userData,
               catatan: result.value,
             })

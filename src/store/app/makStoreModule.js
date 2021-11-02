@@ -18,7 +18,7 @@ export default {
     fetchMak(ctx, params) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${axios.defaults.baseURL}kegiatan?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
+          .get(`${axios.defaults.baseURL}mak?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
           .then(response => {
             resolve(response)
           })

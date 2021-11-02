@@ -3,9 +3,9 @@
     <b-overlay :show="show" rounded="lg" variant="transparent" blur="15px" opacity="0.70">
       <b-row>
         <b-col lg="12" sm="12">
-          <b-card title="Realisasi Anggaran" footer-tag="footer">
+          <b-card title="Realisasi Kegiatan" footer-tag="footer">
             <b-card-body>
-              <b-row>
+              <b-row v-if="!proses">
                 <b-col cols="12">
                   <b-form-group label="Nama Pegawai" label-cols-md="3">
                     <v-select v-model="selectedPegawai" placeholder="Nama Pegawai" :options="pegawaiOption" label="nama" @input="showModal()" />
@@ -22,6 +22,9 @@
                 </template>
                 <template #cell(total_hotel)="data">
                   {{ formatRupiah(data.item.total_hotel) }}
+                  <b-badge variant="light-danger">
+                    {{ data.item.jenis_hotel === 0 ? 'FULL' : '30%' }}
+                  </b-badge>
                 </template>
                 <template #cell(udara)="data">
                   {{ formatRupiah(data.item.udara) }}
@@ -157,6 +160,11 @@
         </b-col>
         <b-col cols="12">
           <b-form-group label="Uang Hotel" label-cols-md="3">
+            <b-row>
+              <b-col md="6">
+                <v-select v-model="realisasi.jenis_hotel" :reduce="x => x.key" placeholder="Jenis Pengunaan Uang Hotel" :options="hotelOption" label="nama" />
+              </b-col>
+            </b-row>
             <b-row>
               <b-col md="2">
                 <b-form-group label="Malam">
@@ -419,6 +427,8 @@ export default {
         })
       } else {
         this.$bvModal.show('modal-realisasi')
+        this.realisasi.tanggal_berangkat = this.form.tanggal_berangkat
+        this.realisasi.tanggal_kembali = this.form.tanggal_kembali
       }
     },
     resetModal() {
@@ -436,6 +446,7 @@ export default {
       this.realisasi.taksi_provinsi = 0
       this.realisasi.representatif = 0
       this.realisasi.total = 0
+      this.realisasi.jenis_hotel = 0
       this.realisasi.lampiran = []
     },
     tambahRealisasi() {
@@ -467,6 +478,7 @@ export default {
         taksi_jakarta: this.realisasi.taksi_jakarta,
         taksi_provinsi: this.realisasi.taksi_provinsi,
         representatif: this.realisasi.representatif,
+        jenis_hotel: this.realisasi.jenis_hotel,
         total:
           parseFloat(parseFloat(this.realisasi.jumlah_hari) * parseFloat(this.realisasi.uang_harian)) +
           parseFloat(parseFloat(this.realisasi.jumlah_malam) * parseFloat(this.realisasi.uang_hotel)) +
@@ -490,6 +502,10 @@ export default {
     },
   },
   setup() {
+    const hotelOption = [
+      { key: 0, nama: 'FULL' },
+      { key: 1, nama: '30%' },
+    ]
     const titleLoading = 'Proses realisasi ....'
     const processing = ref(false)
     const show = ref(false)
@@ -517,6 +533,7 @@ export default {
       taksi_provinsi: 0,
       representatif: 0,
       total: 0,
+      jenis_hotel: 0,
       lampiran: [],
     })
     const tableCol = [
@@ -536,6 +553,7 @@ export default {
       { key: 'actions' },
     ]
     return {
+      hotelOption,
       titleLoading,
       processing,
       show,

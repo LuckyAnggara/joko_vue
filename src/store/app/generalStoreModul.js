@@ -84,6 +84,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchJenisKegiatan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}jenis-kegiatan/`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchUrusan(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
@@ -97,7 +107,7 @@ export default {
     fetchMak(ctx, params) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${axios.defaults.baseURL}kegiatan?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
+          .get(`${axios.defaults.baseURL}mak?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
           .then(response => {
             resolve(response)
           })

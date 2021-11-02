@@ -6,6 +6,7 @@ import { canNavigate } from '@/libs/acl/routeProtection'
 import { isUserLoggedIn, getUserData, getHomeRouteForLoggedInUser } from '@/auth/utils'
 import dashboard from './routes/dashboard'
 import kegiatan from './routes/kegiatan'
+import dipa from './routes/dipa'
 import laporan from './routes/laporan'
 import mak from './routes/mak'
 import perjadin from './routes/perjadin'
@@ -22,6 +23,7 @@ const router = new VueRouter({
     { path: '/', redirect: { name: 'dashboard-ecommerce' } },
     ...kegiatan,
     ...laporan,
+    ...dipa,
     ...dashboard,
     ...mak,
     ...perjadin,

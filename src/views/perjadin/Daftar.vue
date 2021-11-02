@@ -99,11 +99,12 @@
                   <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI KEUANGAN'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="warning" v-if="data.item.status === 'VERIFIKASI REALISASI'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="danger" v-if="data.item.status === 'REVISI PPK'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI PPK'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="primary" v-if="data.item.status === 'PELAKSANAAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI PPK'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="primary" v-if="data.item.status === 'VERIFIED PPK'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-success" v-if="data.item.status === 'VERIFIED PPK'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="danger" v-if="data.item.status === 'TOLAK PPK'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
                 </template>
               </div>

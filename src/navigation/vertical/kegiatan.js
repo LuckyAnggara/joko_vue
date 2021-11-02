@@ -5,19 +5,25 @@ export default [
   {
     title: 'Kegiatan',
     icon: 'ShieldIcon',
-    children: [
-      {
-        title: 'Daftar',
-        route: 'kegiatan-daftar',
-      },
-    ],
+    route: 'kegiatan-daftar',
   },
+  {
+    title: 'Perjalanan Dinas',
+    icon: 'ShieldIcon',
+    route: 'perjadin-daftar',
+  },
+  {
+    title: 'DIPA',
+    icon: 'ShieldIcon',
+    route: 'dipa-daftar',
+  },
+
   {
     title: 'Laporan',
     icon: 'ShieldIcon',
     children: [
       {
-        title: 'Laporan Realisasi',
+        title: 'Realisasi Kegiatan',
         route: 'laporan-rincian',
       },
     ],

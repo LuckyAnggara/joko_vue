@@ -1,368 +1,460 @@
 <template>
-  <!-- <b-row class="match-height"> -->
-  <b-overlay :show="show" rounded="md" variant="transparent" blur="5px" opacity="0.2">
-    <b-row>
-      <b-col lg="3" sm="12">
-        <b-card :bg-variant="status" text-variant="white" class="text-center">
-          <b>{{ dataRealisasi.status }}</b></b-card
-        >
+  <section>
+    <b-row no-gutters>
+      <b-col lg="6" sm="12" class="text-left">
+        <p>STATUS : {{ data.status }}</p>
       </b-col>
+      <b-col sm="12" lg="6" no-gutters class="text-right">
+        <!-- <b-card> -->
+        <div>
+          <template v-if="userData.role === 'USER' && data.status === 'RENCANA' ? true : false">
+            <b-button variant="outline-danger" class="mr-1" @click="destroy()"> Delete </b-button>
+            <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
+          </template>
+          <template
+            v-if="
+              userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false
+            "
+          >
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
+          </template>
+          <template
+            v-if="
+              userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI REALISASI' ? (data.status_realisasi === 'SUDAH' ? true : false) : false
+            "
+          >
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>
+          </template>
+          <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
+            <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
+            <b-button variant="outline-primary" class="ml-1" @click="realisasi()" v-if="!inputRealisasi"> Realisasi </b-button>
+            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="realisasiDone"> Kirim </b-button>
+          </template>
+          <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
+            <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
+            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')"> Kirim </b-button>
+          </template>
+          <template v-if="userData.role === 'USER' && data.status === 'REVISI KEUANGAN' ? true : false">
+            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
+            <b-button variant="outline-danger" class="ml-1" @click="destroy()"> Delete </b-button>
+          </template>
+          <template v-if="userData.role === 'PPK' && data.status === 'VERIFIKASI PPK' ? true : false">
+            <b-button variant="danger" class="mr-1" @click="tolak()"> Tolak </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur2()"> Retur </b-button>
+            <b-button variant="primary" class="ml-1" @click="verifikasiPPK('VERIFIED PPK')"> Setuju </b-button>
+          </template>
+          <template v-if="userData.role === 'BENDAHARA' && data.status === 'VERIFIED PPK' ? true : false">
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <b-button variant="success" class="ml-1" @click="bayar('SELESAI')"> Bayar </b-button>
+          </template>
+        </div>
+      </b-col>
+      <b-tabs v-model="index" class="mt-1" pills>
+        <b-tab title="Umum" active> <umum /></b-tab>
+        <!-- <b-tab title="Susunan Tim"><susunan-tim /></b-tab> -->
+        <b-tab title="Mak"> <mak /></b-tab>
+        <!-- <b-tab title="Anggaran"><anggaran /></b-tab> -->
+        <b-tab title="Realisasi" v-if="data.status_realisasi === 'SUDAH' ? true : false"><realisasi-view /></b-tab>
+        <b-tab title="Realisasi" v-if="inputRealisasi" active><realisasi-input /></b-tab>
+        <b-tab title="Lampiran"><lampiran /> </b-tab>
+        <b-tab title="Log Timeline"> <timeline /></b-tab>
+      </b-tabs>
     </b-row>
-    <b-row>
-      <b-col lg="8" sm="12">
-        <!-- <b-form autocomplete="off" @submit.prevent @submit="store"> -->
-        <b-card :title="`Data Realisasi Nomor : ${dataRealisasi.nomor_kwitansi}`" v-if="dataRealisasi === null ? false : true">
-          <b-row>
-            <b-col cols="12">
-              <b-form-group label="Tahun Anggaran" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.tahun.nama" readonly />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" v-if="userData.role !== 'USER'">
-              <b-form-group label="Bidang" label-cols-md="3">
-                <b-form-input :value="`${dataRealisasi.bidang.nama}`" readonly />
-              </b-form-group>
-              <hr />
-            </b-col>
-            <b-col cols="12">
-              <b-form-group label="Mata Anggaran Kegiatan" label-cols-md="3">
-                <b-form-textarea :value="`${dataRealisasi.kegiatan.kode} - ${dataRealisasi.kegiatan.nama}`" readonly />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12">
-              <b-form-group label="Tanggal SPB" label-cols-md="3">
-                <b-form-input :value="$moment(dataRealisasi.tanggal_spb).format('DD MMMM YYYY')" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Uraian Kegiatan" label-cols-md="3">
-                <b-form-textarea :value="dataRealisasi.uraian" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Nominal Bayar" label-cols-md="3">
-                <b-form-input :value="formatRupiah(dataRealisasi.nominal)" readonly />
-              </b-form-group>
-              <hr />
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Pembuat SPB" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.maker.nama" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Checker SPB" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.checker.nama" readonly />
-              </b-form-group>
-              <hr />
-            </b-col>
-            <b-col cols="12">
-              <b-form-group label="Tanggal Verifikasi" label-cols-md="3">
-                <b-form-input
-                  :value="dataRealisasi.verified_at === null ? 'Belum di Verifikasi' : $moment(dataRealisasi.verified_at).format('DD MMMM YYYY')"
-                  readonly
-                />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12">
-              <b-form-group label="Tanggal di Bayarkan" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.paid_at === null ? 'Belum di Bayarkan' : $moment(dataRealisasi.paid_at).format('DD MMMM YYYY')" readonly />
-              </b-form-group>
-            </b-col>
-            <template v-if="dataRealisasi.status === 'VERIFIKASI'">
-              <b-col cols="2" class="mt-2" md="2" sm="12" offset-md="3" v-if="userData.role === 'PPK'">
-                <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="button" @click="approve">
-                  Approve
-                </b-button>
-              </b-col>
-              <b-col cols="2" class="mt-2" md="2" sm="12" v-if="userData.role === 'PPK'">
-                <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="outline-danger" class="mb-75" block type="button" @click="reject">
-                  Reject
-                </b-button>
-              </b-col>
-            </template>
-            <template v-if="dataRealisasi.status === 'PEMBAYARAN'">
-              <b-col cols="2" class="mt-2" md="3" sm="12" offset-md="3" v-if="userData.role === 'BENDAHARA'">
-                <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="button" @click="bayar">
-                  Bayar
-                </b-button>
-              </b-col>
-            </template>
-          </b-row>
-        </b-card>
-        <!-- </b-form> -->
-        <template #overlay>
-          <div v-if="show" class="text-center">
-            <feather-icon icon="RssIcon" size="3x" />
-            <p>Fetching Data ...</p>
-          </div>
-        </template>
-      </b-col>
-      <!-- Right Col: Card -->
-      <b-col lg="4" cols="12" md="6" xl="4" sm="12">
-        <!-- Action Buttons -->
-        <b-card title="Data Lampiran">
-          <b-table :busy="busy" small :fields="tableColumns" :items="dataRealisasi.lampiran === null ? null : dataRealisasi.lampiran">
-            <template #table-busy>
-              <div class="text-center text-danger my-2">
-                <b-spinner class="align-middle"></b-spinner>
-                <strong>Loading...</strong>
-              </div>
-            </template>
-            <template #cell(no)="data">
-              <span>
-                {{ data.index + 1 }}
-              </span>
-            </template>
-            <template #cell(nama_file)="data">
-              <span>
-                <b-link :href="urlGet(data.item.id, 'realisasi')" class="font-weight-bold" target="_blank"> {{ data.item.nama }} </b-link>
-              </span>
-            </template>
-          </b-table>
-        </b-card>
-      </b-col>
-    </b-row>
-  </b-overlay>
+  </section>
 </template>
 
 <script>
 import {
-  BLink,
-  BSpinner,
-  BTable,
-  BOverlay,
-  // BForm,
-  BCard,
-  BRow,
   BCol,
+  BRow,
+  // BCard,
   BButton,
-  BFormInput,
-  BFormGroup,
-  BFormTextarea,
+  BTab,
+  BTabs,
 } from 'bootstrap-vue'
-
-import { ref } from '@vue/composition-api'
-import Ripple from 'vue-ripple-directive'
-import { formatRupiah, urlGet } from '@core/utils/filter'
+import Umum from './component/detail/Umum.vue'
+// import Mak from './component/detail/Mak.vue'
+// import SusunanTim from './component/detail/SusunanTim.vue'
+import Mak from './component/detail/Mak.vue'
+import RealisasiInput from './component/detail/RealisasiInput.vue'
+import RealisasiView from './component/detail/RealisasiView.vue'
+import Lampiran from './component/detail/Lampiran.vue'
+import Timeline from './component/detail/Timeline.vue'
 
 export default {
   components: {
-    BLink,
-    BSpinner,
-    BTable,
-    BOverlay,
-    BCard,
-    // BForm,
-    BRow,
     BCol,
+    BRow,
+    // BCard,
     BButton,
-    BFormInput,
-    BFormGroup,
-    BFormTextarea,
+    BTab,
+    BTabs,
+    Umum,
+    // Mak,
+    // SusunanTim,
+    Lampiran,
+    Mak,
+    RealisasiInput,
+    RealisasiView,
+    Timeline,
   },
-  directives: {
-    Ripple,
-  },
-  beforeMount() {
-    this.loadData()
-    console.info(this.$router.currentRoute.params)
+  watch: {
+    realisasiDone(x) {
+      if (x === true) {
+        this.inputRealisasi = !this.inputRealisasi
+        // eslint-disable-next-line
+        setTimeout(() => (this.index = 2), 200)
+        // eslint-enable-next-line
+      }
+    },
   },
   computed: {
-    status() {
-      if (this.dataRealisasi.status === 'VERIFIKASI') return 'warning'
-      if (this.dataRealisasi.status === 'PEMBAYARAN') return 'primary'
-      if (this.dataRealisasi.status === 'DITOLAK') return 'danger'
-      return 'success'
+    data() {
+      return this.$store.getters['app-kegiatan/getDetail']
+    },
+    realisasiDone() {
+      return this.$store.getters['app-kegiatan/getRealisasi']
     },
   },
+  mounted() {
+    this.loadPegawai()
+  },
   methods: {
-    formatRupiah,
-    urlGet,
-    loadData() {
-      this.show = !this.show
-      this.busy = !this.busy
-      const { id } = this.$router.currentRoute.params
-      this.$store.dispatch('app-kegiatan/fetchDetailRealisasiKegiatan', id).then(res => {
-        if (res.status === 200) {
-          this.busy = !this.busy
-          this.show = !this.show
-          this.dataRealisasi = res.data
-        }
-      })
+    realisasi() {
+      this.inputRealisasi = !this.inputRealisasi
+      // eslint-disable-next-line
+      setTimeout(() => (this.index = 2), 200)
+      // eslint-enable-next-line
     },
-    // urlGet(id) {
-    //   return `${this.url}?id=${id}`
-    // },
-    approve() {
+    destroy() {
       this.$swal({
-        title: 'Setuju ?',
-        text: 'Data realisasi kegiatan akan di Setujui dan dikirim ke Bendahara!',
+        title: 'Delete ?',
+        text: 'Rencana kegiatan akan di Delete ?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Setuju!',
+        confirmButtonText: 'Delete!',
         customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
-        if (result.value) {
-          this.show = !this.show
+        if (result.isConfirmed) {
+          this.$store.dispatch('app-kegiatan/deleteKegiatan', this.data.id).then(res => {
+            if (res.status === 200) {
+              this.$swal({
+                title: 'Sukses!',
+                text: 'kegiatan berhasil di Delete!',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+                customClass: {
+                  confirmButton: 'btn btn-primary',
+                },
+                buttonsStyling: false,
+              })
+              this.$router.push({ name: 'kegiatan-daftar' })
+            }
+          })
+        }
+      })
+    },
+    retur() {
+      this.$swal({
+        title: 'Retur ?',
+        text: 'kegiatan akan dikembalikan untuk di revisi',
+        icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Retur!',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        console.info(result)
+        if (result.isConfirmed) {
           this.$store
-            .dispatch('app-kegiatan/updateStatusRealisasiKegiatan', {
-              id: this.dataRealisasi.id,
-              status: 'PEMBAYARAN',
+            .dispatch('app-kegiatan/statusKegiatan', {
+              id: this.data.id,
+              status: 'REVISI KEUANGAN',
+              status_log: 'RETUR DARI KEUANGAN',
+              message_log: 'kegiatan di retur oleh keuangan untuk di revisi ',
+              user_data: this.userData,
+              catatan: result.value,
             })
-            .then(res => {
-              if (res.status === 200) {
-                this.show = !this.show
+            .then(x => {
+              if (x.status === 200) {
                 this.$swal({
-                  title: 'Success!',
-                  text: 'Realisai kegiatan berhasil di Setujui!!',
+                  title: 'Sukses!',
+                  text: 'kegiatan berhasil di Retur !',
                   icon: 'success',
                   customClass: {
                     confirmButton: 'btn btn-primary',
                   },
                   buttonsStyling: false,
                 })
-                this.$router.push({
-                  name: 'kegiatan-daftar',
-                })
-              } else {
-                this.$swal({
-                  title: 'Error!',
-                  text: res.status,
-                  icon: 'error',
-                  customClass: {
-                    confirmButton: 'btn btn-primary',
-                  },
-                  buttonsStyling: false,
-                })
+                this.$router.push({ name: 'kegiatan-daftar' })
               }
             })
         }
       })
     },
-    reject() {
+    tolak() {
       this.$swal({
         title: 'Tolak ?',
-        text: 'Data realisasi kegiatan akan di Tolak!',
+        text: 'Pengajuan kegiatan akan di hentikan dengan status Tolak!',
         icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
         showCancelButton: true,
         confirmButtonText: 'Tolak!',
         customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
-        if (result.value) {
-          this.show = !this.show
+        console.info(result)
+        if (result.isConfirmed) {
           this.$store
-            .dispatch('app-kegiatan/updateStatusRealisasiKegiatan', {
-              id: this.dataRealisasi.id,
-              status: 'DITOLAK',
+            .dispatch('app-kegiatan/statusKegiatan', {
+              id: this.data.id,
+              status: 'TOLAK PPK',
+              status_log: 'TOLAK kegiatan PPK',
+              message_log: 'kegiatan di Tolak PPK ',
+              user_data: this.userData,
+              catatan: result.value,
             })
-            .then(res => {
-              if (res.status === 200) {
-                this.show = !this.show
+            .then(x => {
+              if (x.status === 200) {
                 this.$swal({
-                  title: 'Success!',
-                  text: 'Realisai kegiatan di Tolak!!',
+                  title: 'Sukses!',
+                  text: 'kegiatan berhasil di Tolak !',
                   icon: 'success',
                   customClass: {
                     confirmButton: 'btn btn-primary',
                   },
                   buttonsStyling: false,
                 })
-                this.$router.push({
-                  name: 'kegiatan-daftar',
-                })
-              } else {
-                this.$swal({
-                  title: 'Error!',
-                  text: res.status,
-                  icon: 'error',
-                  customClass: {
-                    confirmButton: 'btn btn-primary',
-                  },
-                  buttonsStyling: false,
-                })
+                this.$router.push({ name: 'kegiatan-daftar' })
               }
             })
         }
       })
     },
-    bayar() {
+    verifikasiKeuangan(status) {
       this.$swal({
-        title: 'Bayar ?',
-        text: 'Data realisasi kegiatan telah Selesai!',
+        title: 'Verifikasi Keuangan Selesai ?',
+        text: `kegiatan akan masuk tahap ${status.toLowerCase()}`,
         icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
         showCancelButton: true,
-        confirmButtonText: 'Bayar!',
+        confirmButtonText: 'Proses!',
         customClass: {
           confirmButton: 'btn btn-primary',
           cancelButton: 'btn btn-outline-danger ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
-        if (result.value) {
-          this.show = !this.show
+        if (result.isConfirmed) {
           this.$store
-            .dispatch('app-kegiatan/updateStatusRealisasiKegiatan', {
-              id: this.dataRealisasi.id,
-              status: 'SELESAI',
+            .dispatch('app-kegiatan/statusKegiatan', {
+              id: this.data.id,
+              status,
+              status_log: 'VERIFIED KEUANGAN',
+              message_log: 'kegiatan telah di verifikasi ',
+              user_data: this.userData,
+              catatan: result.value,
             })
-            .then(res => {
-              if (res.status === 200) {
-                this.show = !this.show
+            .then(x => {
+              if (x.status === 200) {
                 this.$swal({
-                  title: 'Success!',
-                  text: 'Realisai kegiatan di Tolak!!',
+                  title: 'Sukses!',
+                  text: 'kegiatan berhasil di Verifikasi',
                   icon: 'success',
                   customClass: {
                     confirmButton: 'btn btn-primary',
                   },
                   buttonsStyling: false,
                 })
-                this.$router.push({
-                  name: 'kegiatan-daftar',
-                })
-              } else {
-                this.$swal({
-                  title: 'Error!',
-                  text: res.status,
-                  icon: 'error',
-                  customClass: {
-                    confirmButton: 'btn btn-primary',
-                  },
-                  buttonsStyling: false,
-                })
+                this.$router.push({ name: 'kegiatan-daftar' })
               }
             })
         }
       })
     },
+    kirimKeuangan(status) {
+      this.$swal({
+        title: 'Kirim Keuangan ?',
+        text: 'Berkas kegiatan akan di kirim ke keuangan !',
+        icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Proses!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.$store
+            .dispatch('app-kegiatan/statusKegiatan', {
+              id: this.data.id,
+              status,
+              status_log: `KIRIM KEUANGAN - ${status}`,
+              message_log: 'kegiatan telah di kirim ke keuangan ',
+              user_data: this.userData,
+              catatan: result.value,
+            })
+            .then(x => {
+              if (x.status === 200) {
+                this.$swal({
+                  title: 'Sukses!',
+                  text: 'kegiatan berhasil dikirim',
+                  icon: 'success',
+                  customClass: {
+                    confirmButton: 'btn btn-primary',
+                  },
+                  buttonsStyling: false,
+                })
+                this.$router.push({ name: 'kegiatan-daftar' })
+              }
+            })
+        }
+      })
+    },
+    verifikasiPPK(status) {
+      this.$swal({
+        title: 'Verifikasi PPK Selesai ?',
+        text: 'kegiatan akan masuk ke Bendahara untuk dibayarkan',
+        icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Proses!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.$store
+            .dispatch('app-kegiatan/statusKegiatan', {
+              id: this.data.id,
+              status,
+              status_log: 'VERIFIED PPK',
+              message_log: 'kegiatan telah di verifikasi oleh ',
+              user_data: this.userData,
+              catatan: result.value,
+            })
+            .then(x => {
+              if (x.status === 200) {
+                this.$swal({
+                  title: 'Sukses!',
+                  text: 'kegiatan berhasil di Verifikasi',
+                  icon: 'success',
+                  customClass: {
+                    confirmButton: 'btn btn-primary',
+                  },
+                  buttonsStyling: false,
+                })
+                this.$router.push({ name: 'kegiatan-daftar' })
+              }
+            })
+        }
+      })
+    },
+    bayar(status) {
+      this.$swal({
+        title: 'Bayarkan ?',
+        text: 'kegiatan sudah sesuai, dan akan dibayarkan',
+        icon: 'warning',
+        input: 'textarea',
+        inputLabel: 'Catatan ?',
+        inputPlaceholder: 'Ketik catatan mu disini...',
+        inputAttributes: {
+          'aria-label': 'Ketik catatan mu disini',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Proses!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.$store
+            .dispatch('app-kegiatan/statusKegiatan', {
+              id: this.data.id,
+              status,
+              status_log: 'SELESAI',
+              message_log: 'Uang kegiatan telah dibayarkan oleh ',
+              user_data: this.userData,
+              catatan: result.value,
+            })
+            .then(x => {
+              if (x.status === 200) {
+                this.$swal({
+                  title: 'Sukses!',
+                  text: 'kegiatan berhasil di Bayarkan',
+                  icon: 'success',
+                  customClass: {
+                    confirmButton: 'btn btn-primary',
+                  },
+                  buttonsStyling: false,
+                })
+                this.$router.push({ name: 'kegiatan-daftar' })
+              }
+            })
+        }
+      })
+    },
+    loadPegawai() {
+      this.$store.dispatch('app-general/fetchPegawai').then(res => {
+        this.$store.commit('app-general/SET_PEGAWAI', res.data)
+      })
+    },
   },
+
   setup() {
-    const busy = ref(false)
-    const show = ref(false)
+    const index = 0
+    const inputRealisasi = false
     const userData = JSON.parse(localStorage.getItem('userData'))
-
-    const tableColumns = [{ key: 'no', label: '#' }, { key: 'nama_file' }]
-    const dataRealisasi = ref(null)
-
     return {
-      tableColumns,
-      busy,
-      show,
+      index,
+      inputRealisasi,
       userData,
-      dataRealisasi,
     }
   },
 }
