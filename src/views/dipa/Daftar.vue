@@ -8,11 +8,6 @@
             <label>Tahun Data</label>
             <v-select v-model="tahun" label="nama" :options="tahunOption" :clearable="false" />
           </b-col>
-
-          <b-col cols="6" lg="3" md="5" sm="12">
-            <label class="mr-1">Cari Data</label>
-            <b-form-input v-model="searchQuery" placeholder="Cari data... " />
-          </b-col>
         </b-row>
       </div>
       <b-table
@@ -25,6 +20,7 @@
         show-empty
         empty-text="Tidak ada data"
         class="position-relative"
+        foot-clone
       >
         <template #table-busy>
           <div class="text-center text-danger my-2">
@@ -44,13 +40,50 @@
           </span>
         </template>
         <template #cell(realisasi)="data">
-          <span>
-            {{ formatRupiah(data.item.realisasi) }}
-          </span>
+          <span> {{ formatRupiah(data.item.realisasi) }} ({{ ((parseFloat(data.item.realisasi) / parseFloat(data.item.pagu)) * 100).toFixed(2) }}%) </span>
         </template>
         <template #cell(sisa_saldo)="data">
           <span>
             {{ formatRupiah(parseFloat(data.item.pagu) - parseFloat(data.item.realisasi)) }}
+          </span>
+        </template>
+        <template #cell(unrealisasi)="data">
+          <span>
+            {{ formatRupiah(parseFloat(data.item.unrealisasi)) }} ({{ ((parseFloat(data.item.unrealisasi) / parseFloat(data.item.pagu)) * 100).toFixed(2) }}%)
+          </span>
+        </template>
+        <template #cell(sisa_saldo_unrealisasi)="data">
+          <span>
+            {{ formatRupiah(parseFloat(data.item.pagu) - parseFloat(data.item.realisasi) - parseFloat(data.item.unrealisasi)) }}
+          </span>
+        </template>
+        <template #cell(actions)="data">
+          <div class="text-nowrap">
+            <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
+          </div>
+        </template>
+
+        <!-- FOOT -->
+        <template #foot(mak)>
+          <span>Total</span>
+        </template>
+        <template #foot(pagu)>
+          <span>{{ formatRupiah(totalPagu) }}</span>
+        </template>
+        <template #foot(realisasi)>
+          <span>{{ formatRupiah(totalRealisasi) }}</span>
+        </template>
+        <template #foot(sisa_saldo)>
+          <span>
+            {{ formatRupiah(parseFloat(totalPagu) - parseFloat(totalRealisasi)) }}
+          </span>
+        </template>
+        <template #foot(unrealisasi)>
+          <span>{{ formatRupiah(totalUnrealisasi) }}</span>
+        </template>
+        <template #foot(sisa_saldo_unrealisasi)>
+          <span>
+            {{ formatRupiah(parseFloat(totalPagu) - parseFloat(totalRealisasi) - parseFloat(totalUnrealisasi)) }}
           </span>
         </template>
       </b-table>
@@ -69,7 +102,7 @@ import {
   BCard,
   BRow,
   BCol,
-  BFormInput,
+  // BFormInput,
   BTable,
 } from 'bootstrap-vue'
 
@@ -80,7 +113,7 @@ export default {
     BCard,
     BRow,
     BCol,
-    BFormInput,
+    // BFormInput,
     BTable,
     vSelect,
   },
@@ -96,32 +129,35 @@ export default {
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
     },
-    totalDipa() {
+    totalPagu() {
       let total = 0
-      this.dataRealisasi.forEach(x => {
-        total += x.dipa
+      this.dataMak.forEach(x => {
+        total += x.pagu
       })
       return total
     },
     totalRealisasi() {
       let total = 0
-      this.dataRealisasi.forEach(x => {
-        x.realisasi.forEach(v => {
-          if (v.status === 'SELESAI') total += v.nominal
-        })
+      this.dataMak.forEach(x => {
+        total += x.realisasi
       })
       return total
     },
-    totalTransaksi() {
+    totalUnrealisasi() {
       let total = 0
-      this.dataRealisasi.forEach(x => {
-        total += x.realisasi.length
+      this.dataMak.forEach(x => {
+        total += x.unrealisasi
       })
       return total
     },
   },
   methods: {
     formatRupiah,
+    detail(id) {
+      const data = this.dataMak.find(x => x.id === id)
+      this.$store.commit('app-mak/SET_DETAIL', data.rincian)
+      this.$router.push({ name: 'dipa-detail' })
+    },
     loadMAK() {
       if (this.tahun !== null) {
         this.isBusy = !this.isBusy
@@ -154,7 +190,16 @@ export default {
       nama: 2021,
     })
     const isBusy = false
-    const tableColumns = [{ key: 'id', label: '#' }, { key: 'mak' }, { key: 'pagu' }, { key: 'realisasi' }, { key: 'sisa_saldo' }, { key: 'actions' }]
+    const tableColumns = [
+      { key: 'id', label: '#' },
+      { key: 'mak' },
+      { key: 'pagu' },
+      { key: 'realisasi' },
+      { key: 'sisa_saldo', label: 'sisa' },
+      { key: 'unrealisasi', label: 'Rencana Realisasi' },
+      { key: 'sisa_saldo_unrealisasi', label: 'sisa' },
+      { key: 'actions' },
+    ]
 
     return {
       dataMak,

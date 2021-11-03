@@ -14,4 +14,22 @@ export default [
       ],
     },
   },
+  {
+    path: '/dipa/detail',
+    name: 'dipa-detail',
+    component: () => import('@/views/dipa/Detail.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'DIPA',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
 ]

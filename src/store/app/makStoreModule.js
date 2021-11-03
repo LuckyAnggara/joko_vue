@@ -2,8 +2,17 @@ import axios from '@axios'
 
 export default {
   namespaced: true,
-  state: {},
-  getters: {},
+  state: {
+    detail: {},
+  },
+  getters: {
+    getDetail: state => state.detail,
+  },
+  mutations: {
+    SET_DETAIL(state, data) {
+      state.detail = data
+    },
+  },
   actions: {
     fetchTahun(ctx, data) {
       return new Promise((resolve, reject) => {

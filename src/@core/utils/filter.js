@@ -9,6 +9,7 @@ export const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + '..
 // eslint-enable-next-line
 export const urlGet = (id, url, jenis = null) => `${axios.defaults.baseURL}${url}/download-lampiran?id=${id}&jenis=${jenis}`
 export const spdGet = id => `${axios.defaults.baseURL}print/download-spd?id=${id}`
+export const spbGet = (id, tanggal) => `${axios.defaults.baseURL}print/download-spb?id=${id}&tanggal=${tanggal}`
 
 export const title = (value, replacer = ' ') => {
   if (!value) return ''

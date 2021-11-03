@@ -40,20 +40,30 @@
                 </b-form-group>
               </b-col>
             </b-row>
+            <b-row>
+              <b-button variant="primary" class="ml-1" @click="printSPB()"> Cetak SPB </b-button>
+            </b-row>
           </b-card-body>
         </b-card>
       </b-col>
     </b-row>
+    <b-modal id="spb" size="md" hide-backdrop centered no-close-on-backdrop ok-variant="success" ok-title="print" @ok="spbGet(data.id, tanggal)">
+      <b-form-group label="Tanggal Cetak SPB">
+        <b-form-datepicker locale="id" v-modal="tanggal" />
+      </b-form-group>
+    </b-modal>
   </section>
 </template>
 
 <script>
-import { BCard, BCardBody, BRow, BCol, BFormGroup, BFormInput } from 'bootstrap-vue'
-import Ripple from 'vue-ripple-directive'
-import { formatRupiah, urlGet } from '@core/utils/filter'
+import { ref } from '@vue/composition-api'
+import { BFormDatepicker, BButton, BCard, BCardBody, BRow, BCol, BFormGroup, BFormInput } from 'bootstrap-vue'
+import { formatRupiah, spbGet } from '@core/utils/filter'
 
 export default {
   components: {
+    BFormDatepicker,
+    BButton,
     BCard,
     BRow,
     BCol,
@@ -61,9 +71,7 @@ export default {
     BFormGroup,
     BFormInput,
   },
-  directives: {
-    Ripple,
-  },
+
   computed: {
     data() {
       return this.$store.getters['app-kegiatan/getDetail']
@@ -73,18 +81,22 @@ export default {
     },
   },
   methods: {
-    urlGet,
+    spbGet,
     formatRupiah,
-    showLampiran(x) {
-      this.lampiran = x
-      console.info(this.lampiran)
-      this.$bvModal.show('modal-lampiran-realisasi')
+    printSPB() {
+      console.info('ss')
+      this.$bvModal.show('spb')
     },
-    showPrint() {
-      this.$bvModal.show('modal-print')
+    print() {
+      this.spbGet(this.data.id, this.tanggal)
     },
   },
-  setup() {},
+  setup() {
+    const tanggal = ref(null)
+    return {
+      tanggal,
+    }
+  },
 }
 </script>
 

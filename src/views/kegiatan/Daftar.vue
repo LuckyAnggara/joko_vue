@@ -68,8 +68,14 @@
                 {{ $moment(data.item.tanggal_rencana_kegiatan).format('DD-MM-YYYY') }}
               </span>
             </template>
-            <template #cell(kode_mak)="data">
+            <template #cell(jenis)="data">
               <span>
+                {{ data.item.jenis_kegiatan.nama }}
+              </span>
+            </template>
+            <template #cell(kode_mak)="data">
+              <b-tooltip :target="`tooltip_${data.item.id}`">{{ data.item.mak.nama }}</b-tooltip>
+              <span :id="`tooltip_${data.item.id}`">
                 {{ data.item.mak.kode }}
               </span>
             </template>
@@ -84,8 +90,7 @@
               </span>
             </template>
             <template #cell(uraian)="data">
-              <b-tooltip :target="`tooltip_${data.item.id}`">{{ data.item.uraian }}</b-tooltip>
-              <span :id="`tooltip_${data.item.id}`">
+              <span>
                 {{ truncate(data.item.uraian, 30) }}
               </span>
             </template>
@@ -290,6 +295,7 @@ export default {
       { key: 'nomor_kwitansi' },
       { key: 'tanggal_kegiatan' },
       { key: 'uraian', label: 'Uraian Kegiatan' },
+      { key: 'jenis', label: 'Jenis Kegiatan' },
       { key: 'kode_mak' },
       { key: 'total_anggaran' },
       { key: 'total_realisasi' },
