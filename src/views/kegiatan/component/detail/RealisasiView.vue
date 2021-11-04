@@ -41,16 +41,18 @@
               </b-col>
             </b-row>
             <b-row>
-              <b-button variant="primary" class="ml-1" @click="printSPB()"> Cetak SPB </b-button>
+              <b-button variant="primary" v-b-modal="'modal-spb'" class="ml-1"> Cetak SPB </b-button>
             </b-row>
           </b-card-body>
         </b-card>
       </b-col>
     </b-row>
-    <b-modal id="spb" size="md" hide-backdrop centered no-close-on-backdrop ok-variant="success" ok-title="print" @ok="spbGet(data.id, tanggal)">
+
+    <b-modal id="modal-spb" size="md" hide-backdrop centered no-close-on-backdrop ok-variant="success" ok-title="print" hide-footer>
       <b-form-group label="Tanggal Cetak SPB">
-        <b-form-datepicker locale="id" v-modal="tanggal" />
+        <b-form-datepicker locale="id" v-model="tanggal" />
       </b-form-group>
+      <b-button variant="primary" :href="spbGet(data.id, tanggal)" class="ml-1"> Print SPB </b-button>
     </b-modal>
   </section>
 </template>
@@ -71,7 +73,6 @@ export default {
     BFormGroup,
     BFormInput,
   },
-
   computed: {
     data() {
       return this.$store.getters['app-kegiatan/getDetail']
@@ -88,7 +89,8 @@ export default {
       this.$bvModal.show('spb')
     },
     print() {
-      this.spbGet(this.data.id, this.tanggal)
+      console.info('sss')
+      return this.spbGet(this.data.id, this.tanggal)
     },
   },
   setup() {

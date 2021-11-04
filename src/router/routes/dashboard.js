@@ -12,7 +12,7 @@ export default [
   {
     path: '/dashboard/user',
     name: 'dashboard-user',
-    component: () => import('@/views/dashboard/user/Analytics.vue'),
+    component: () => import('@/views/dashboard/user/Dashboard.vue'),
   },
   {
     path: '/login',

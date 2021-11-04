@@ -24,7 +24,7 @@
               </b-col>
               <b-col cols="6" md="5">
                 <label class="mr-1">Filter Bidang</label>
-                <v-select v-model="bidangFilter" :options="bidangOption" label="nama" :clearable="true" />
+                <v-select v-model="bidangFilter" :options="bidangOption" label="nama" :clearable="false" />
               </b-col>
               <!-- Search -->
               <b-col cols="6" md="6">
@@ -34,6 +34,7 @@
             </b-row>
           </div>
           <b-table
+            small
             :busy="isBusy"
             ref="refTable"
             responsive
@@ -59,9 +60,9 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(dipa)="data">
+            <template #cell(pagu)="data">
               <span>
-                {{ formatRupiah(data.item.dipa) }}
+                {{ formatRupiah(data.item.pagu) }}
               </span>
             </template>
 
@@ -73,17 +74,7 @@
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="text-nowrap">
-                <feather-icon
-                  icon="EyeIcon"
-                  size="16"
-                  class="mx-1"
-                  @click="
-                    $router.push({
-                      name: 'kegiatan-detail',
-                      params: { id: data.item.id },
-                    })
-                  "
-                />
+                <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
                 <b-dropdown variant="link" toggle-class="p-0" no-caret>
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
@@ -170,10 +161,10 @@ export default {
     },
     /* eslint-enable */
     bidangFilter(x) {
-      if (x === '' || x === null) {
+      if (x.id === '' || x.id === null || x.id === 0) {
         this.dataMak = this.dataTemp
       } else {
-        this.dataMak = this.dataTemp.filter(item => item.bidang_id === x.id)
+        this.dataMak = this.dataTemp.filter(item => item.bidang.id === x.id)
       }
     },
     tahun() {
@@ -191,6 +182,12 @@ export default {
     },
     totalData() {
       return this.dataMak.length
+    },
+    tahunOption() {
+      return this.$store.getters['app-general/getTahun']
+    },
+    bidangOption() {
+      return [{ id: 0, nama: 'SEMUA' }, ...this.$store.getters['app-general/getBidang']]
     },
   },
 
@@ -253,14 +250,20 @@ export default {
         }
       })
     },
+    detail(id) {
+      const data = this.dataMak.find(x => x.id === id)
+      console.info(id)
+      this.$store.commit('app-mak/SET_DETAIL', data.rincian)
+      this.$router.push({ name: 'dipa-detail' })
+    },
     loadBidang() {
-      this.$store.dispatch('app-mak/fetchBidang').then(res => {
-        this.bidangOption = res.data
+      this.$store.dispatch('app-general/fetchBidang').then(res => {
+        this.$store.commit('app-general/SET_BIDANG', res.data)
       })
     },
     loadTahun() {
-      this.$store.dispatch('app-mak/fetchTahun').then(res => {
-        this.tahunOption = res.data
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
+        this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
   },
@@ -270,19 +273,24 @@ export default {
     this.loadMak()
   },
   setup() {
-    const tahun = ref(null)
+    const tahun = ref({
+      id: 1,
+      nama: '2021',
+    })
     const isBusy = false
     const dataMak = ref([])
     const dataTemp = ref([])
-    const tableColumns = [{ key: 'id', label: '#' }, { key: 'kode' }, { key: 'nama' }, { key: 'bidang' }, { key: 'dipa' }, { key: 'actions' }]
+    const tableColumns = [{ key: 'id', label: '#' }, { key: 'kode' }, { key: 'nama' }, { key: 'bidang' }, { key: 'pagu' }, { key: 'actions' }]
     const searchQuery = ref('')
     const perPage = ref(10)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    const bidangFilter = ref('')
-    const bidangOption = ref([])
+    const bidangFilter = ref({
+      id: 0,
+      nama: 'SEMUA',
+    })
     const tahunOption = ref([])
     return {
       tahun,
@@ -297,7 +305,6 @@ export default {
       sortBy,
       isSortDirDesc,
       bidangFilter,
-      bidangOption,
       tahunOption,
     }
   },

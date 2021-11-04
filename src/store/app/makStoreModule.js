@@ -34,20 +34,10 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchBidang(ctx, data) {
-      return new Promise((resolve, reject) => {
-        axios
-          .get(`${axios.defaults.baseURL}bidang/`, data)
-          .then(response => {
-            resolve(response)
-          })
-          .catch(error => reject(error))
-      })
-    },
     storeMAK(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`${axios.defaults.baseURL}kegiatan/store`, data)
+          .post(`${axios.defaults.baseURL}mak/store`, data)
           .then(response => {
             resolve(response)
           })
@@ -57,7 +47,7 @@ export default {
     cekKodeMak(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`${axios.defaults.baseURL}kegiatan/cek-kode-mak`, data)
+          .post(`${axios.defaults.baseURL}mak/cek-kode-mak`, data)
           .then(response => {
             resolve(response)
           })
@@ -67,7 +57,7 @@ export default {
     deleteMAK(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`${axios.defaults.baseURL}kegiatan/delete-kegiatan?id=${data.id}`)
+          .delete(`${axios.defaults.baseURL}mak/delete-kegiatan?id=${data.id}`)
           .then(response => {
             resolve(response)
           })

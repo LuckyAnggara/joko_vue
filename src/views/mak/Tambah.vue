@@ -8,14 +8,7 @@
             <b-row>
               <b-col cols="12">
                 <b-form-group label="Tahun Anggaran" label-cols-md="3">
-                  <v-select
-                    v-model="form.tahun_id"
-                    placeholder="Tahun Anggaran"
-                    label="nama"
-                    :reduce="tahun => tahun.id"
-                    :options="tahunOption"
-                    @input="changeTahun()"
-                  />
+                  <v-select v-model="form.tahun_id" placeholder="Tahun Anggaran" label="nama" :reduce="tahun => tahun.id" :options="tahunOption" />
                 </b-form-group>
               </b-col>
               <b-col cols="12">
@@ -49,8 +42,8 @@
               </b-col>
 
               <b-col cols="12">
-                <b-form-group label="DIPA" label-cols-md="3">
-                  <b-form-input v-model="form.dipa" type="number" placeholder="DIPA Anggara" required />
+                <b-form-group label="Pagu" label-cols-md="3">
+                  <b-form-input v-model="form.pagu" type="number" placeholder="Pagu Anggaran" required />
                 </b-form-group>
                 <hr />
               </b-col>
@@ -108,7 +101,14 @@ export default {
   directives: {
     Ripple,
   },
-
+  computed: {
+    tahunOption() {
+      return this.$store.getters['app-general/getTahun']
+    },
+    bidangOption() {
+      return this.$store.getters['app-general/getBidang']
+    },
+  },
   mounted() {
     this.loadTahun()
     this.loadBidang()
@@ -129,13 +129,13 @@ export default {
       })
     },
     loadBidang() {
-      this.$store.dispatch('app-mak/fetchBidang').then(res => {
-        this.bidangOption = res.data
+      this.$store.dispatch('app-general/fetchBidang').then(res => {
+        this.$store.commit('app-general/SET_BIDANG', res.data)
       })
     },
     loadTahun() {
-      this.$store.dispatch('app-mak/fetchTahun').then(res => {
-        this.tahunOption = res.data
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
+        this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
     success() {
@@ -201,8 +201,6 @@ export default {
       nominal: 0,
       user: JSON.parse(localStorage.getItem('userData')),
     })
-    const tahunOption = ref([])
-    const bidangOption = ref([])
     const tahun = ref({})
 
     return {
@@ -211,8 +209,6 @@ export default {
       title,
       show,
       userData,
-      tahunOption,
-      bidangOption,
       form,
       tahun,
     }
