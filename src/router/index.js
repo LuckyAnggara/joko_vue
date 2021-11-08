@@ -8,7 +8,7 @@ import dashboard from './routes/dashboard'
 import kegiatan from './routes/kegiatan'
 import dipa from './routes/dipa'
 import laporan from './routes/laporan'
-import mak from './routes/mak'
+import admin from './routes/admin'
 import perjadin from './routes/perjadin'
 
 Vue.use(VueRouter)
@@ -25,7 +25,7 @@ const router = new VueRouter({
     ...laporan,
     ...dipa,
     ...dashboard,
-    ...mak,
+    ...admin,
     ...perjadin,
     {
       path: '*',

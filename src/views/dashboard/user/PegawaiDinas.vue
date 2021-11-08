@@ -63,7 +63,6 @@ export default {
   },
 
   data() {
-    console.info(this.tableData)
     return {
       fields: [{ key: 'no' }, { key: 'nama_pegawai' }, { key: 'tujuan' }, { key: 'tanggal_berangkat' }, { key: 'tanggal_kembali' }],
     }

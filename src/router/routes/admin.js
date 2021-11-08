@@ -30,4 +30,35 @@ export default [
       ],
     },
   },
+  {
+    path: '/pegawai/daftar',
+    name: 'pegawai-daftar',
+    component: () => import('@/views/admin/pegawai/Daftar.vue'),
+    meta: {
+      pageTitle: 'Pegawai',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/pegawai/tambah',
+    name: 'pegawai-tambah',
+    component: () => import('@/views/admin/pegawai/Tambah.vue'),
+    meta: {
+      pageTitle: 'Pegawai',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Tambah Data',
+          active: true,
+        },
+      ],
+    },
+  },
 ]

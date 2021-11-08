@@ -12,10 +12,10 @@
       </b-avatar>
     </template>
 
-    <b-dropdown-item link-class="d-flex align-items-center">
+    <!-- <b-dropdown-item link-class="d-flex align-items-center">
       <feather-icon size="16" icon="UserIcon" class="mr-50" />
       <span>Profile</span>
-    </b-dropdown-item>
+    </b-dropdown-item> -->
     <!-- <b-dropdown-item :to="{ name: 'apps-email' }" link-class="d-flex align-items-center">
       <feather-icon size="16" icon="MailIcon" class="mr-50" />
       <span>Inbox</span>
@@ -29,7 +29,7 @@
       <span>Chat</span>
     </b-dropdown-item> -->
 
-    <b-dropdown-divider />
+    <!-- <b-dropdown-divider /> -->
 
     <!-- <b-dropdown-item :to="{ name: 'pages-account-setting' }" link-class="d-flex align-items-center">
       <feather-icon size="16" icon="SettingsIcon" class="mr-50" />
@@ -51,7 +51,12 @@
 </template>
 
 <script>
-import { BNavItemDropdown, BDropdownItem, BDropdownDivider, BAvatar } from 'bootstrap-vue'
+import {
+  BNavItemDropdown,
+  BDropdownItem,
+  // BDropdownDivider,
+  BAvatar,
+} from 'bootstrap-vue'
 import { initialAbility } from '@/libs/acl/config'
 import useJwt from '@/auth/jwt/useJwt'
 import { avatarText } from '@core/utils/filter'
@@ -60,7 +65,7 @@ export default {
   components: {
     BNavItemDropdown,
     BDropdownItem,
-    BDropdownDivider,
+    // BDropdownDivider,
     BAvatar,
   },
   data() {

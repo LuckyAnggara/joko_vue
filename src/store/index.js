@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 // Modules
-import adminStoreModule from '@/views/admin/adminStoreModule'
 import app from './app'
 import appConfig from './app-config'
 import verticalMenu from './vertical-menu'
@@ -20,7 +19,6 @@ export default new Vuex.Store({
     verticalMenu,
     'app-kegiatan': kegiatanStoreModule,
     'app-auth': authStoreModule,
-    'app-admin': adminStoreModule,
     'app-mak': makStoreModule,
     'app-general': generalStoreModul,
     'app-perjadin': perjadinStoreModule,
