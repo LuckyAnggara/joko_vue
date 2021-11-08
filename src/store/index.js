@@ -10,6 +10,7 @@ import authStoreModule from './app/authStoreModule'
 import makStoreModule from './app/makStoreModule'
 import generalStoreModul from './app/generalStoreModul'
 import perjadinStoreModule from './app/perjadinStoreModule'
+import pegawaiStoreModule from './app/pegawaiStoreModule'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -22,6 +23,7 @@ export default new Vuex.Store({
     'app-mak': makStoreModule,
     'app-general': generalStoreModul,
     'app-perjadin': perjadinStoreModule,
+    'app-pegawai': pegawaiStoreModule,
   },
   strict: process.env.DEV,
 })

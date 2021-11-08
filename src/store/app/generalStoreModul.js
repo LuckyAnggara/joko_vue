@@ -8,6 +8,8 @@ export default {
     bidang: [],
     peran: [],
     urusan: [],
+    golongan: [],
+    jabatan: [],
     mak: [],
     kanwil: [],
   },
@@ -17,6 +19,8 @@ export default {
     getBidang: state => state.bidang,
     getPeran: state => state.peran,
     getUrusan: state => state.urusan,
+    getGolongan: state => state.golongan,
+    getJabatan: state => state.jabatan,
     getMak: state => state.mak,
     getKanwil: state => state.kanwil,
   },
@@ -35,6 +39,12 @@ export default {
     },
     SET_URUSAN(state, data) {
       state.urusan = data
+    },
+    SET_GOLONGAN(state, data) {
+      state.golongan = data
+    },
+    SET_JABATAN(state, data) {
+      state.jabatan = data
     },
     SET_MAK(state, data) {
       state.mak = data
@@ -98,6 +108,26 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}urusan/`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchGolongan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}golongan/`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchJabatan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}jabatan/`, data)
           .then(response => {
             resolve(response)
           })

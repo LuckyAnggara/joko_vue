@@ -18,22 +18,24 @@
               </b-col>
               <b-col cols="12">
                 <b-form-group label="Tanggal Lahir" label-cols-md="3">
-                  <b-form-datepicker locale="id" v-model="form.nip" placeholder="Tanggal Lahir" required />
+                  <b-form-datepicker locale="id" v-model="form.tanggal_lahir" placeholder="Tanggal Lahir" required />
                 </b-form-group>
               </b-col>
               <b-col cols="12">
                 <b-form-group label="Golongan / Pangkat" label-cols-md="3">
-                  <v-select v-model="form.bidang_id" placeholder="Golongan / Pangkat" label="nama" :reduce="bidang => bidang.id" :options="bidangOption" />
+                  <v-select v-model="form.golongan" placeholder="Golongan / Pangkat" label="nama" :reduce="x => x.id" :options="golonganOption">
+                    <template v-slot:option="option"> {{ option.golongan }} - {{ option.nama }} </template>
+                  </v-select>
                 </b-form-group>
               </b-col>
               <b-col cols="12">
                 <b-form-group label="Jabatan" label-cols-md="3">
-                  <v-select v-model="form.bidang_id" placeholder="Jabatan" label="nama" :reduce="bidang => bidang.id" :options="bidangOption" />
+                  <v-select v-model="form.jabatan" placeholder="Jabatan" label="nama" :reduce="x => x.id" :options="jabatanOption" />
                 </b-form-group>
               </b-col>
               <b-col cols="12">
                 <b-form-group label="Bagian / Wilayah" label-cols-md="3">
-                  <v-select v-model="form.bidang_id" placeholder="Bagian / Wilayah" label="nama" :reduce="bidang => bidang.id" :options="bidangOption" />
+                  <v-select v-model="form.bidang" placeholder="Bagian / Wilayah" label="nama" :reduce="x => x.id" :options="bidangOption" />
                 </b-form-group>
               </b-col>
 
@@ -99,10 +101,18 @@ export default {
     bidangOption() {
       return this.$store.getters['app-general/getBidang']
     },
+    golonganOption() {
+      return this.$store.getters['app-general/getGolongan']
+    },
+    jabatanOption() {
+      return this.$store.getters['app-general/getJabatan']
+    },
   },
   mounted() {
     this.loadTahun()
     this.loadBidang()
+    this.loadGolongan()
+    this.loadJabatan()
   },
   methods: {
     formatRupiah,
@@ -119,6 +129,17 @@ export default {
         }
       })
     },
+    /* eslint-disable */
+    uploadFiles(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.attachments.push(selectedFiles[i])
+      }
+    },
+    /* eslint-enable */
     loadBidang() {
       this.$store.dispatch('app-general/fetchBidang').then(res => {
         this.$store.commit('app-general/SET_BIDANG', res.data)
@@ -127,6 +148,16 @@ export default {
     loadTahun() {
       this.$store.dispatch('app-general/fetchTahun').then(res => {
         this.$store.commit('app-general/SET_TAHUN', res.data)
+      })
+    },
+    loadJabatan() {
+      this.$store.dispatch('app-general/fetchJabatan').then(res => {
+        this.$store.commit('app-general/SET_JABATAN', res.data)
+      })
+    },
+    loadGolongan() {
+      this.$store.dispatch('app-general/fetchGolongan').then(res => {
+        this.$store.commit('app-general/SET_GOLONGAN', res.data)
       })
     },
     success() {
@@ -154,7 +185,7 @@ export default {
     store() {
       this.$swal({
         title: 'Proses ?',
-        text: 'Data MAK baru akan di proses',
+        text: 'Data Pegawai baru akan di proses !',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -166,10 +197,10 @@ export default {
       }).then(result => {
         if (result.value) {
           this.show = !this.show
-          this.$store.dispatch('app-mak/storeMAK', this.form).then(res => {
+          this.$store.dispatch('app-pegawai/store', this.form).then(res => {
             if (res.status === 200) {
               this.success()
-              this.$router.push({ name: 'mak-daftar' })
+              this.$router.push({ name: 'pegawai-daftar' })
             } else {
               this.error(res.status)
             }
@@ -179,29 +210,25 @@ export default {
     },
   },
   setup() {
-    const busyCekMak = ref(false)
-    const kode = ref(false)
-    const title = ref('Membuat Mata Anggaran Kegiatan .... ')
+    const title = ref('Store data Pegawai baru .... ')
     const show = ref(false)
     const userData = JSON.parse(localStorage.getItem('userData'))
     const form = ref({
-      tahun_id: null,
-      bidang_id: null,
-      kode: null,
       nama: null,
-      nominal: 0,
-      user: JSON.parse(localStorage.getItem('userData')),
+      nip: null,
+      tanggal_lahir: null,
+      golongan: null,
+      jabatan: 0,
+      bidang: 0,
+      foto: 0,
+      user_data: JSON.parse(localStorage.getItem('userData')),
     })
-    const tahun = ref({})
 
     return {
-      busyCekMak,
-      kode,
       title,
       show,
       userData,
       form,
-      tahun,
     }
   },
 }
