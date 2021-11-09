@@ -108,12 +108,7 @@ export default {
       return this.$store.getters['app-general/getJabatan']
     },
   },
-  mounted() {
-    this.loadTahun()
-    this.loadBidang()
-    this.loadGolongan()
-    this.loadJabatan()
-  },
+
   methods: {
     formatRupiah,
     cekKodeMak() {
@@ -140,26 +135,7 @@ export default {
       }
     },
     /* eslint-enable */
-    loadBidang() {
-      this.$store.dispatch('app-general/fetchBidang').then(res => {
-        this.$store.commit('app-general/SET_BIDANG', res.data)
-      })
-    },
-    loadTahun() {
-      this.$store.dispatch('app-general/fetchTahun').then(res => {
-        this.$store.commit('app-general/SET_TAHUN', res.data)
-      })
-    },
-    loadJabatan() {
-      this.$store.dispatch('app-general/fetchJabatan').then(res => {
-        this.$store.commit('app-general/SET_JABATAN', res.data)
-      })
-    },
-    loadGolongan() {
-      this.$store.dispatch('app-general/fetchGolongan').then(res => {
-        this.$store.commit('app-general/SET_GOLONGAN', res.data)
-      })
-    },
+
     success() {
       this.$swal({
         title: 'Success!',

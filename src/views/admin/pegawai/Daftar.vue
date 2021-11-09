@@ -174,7 +174,6 @@ export default {
         this.$store.commit('app-general/SET_PEGAWAI', res.data)
         this.dataTemp = res.data
         this.dataPegawai = this.dataTemp
-        console.info(this.dataPegawai)
       })
     },
     loadBidang() {
@@ -182,10 +181,34 @@ export default {
         this.$store.commit('app-general/SET_BIDANG', res.data)
       })
     },
+
+    loadTahun() {
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
+        this.$store.commit('app-general/SET_TAHUN', res.data)
+      })
+    },
+    loadJabatan() {
+      this.$store.dispatch('app-general/fetchJabatan').then(res => {
+        this.$store.commit('app-general/SET_JABATAN', res.data)
+      })
+    },
+    loadGolongan() {
+      this.$store.dispatch('app-general/fetchGolongan').then(res => {
+        this.$store.commit('app-general/SET_GOLONGAN', res.data)
+      })
+    },
+    detail(id) {
+      const data = this.dataTemp.find(x => x.id === id)
+      this.$store.commit('app-pegawai/SET_DETAIL', data)
+      this.$router.push({ name: 'pegawai-detail' })
+    },
   },
   mounted() {
     this.loadPegawai()
     this.loadBidang()
+    this.loadTahun()
+    this.loadGolongan()
+    this.loadJabatan()
   },
   setup() {
     const isBusy = false

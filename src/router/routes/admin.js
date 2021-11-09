@@ -61,4 +61,21 @@ export default [
       ],
     },
   },
+  {
+    path: '/pegawai/detail',
+    name: 'pegawai-detail',
+    component: () => import('@/views/admin/pegawai/Detail.vue'),
+    meta: {
+      pageTitle: 'Pegawai',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
 ]

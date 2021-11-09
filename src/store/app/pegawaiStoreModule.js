@@ -4,9 +4,11 @@ export default {
   namespaced: true,
   state: {
     pegawai: [],
+    detail: {},
   },
   getters: {
     getPegawai: state => state.pegawai,
+    getDetail: state => state.detail,
   },
   mutations: {
     SET_PEGAWAI(state, data) {
@@ -14,6 +16,9 @@ export default {
     },
     UPDATE_PEGAWAI(state, data) {
       state.pegawai.push(data)
+    },
+    SET_DETAIL(state, data) {
+      state.detail = data
     },
   },
   actions: {

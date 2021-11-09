@@ -19,8 +19,11 @@
             <b-col lg="2">
               <label>NIP </label>
             </b-col>
-            <b-col lg="5">
+            <b-col lg="3">
               <label>NAMA PEGAWAI </label>
+            </b-col>
+            <b-col lg="2">
+              <label>JABATAN </label>
             </b-col>
             <b-col lg="3">
               <label>PERAN </label>
@@ -39,8 +42,11 @@
             <b-col lg="2">
               <b-form-input plaintext :value="form.susunan_tim[index].pegawai.nip" />
             </b-col>
-            <b-col lg="5">
+            <b-col lg="3">
               <v-select v-model="form.susunan_tim[index].pegawai" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
+            </b-col>
+            <b-col lg="2">
+              <b-form-input plaintext :value="form.susunan_tim[index].pegawai.jabatan.nama" />
             </b-col>
             <b-col lg="3">
               <v-select v-model="form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
@@ -92,6 +98,7 @@ export default {
         pegawai: {
           nip: null,
           nama: null,
+          jabatan: null,
         },
         peran: null,
       }

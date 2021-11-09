@@ -1,182 +1,59 @@
 <template>
-  <!-- <b-row class="match-height"> -->
-  <b-overlay :show="show" rounded="md" variant="transparent" blur="5px" opacity="0.2">
-    <b-row class="match-height">
-      <b-col lg="8" sm="12">
-        <!-- <b-form autocomplete="off" @submit.prevent @submit="store"> -->
-        <b-card title="Data Realisasi" v-if="dataRealisasi === null ? false : true">
-          <b-row>
-            <b-col cols="12">
-              <b-form-group label="Tahun Anggaran" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.tahun.nama" readonly />
-              </b-form-group>
-            </b-col>
-            <b-col cols="12">
-              <b-form-group label="Mata Anggaran Kegiatan" label-cols-md="3">
-                <b-form-textarea :value="`${dataRealisasi.kegiatan.kode} - ${dataRealisasi.kegiatan.nama}`" readonly />
-              </b-form-group>
-              <hr />
-            </b-col>
-            <b-col cols="12">
-              <b-form-group label="Tanggal SPB" label-cols-md="3">
-                <b-form-input :value="$moment(dataRealisasi.tanggal_spb).format('DD MMMM YYYY')" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Uraian Kegiatan" label-cols-md="3">
-                <b-form-textarea :value="dataRealisasi.uraian" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Nominal Bayar" label-cols-md="3">
-                <b-form-input :value="formatRupiah(dataRealisasi.nominal)" readonly />
-              </b-form-group>
-              <hr />
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Pembuat SPB" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.maker.nama" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Checker SPB" label-cols-md="3">
-                <b-form-input :value="dataRealisasi.checker.nama" readonly />
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="2" class="mt-2" md="3" sm="12" v-if="userData.role === 'PPK'">
-              <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="success" class="mb-75" block type="button">
-                Approve
-              </b-button>
-            </b-col>
-            <b-col cols="2" class="mt-2" md="3" sm="12" v-if="userData.role === 'PPK'">
-              <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="danger" class="mb-75" block type="button">
-                Reject
-              </b-button>
-            </b-col>
-          </b-row>
+  <section>
+    <b-row>
+      <b-col lg="3">
+        <b-card>
+          <b-img-lazy
+            thumbnail
+            fluid
+            src="https://banner2.cleanpng.com/20180603/jx/kisspng-user-interface-design-computer-icons-default-stephen-salazar-photography-5b1462e1b19d70.1261504615280626897275.jpg"
+          />
         </b-card>
-        <!-- </b-form> -->
-        <template #overlay>
-          <div v-if="show" class="text-center">
-            <feather-icon icon="RssIcon" size="3x" />
-            <p>Fetching Data ...</p>
-          </div>
-        </template>
       </b-col>
-      <!-- Right Col: Card -->
-      <b-col lg="4" cols="12" md="6" xl="4" sm="12">
-        <!-- Action Buttons -->
-        <b-card title="Data Lampiran">
-          <b-table :busy="busy" small :fields="tableColumns" :items="dataRealisasi.lampiran">
-            <template #table-busy>
-              <div class="text-center text-danger my-2">
-                <b-spinner class="align-middle"></b-spinner>
-                <strong>Loading...</strong>
-              </div>
-            </template>
-            <template #cell(no)="data">
-              <span>
-                {{ data.index + 1 }}
-              </span>
-            </template>
-            <template #cell(nama_file)="data">
-              <span>
-                <b-link :href="urlGet(data.item.id)" class="font-weight-bold" target="_blank"> {{ data.item.nama }} </b-link>
-              </span>
-            </template>
-          </b-table>
+      <b-col lg="9">
+        <b-card>
+          <b-tabs content-class="mt-3">
+            <b-tab title="Data" active>
+              <umum />
+            </b-tab>
+            <b-tab title="Peta Kompetensi"> <peta-kompetensi /></b-tab>
+            <b-tab title="Perjalanan Dinas" disabled><p>Perjalanan Dinas</p></b-tab>
+          </b-tabs>
         </b-card>
       </b-col>
     </b-row>
-  </b-overlay>
+  </section>
 </template>
 
 <script>
-import {
-  BLink,
-  BSpinner,
-  BTable,
-  BOverlay,
-  // BForm,
-  BCard,
-  BRow,
-  BCol,
-  BButton,
-  BFormInput,
-  BFormGroup,
-  BFormTextarea,
-} from 'bootstrap-vue'
-
-import { ref } from '@vue/composition-api'
-import Ripple from 'vue-ripple-directive'
-import { formatRupiah } from '@core/utils/filter'
+import { BRow, BCol, BCard, BImgLazy, BTabs, BTab } from 'bootstrap-vue'
+import Umum from './component/detail/Umum.vue'
+import PetaKompetensi from './component/detail/PetaKompetensi.vue'
+// import { ref } from '@vue/composition-api'
+// import { formatRupiah } from '@core/utils/filter'
 
 export default {
   components: {
-    BLink,
-    BSpinner,
-    BTable,
-    BOverlay,
-    BCard,
-    // BForm,
     BRow,
     BCol,
-    BButton,
-    BFormInput,
-    BFormGroup,
-    BFormTextarea,
+    BCard,
+    BImgLazy,
+    BTabs,
+    BTab,
+    Umum,
+    PetaKompetensi,
   },
-  directives: {
-    Ripple,
-  },
-  beforeMount() {
-    this.loadData()
+  // computed: {
+  //   data() {
+  //     return this.$store.getters['app-pegawai/getDetail']
+  //   },
+  // },
 
-    console.info(this.$router.currentRoute.params)
-  },
-
-  methods: {
-    formatRupiah,
-    loadData() {
-      this.show = !this.show
-      this.busy = !this.busy
-      const { id } = this.$router.currentRoute.params
-      this.$store.dispatch('app-kegiatan/fetchDetailRealisasiKegiatan', id).then(res => {
-        if (res.status === 200) {
-          this.busy = !this.busy
-          this.show = !this.show
-          this.dataRealisasi = res.data
-        }
-      })
-    },
-    urlGet(id) {
-      return `${this.url}?id=${id}`
-    },
-  },
   setup() {
-    const url = 'http://127.0.0.1:8000/api/realisasi/download-lampiran'
-
-    const busy = ref(false)
-    const show = ref(false)
-    const userData = ref({
-      id: 1,
-      role: 'USER',
-    })
-    const tableColumns = [{ key: 'no', label: '#' }, { key: 'nama_file' }]
-    const dataRealisasi = ref(null)
+    const userData = JSON.parse(localStorage.getItem('userData'))
 
     return {
-      url,
-      tableColumns,
-      busy,
-      show,
       userData,
-      dataRealisasi,
     }
   },
 }
