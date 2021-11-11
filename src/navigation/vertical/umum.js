@@ -8,9 +8,9 @@ export default [
     route: 'barang-daftar',
   },
   {
-    title: 'Persediaan',
+    title: 'Pembelian',
     icon: 'ShieldIcon',
-    // route: 'pegawai-daftar',
+    route: 'pembelian-tambah',
   },
   // {
   //   title: 'Servis Kendaraan',

@@ -51,6 +51,24 @@ export default [
     },
   },
   {
+    path: '/persediaan/pembelian/tambah',
+    name: 'pembelian-tambah',
+    component: () => import('@/views/persediaan/pembelian/Tambah.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'Pembelian',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Tambah',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/kepegawaian/peta-kompetensi',
     name: 'peta-kompetensi',
     component: () => import('@/views/admin/pegawai/Detail.vue'),
