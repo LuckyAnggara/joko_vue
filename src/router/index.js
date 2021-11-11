@@ -10,6 +10,8 @@ import dipa from './routes/dipa'
 import laporan from './routes/laporan'
 import admin from './routes/admin'
 import perjadin from './routes/perjadin'
+import kepegawaian from './routes/kepegawaian'
+import umum from './routes/umum'
 
 Vue.use(VueRouter)
 
@@ -27,6 +29,8 @@ const router = new VueRouter({
     ...dashboard,
     ...admin,
     ...perjadin,
+    ...kepegawaian,
+    ...umum,
     {
       path: '*',
       redirect: 'error-404',

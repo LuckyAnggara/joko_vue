@@ -11,6 +11,7 @@ import makStoreModule from './app/makStoreModule'
 import generalStoreModul from './app/generalStoreModul'
 import perjadinStoreModule from './app/perjadinStoreModule'
 import pegawaiStoreModule from './app/pegawaiStoreModule'
+import barangStoreModule from './app/barangStoreModule'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     'app-general': generalStoreModul,
     'app-perjadin': perjadinStoreModule,
     'app-pegawai': pegawaiStoreModule,
+    'app-barang': barangStoreModule,
   },
   strict: process.env.DEV,
 })

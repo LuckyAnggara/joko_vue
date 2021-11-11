@@ -32,8 +32,9 @@ tagVariant
 */
 import admin from './admin'
 import dashboard from './dashboard'
-import kegiatan from './kegiatan'
-import perjadin from './perjadin'
+import keuangan from './keuangan'
+import kepegawaian from './kepegawaian'
+import umum from './umum'
 
 // Array of sections
-export default [...dashboard, ...kegiatan, ...perjadin, ...admin]
+export default [...dashboard, ...keuangan, ...kepegawaian, ...umum, ...admin]

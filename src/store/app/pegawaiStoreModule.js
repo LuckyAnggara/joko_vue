@@ -20,6 +20,13 @@ export default {
     SET_DETAIL(state, data) {
       state.detail = data
     },
+    UPDATE_KOMPETENSI(state, data) {
+      state.detail.peta_kompetensi.push(data)
+    },
+    DELETE_KOMPETENSI(state, id) {
+      const b = state.detail.peta_kompetensi.findIndex(x => x.id === id)
+      state.detail.peta_kompetensi.splice(b, 1)
+    },
   },
   actions: {
     fetchPegawai(ctx, data) {
@@ -46,6 +53,36 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post(`${axios.defaults.baseURL}pegawai/store-lampiran`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeKompetensi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}pegawai/store-kompetensi`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeLampiranKompetensi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}pegawai/store-lampiran-kompetensi`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    deleteKompetensi(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`${axios.defaults.baseURL}pegawai/delete-kompetensi?id=${id}`)
           .then(response => {
             resolve(response)
           })

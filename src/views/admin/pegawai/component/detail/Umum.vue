@@ -27,7 +27,7 @@
         <v-select v-model="data.jabatan" placeholder="Jabatan" label="nama" :reduce="x => x.id" :options="jabatanOption" :disabled="!edit" />
       </b-form-group>
     </b-col>
-    <b-col cols="12">
+    <b-col cols="12" v-if="userData.role === 'ADMIN KEPEGAWAIAN'">
       <b-form-group label="Bagian / Wilayah" label-cols-md="3">
         <v-select v-model="data.bidang" placeholder="Bagian / Wilayah" label="nama" :reduce="x => x.id" :options="bidangOption" :disabled="!edit" />
       </b-form-group>

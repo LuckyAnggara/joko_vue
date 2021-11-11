@@ -6,9 +6,14 @@
           <div class="mb-2">
             <!-- Table Top -->
             <b-row>
-              <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN KEPEGAWAIAN'">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'pegawai-tambah' }">
-                  <feather-icon icon="PlusIcon" /> Tambah Data
+              <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
+                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'barang-tambah' }">
+                  <feather-icon icon="PlusIcon" /> Tambah Barang
+                </b-button>
+              </b-col>
+              <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
+                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'pembelian-daftar' }">
+                  Pembelian
                 </b-button>
               </b-col>
             </b-row>
@@ -17,10 +22,7 @@
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
-              <b-col cols="6" md="5" v-if="userData.role === 'ADMIN KEPEGAWAIAN'">
-                <label class="mr-1">Filter Bidang</label>
-                <v-select v-model="bidangFilter" :options="bidangOption" label="nama" :clearable="false" />
-              </b-col>
+
               <!-- Search -->
               <b-col cols="6" md="6">
                 <label class="mr-1">Cari Data</label>
@@ -34,7 +36,7 @@
             :busy="isBusy"
             responsive
             :fields="tableColumns"
-            :items="dataPegawai"
+            :items="dataBarang"
             :current-page="currentPage"
             :per-page="perPage"
             :sort-by.sync="sortBy"
@@ -54,23 +56,12 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(pangkat)="data">
+            <template #cell(saldo)="data">
               <span>
-                {{ data.item.golongan.golongan }}
+                {{ data.item.saldo_akhir }}
               </span>
             </template>
 
-            <template #cell(jabatan)="data">
-              <span>
-                {{ data.item.jabatan.nama }}
-              </span>
-            </template>
-
-            <template #cell(bidang)="data">
-              <span>
-                {{ data.item.bidang.nama }}
-              </span>
-            </template>
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="text-nowrap">
@@ -135,17 +126,17 @@ export default {
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataPegawai = this.dataTemp
+        this.dataBarang = this.dataTemp
       } else {
-        this.dataPegawai = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
+        this.dataBarang = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
       }
     },
     /* eslint-enable */
     bidangFilter(x) {
       if (x.id === '' || x.id === null || x.id === 0) {
-        this.dataPegawai = this.dataTemp
+        this.dataBarang = this.dataTemp
       } else {
-        this.dataPegawai = this.dataTemp.filter(item => item.bidang.id === x.id)
+        this.dataBarang = this.dataTemp.filter(item => item.bidang.id === x.id)
       }
     },
     tahun() {
@@ -162,87 +153,44 @@ export default {
       }
     },
     totalData() {
-      return this.dataPegawai.length
-    },
-    bidangOption() {
-      return [{ id: 0, nama: 'SEMUA' }, ...this.$store.getters['app-general/getBidang']]
+      return this.dataBarang.length
     },
   },
   methods: {
-    loadPegawai() {
-      this.$store.dispatch('app-general/fetchPegawai').then(res => {
-        this.$store.commit('app-general/SET_PEGAWAI', res.data)
-        this.dataTemp = res.data
-        this.dataPegawai = this.dataTemp
-      })
-    },
-    loadBidang() {
-      this.$store.dispatch('app-general/fetchBidang').then(res => {
-        this.$store.commit('app-general/SET_BIDANG', res.data)
-      })
-    },
-
-    loadTahun() {
-      this.$store.dispatch('app-general/fetchTahun').then(res => {
-        this.$store.commit('app-general/SET_TAHUN', res.data)
-      })
-    },
-    loadJabatan() {
-      this.$store.dispatch('app-general/fetchJabatan').then(res => {
-        this.$store.commit('app-general/SET_JABATAN', res.data)
-      })
-    },
-    loadGolongan() {
-      this.$store.dispatch('app-general/fetchGolongan').then(res => {
-        this.$store.commit('app-general/SET_GOLONGAN', res.data)
-      })
-    },
     detail(id) {
       const data = this.dataTemp.find(x => x.id === id)
-      this.$store.commit('app-pegawai/SET_DETAIL', data)
-      this.$router.push({ name: 'pegawai-detail' })
+      this.$store.commit('app-barang/SET_DETAIL_BARANG', data)
+      this.$router.push({ name: 'barang-detail' })
+    },
+    loadBarang() {
+      this.$store.dispatch('app-barang/fetchBarang').then(res => {
+        this.$store.commit('app-barang/SET_BARANG', res.data)
+        this.dataTemp = res.data
+        this.dataBarang = this.dataTemp
+      })
     },
   },
   mounted() {
-    this.loadPegawai()
-    this.loadBidang()
-    this.loadTahun()
-    this.loadGolongan()
-    this.loadJabatan()
+    this.loadBarang()
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))
     const isBusy = false
-    const dataPegawai = ref([])
+    const dataBarang = ref([])
     const dataTemp = ref([])
-    const tableColumns = [
-      { key: 'id', label: '#' },
-      { key: 'nama' },
-      { key: 'pangkat' },
-      { key: 'jabatan' },
-      {
-        key: 'bidang',
-        label: 'BAGIAN / WILAYAH',
-        thClass: userData.role === 'ADMIN KEPEGAWAIAN' ? '' : 'd-none',
-        tdClass: userData.role === 'ADMIN KEPEGAWAIAN' ? '' : 'd-none',
-      },
-      { key: 'actions' },
-    ]
+    const tableColumns = [{ key: 'id', label: '#' }, { key: 'nama', label: 'NAMA BARANG' }, { key: 'satuan' }, { key: 'saldo' }, { key: 'actions' }]
     const searchQuery = ref('')
     const perPage = ref(10)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    const bidangFilter = ref({
-      id: 0,
-      nama: 'SEMUA',
-    })
+
     return {
       userData,
       isBusy,
       tableColumns,
-      dataPegawai,
+      dataBarang,
       dataTemp,
       searchQuery,
       perPage,
@@ -250,7 +198,6 @@ export default {
       perPageOptions,
       sortBy,
       isSortDirDesc,
-      bidangFilter,
     }
   },
 }

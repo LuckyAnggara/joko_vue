@@ -6,6 +6,7 @@ export default {
     tahun: [],
     pegawai: [],
     bidang: [],
+    bidangIlmu: [],
     peran: [],
     urusan: [],
     golongan: [],
@@ -17,6 +18,7 @@ export default {
     getTahun: state => state.tahun,
     getPegawai: state => state.pegawai,
     getBidang: state => state.bidang,
+    getBidangIlmu: state => state.bidangIlmu,
     getPeran: state => state.peran,
     getUrusan: state => state.urusan,
     getGolongan: state => state.golongan,
@@ -33,6 +35,9 @@ export default {
     },
     SET_BIDANG(state, data) {
       state.bidang = data
+    },
+    SET_BIDANG_ILMU(state, data) {
+      state.bidangIlmu = data
     },
     SET_PERAN(state, data) {
       state.peran = data
@@ -78,6 +83,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}bidang/`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchBidangIlmu(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}bidang-ilmu/`, data)
           .then(response => {
             resolve(response)
           })
