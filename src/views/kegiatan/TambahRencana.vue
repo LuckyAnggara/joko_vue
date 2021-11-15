@@ -19,63 +19,65 @@
                 </b-form-group>
                 <hr />
               </b-col>
-              <b-col cols="12">
-                <b-form-group label="Tanggal Rencana Kegiatan" label-cols-md="3">
-                  <b-form-datepicker locale="id" v-model="form.tanggal_rencana_kegiatan" placeholder="Tanggal Rencana Kegiatan" />
-                </b-form-group>
-              </b-col>
-              <b-col cols="12">
-                <b-form-group label="Lokasi Kegiatan" label-cols-md="3">
-                  <b-form-input v-model="form.lokasi" placeholder="Lokasi Kegiatan" required />
-                </b-form-group>
-              </b-col>
-
-              <b-col cols="12">
-                <b-form-group label="Uraian Kegiatan" label-cols-md="3">
-                  <b-form-textarea v-model="form.uraian" placeholder="Uraian Kegiatan" required rows="3" />
-                </b-form-group>
-              </b-col>
-
-              <b-col cols="12">
-                <b-form-group label="Output Kegiatan" label-cols-md="3">
-                  <b-form-textarea v-model="form.output" placeholder="Uraian Kegiatan" required rows="3" />
-                </b-form-group>
-              </b-col>
-
-              <b-col cols="12">
-                <b-form-group label="Jenis Kegiatan" label-cols-md="3">
-                  <v-select v-model="form.jenis_kegiatan" placeholder="Jenis Kegiatan" label="nama" :options="jenisKegiatanOption" />
-                </b-form-group>
-              </b-col>
-
-              <b-col cols="12">
-                <b-form-group label="Anggaran Kegiatan" label-cols-md="3">
-                  <b-form-input v-model="form.total_anggaran" type="number" placeholder="Rp. 0" required />
-                </b-form-group>
-                <hr />
-              </b-col>
-
-              <b-col cols="12">
-                <b-form-group label="Upload Lampiran" label-cols-md="3">
-                  <b-form-file
-                    @change="uploadFiles"
-                    placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
-                    drop-placeholder="Drop file disini..."
-                    multiple
-                    ref="file_input"
-                  >
-                    <template slot="file-name" slot-scope="{ names }">
-                      <b-badge variant="dark">{{ names[0] }}</b-badge>
-                      <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
-                    </template>
-                  </b-form-file>
-                </b-form-group>
-              </b-col>
-              <b-col cols="2" class="mt-2" md="6" sm="12" offset-lg="3">
-                <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="submit">
-                  Proses
-                </b-button>
-              </b-col>
+              <template v-if="cekPagu">
+                <b-col cols="12">
+                  <b-form-group label="Tanggal Rencana Kegiatan" label-cols-md="3">
+                    <b-form-datepicker locale="id" v-model="form.tanggal_rencana_kegiatan" placeholder="Tanggal Rencana Kegiatan" />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-form-group label="Lokasi Kegiatan" label-cols-md="3">
+                    <b-form-input v-model="form.lokasi" placeholder="Lokasi Kegiatan" required />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-form-group label="Uraian Kegiatan" label-cols-md="3">
+                    <b-form-textarea v-model="form.uraian" placeholder="Uraian Kegiatan" required rows="3" />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-form-group label="Output Kegiatan" label-cols-md="3">
+                    <b-form-textarea v-model="form.output" placeholder="Uraian Kegiatan" required rows="3" />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-form-group label="Jenis Kegiatan" label-cols-md="3">
+                    <v-select v-model="form.jenis_kegiatan" placeholder="Jenis Kegiatan" label="nama" :options="jenisKegiatanOption" />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-form-group label="Anggaran Kegiatan" label-cols-md="3">
+                    <b-form-input v-model="form.total_anggaran" type="number" placeholder="Rp. 0" required />
+                  </b-form-group>
+                  <hr />
+                </b-col>
+                <b-col cols="12">
+                  <b-form-group label="Upload Lampiran" label-cols-md="3">
+                    <b-form-file
+                      @change="uploadFiles"
+                      placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                      drop-placeholder="Drop file disini..."
+                      multiple
+                      ref="file_input"
+                    >
+                      <template slot="file-name" slot-scope="{ names }">
+                        <b-badge variant="dark">{{ names[0] }}</b-badge>
+                        <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                      </template>
+                    </b-form-file>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="2" class="mt-2" md="6" sm="12" offset-lg="3">
+                  <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="submit">
+                    Proses
+                  </b-button>
+                </b-col>
+              </template>
+              <template v-else>
+                <b-card-text>
+                  <p>Mata Anggaran Kegiatan sudah tidak bisa di gunakan . Saldo 0</p>
+                </b-card-text>
+              </template>
             </b-row>
           </b-card>
         </b-form>
@@ -141,7 +143,21 @@
 </template>
 
 <script>
-import { BOverlay, BBadge, BFormDatepicker, BFormFile, BForm, BCard, BRow, BCol, BButton, BFormInput, BFormGroup, BFormTextarea } from 'bootstrap-vue'
+import {
+  BOverlay,
+  BBadge,
+  BFormDatepicker,
+  BFormFile,
+  BForm,
+  BCard,
+  BCardText,
+  BRow,
+  BCol,
+  BButton,
+  BFormInput,
+  BFormGroup,
+  BFormTextarea,
+} from 'bootstrap-vue'
 
 import { ref } from '@vue/composition-api'
 import Ripple from 'vue-ripple-directive'
@@ -156,6 +172,7 @@ export default {
     BFormDatepicker,
     BFormFile,
     BCard,
+    BCardText,
     BForm,
     BRow,
     BCol,
@@ -168,6 +185,15 @@ export default {
   },
   directives: {
     Ripple,
+  },
+  computed: {
+    cekPagu() {
+      if (this.form.mak === null) return true
+      if (parseFloat(this.form.mak.pagu) - parseFloat(this.form.mak.realisasi) > 0) {
+        return true
+      }
+      return false
+    },
   },
 
   mounted() {

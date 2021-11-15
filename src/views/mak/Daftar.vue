@@ -9,14 +9,18 @@
         </b-card>
       </b-col>
       <b-col lg="12" cols="12">
-        <b-card>
+        <b-card v-if="!revisi">
           <div class="mb-2">
             <!-- Table Top -->
             <b-row>
               <b-col cols="6" md="2" class="mb-2">
                 <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'mak-tambah' }"> <feather-icon icon="PlusIcon" /> Tambah Data </b-button>
               </b-col>
+              <b-col cols="6" md="3" class="mb-2">
+                <b-button variant="primary" class="btn-icon" size="md" @click="revisi = !revisi"> Revisi Anggaran </b-button>
+              </b-col>
             </b-row>
+
             <b-row>
               <b-col cols="6" md="1">
                 <label>Tampilkan</label>
@@ -24,7 +28,7 @@
               </b-col>
               <b-col cols="6" md="5">
                 <label class="mr-1">Filter Bidang</label>
-                <v-select v-model="bidangFilter" :options="bidangOption" label="nama" :clearable="false" />
+                <v-select v-model="bidangFilter" label="nama" :options="bidangOption" :clearable="false" />
               </b-col>
               <!-- Search -->
               <b-col cols="6" md="6">
@@ -115,6 +119,7 @@
             </b-row>
           </div>
         </b-card>
+        <revisi v-if="revisi" @reset="reset" @reload="reload" />
       </b-col>
     </b-row>
   </section>
@@ -125,6 +130,7 @@ import { ref } from '@vue/composition-api'
 import { formatRupiah } from '@core/utils/filter'
 import { BFormGroup, BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
 import vSelect from 'vue-select'
+import Revisi from './Revisi.vue'
 
 export default {
   components: {
@@ -140,6 +146,7 @@ export default {
     BDropdown,
     BDropdownItem,
     vSelect,
+    Revisi,
   },
   data() {
     return {}
@@ -204,6 +211,8 @@ export default {
           this.isBusy = !this.isBusy
           this.dataTemp = res.data
           this.dataMak = this.dataTemp
+          this.$store.commit('app-mak/SET_MAK', res.data)
+          this.$store.commit('app-mak/SET_PASSIVE_PAGU', res.data)
         })
     },
     delete_data(id) {
@@ -266,6 +275,14 @@ export default {
         this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
+    reset() {
+      this.loadMak()
+      this.revisi = !this.revisi
+    },
+    reload() {
+      this.loadMak()
+      this.revisi = !this.revisi
+    },
   },
   mounted() {
     this.loadBidang()
@@ -277,6 +294,7 @@ export default {
       id: 1,
       nama: '2021',
     })
+    const revisi = false
     const isBusy = false
     const dataMak = ref([])
     const dataTemp = ref([])
@@ -291,10 +309,10 @@ export default {
       id: 0,
       nama: 'SEMUA',
     })
-    const tahunOption = ref([])
     return {
       tahun,
       isBusy,
+      revisi,
       tableColumns,
       dataMak,
       dataTemp,
@@ -305,7 +323,6 @@ export default {
       sortBy,
       isSortDirDesc,
       bidangFilter,
-      tahunOption,
     }
   },
 }

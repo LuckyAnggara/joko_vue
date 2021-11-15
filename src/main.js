@@ -8,6 +8,7 @@ import store from './store'
 import App from './App.vue'
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
+import 'vue-slider-component/theme/default.css'
 
 // Global Components
 import './global-components'

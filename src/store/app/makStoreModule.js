@@ -4,14 +4,27 @@ export default {
   namespaced: true,
   state: {
     detail: {},
+    mak: [],
   },
   getters: {
     getDetail: state => state.detail,
+    getMak: state => state.mak,
   },
   mutations: {
+    SET_MAK(state, data) {
+      state.mak = data
+    },
     SET_DETAIL(state, data) {
       state.detail = data
     },
+
+    /* eslint-disable */
+    SET_PASSIVE_PAGU(state) {
+      state.mak.forEach(x => {
+        x.passive_pagu = x.pagu
+      })
+    },
+    /* eslint-enable */
   },
   actions: {
     fetchTahun(ctx, data) {
@@ -38,6 +51,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post(`${axios.defaults.baseURL}mak/store`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeRevisiMak(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}mak/store-revisi`, data)
           .then(response => {
             resolve(response)
           })
