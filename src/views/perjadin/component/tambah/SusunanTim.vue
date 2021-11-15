@@ -98,7 +98,9 @@ export default {
         pegawai: {
           nip: null,
           nama: null,
-          jabatan: null,
+          jabatan: {
+            nama: null,
+          },
         },
         peran: null,
       }
