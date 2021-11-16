@@ -7,11 +7,6 @@
             <!-- Table Top -->
             <b-row>
               <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'barang-tambah' }">
-                  <feather-icon icon="PlusIcon" /> Tambah Barang
-                </b-button>
-              </b-col>
-              <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
                 <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'pembelian-daftar' }">
                   Pembelian
                 </b-button>
@@ -36,7 +31,7 @@
             :busy="isBusy"
             responsive
             :fields="tableColumns"
-            :items="dataBarang"
+            :items="dataPembelian"
             :current-page="currentPage"
             :per-page="perPage"
             :sort-by.sync="sortBy"
@@ -56,10 +51,18 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(saldo)="data">
+            <template #cell(tanggal_invoice)="data">
               <span>
-                {{ data.item.saldo_akhir }}
+                {{ $moment(data.item.tanggal_invoice).format('DD-MMM-YYYY') }}
               </span>
+            </template>
+
+            <template #cell(lampiran)="data">
+              <ol>
+                <li v-for="item in data.item.lampiran" :key="item.id">
+                  <b-link :href="urlGet(item.id, 'barang')" class="font-weight-bold" target="_blank"> {{ item.nama }} </b-link>
+                </li>
+              </ol>
             </template>
 
             <!-- Column: Actions -->
@@ -104,11 +107,13 @@
 
 <script>
 import { ref } from '@vue/composition-api'
-import { BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
+import { BLink, BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
 import vSelect from 'vue-select'
+import { urlGet } from '@core/utils/filter'
 
 export default {
   components: {
+    BLink,
     BButton,
     BSpinner,
     BCard,
@@ -126,21 +131,18 @@ export default {
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataBarang = this.dataTemp
+        this.dataPembelian = this.dataTemp
       } else {
-        this.dataBarang = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
+        this.dataPembelian = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
       }
     },
     /* eslint-enable */
     bidangFilter(x) {
       if (x.id === '' || x.id === null || x.id === 0) {
-        this.dataBarang = this.dataTemp
+        this.dataPembelian = this.dataTemp
       } else {
-        this.dataBarang = this.dataTemp.filter(item => item.bidang.id === x.id)
+        this.dataPembelian = this.dataTemp.filter(item => item.bidang.id === x.id)
       }
-    },
-    tahun() {
-      this.loadMak()
     },
   },
   computed: {
@@ -153,32 +155,40 @@ export default {
       }
     },
     totalData() {
-      return this.dataBarang.length
+      return this.dataPembelian.length
     },
   },
   methods: {
+    urlGet,
     detail(id) {
       const data = this.dataTemp.find(x => x.id === id)
-      this.$store.commit('app-barang/SET_DETAIL_BARANG', data)
-      this.$router.push({ name: 'barang-detail' })
+      this.$store.commit('app-barang/SET_DETAIL_PEMBELIAN', data)
+      this.$router.push({ name: 'pembelian-detail' })
     },
-    loadBarang() {
-      this.$store.dispatch('app-barang/fetchBarang').then(res => {
-        this.$store.commit('app-barang/SET_BARANG', res.data)
+    loadPembelian() {
+      this.$store.dispatch('app-barang/fetchPembelian').then(res => {
+        this.$store.commit('app-barang/SET_PEMBELIAN', res.data)
         this.dataTemp = res.data
-        this.dataBarang = this.dataTemp
+        this.dataPembelian = this.dataTemp
       })
     },
   },
   mounted() {
-    this.loadBarang()
+    this.loadPembelian()
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))
     const isBusy = false
-    const dataBarang = ref([])
+    const dataPembelian = ref([])
     const dataTemp = ref([])
-    const tableColumns = [{ key: 'id', label: '#' }, { key: 'nama', label: 'NAMA BARANG' }, { key: 'satuan' }, { key: 'saldo' }, { key: 'actions' }]
+    const tableColumns = [
+      { key: 'id', label: '#' },
+      { key: 'no_invoice' },
+      { key: 'tanggal_invoice' },
+      { key: 'nama_supplier' },
+      { key: 'lampiran' },
+      { key: 'actions' },
+    ]
     const searchQuery = ref('')
     const perPage = ref(10)
     const currentPage = ref(1)
@@ -190,7 +200,7 @@ export default {
       userData,
       isBusy,
       tableColumns,
-      dataBarang,
+      dataPembelian,
       dataTemp,
       searchQuery,
       perPage,

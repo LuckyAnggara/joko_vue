@@ -1,5 +1,23 @@
 <template>
-  <b-modal>
+  <b-modal
+    id="modal-daftar-mak"
+    size="xl"
+    scrollable
+    ok-only
+    no-close-on-backdrop
+    content-class="shadow"
+    :title="`Daftar Mak ${bidang.nama}`"
+    ok-variant="danger"
+    ok-title="Tutup"
+    lazy
+  >
+    <b-row>
+      <!-- Search -->
+      <b-col cols="6" md="6">
+        <label class="mr-1">Cari Data</label>
+        <b-form-input v-model="searchQuery" placeholder="Cari data... " />
+      </b-col>
+    </b-row>
     <b-table
       small
       :busy="isBusy"
@@ -27,31 +45,29 @@
           {{ data.index + 1 }}
         </span>
       </template>
+      <template #cell(kode)="data">
+        <span>
+          {{ data.item.kode }}
+        </span>
+        <br />
+        <span>
+          {{ data.item.nama }}
+        </span>
+      </template>
       <template #cell(pagu)="data">
         <span>
           {{ formatRupiah(data.item.pagu) }}
         </span>
       </template>
-
-      <template #cell(bidang)="data">
+      <template #cell(realisasi)="data">
         <span>
-          {{ data.item.bidang.nama }}
+          {{ formatRupiah(data.item.realisasi) }}
         </span>
       </template>
-      <!-- Column: Actions -->
-      <template #cell(actions)="data">
-        <div class="text-nowrap">
-          <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
-          <b-dropdown variant="link" toggle-class="p-0" no-caret>
-            <template #button-content>
-              <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-            </template>
-            <b-dropdown-item @click="delete_data(data.item.id)">
-              <feather-icon icon="" />
-              <span class="align-middle ml-50">Hapus</span>
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
+      <template #cell(sisa)="data">
+        <span>
+          {{ formatRupiah(parseFloat(data.item.pagu) - parseFloat(data.item.realisasi)) }}
+        </span>
       </template>
     </b-table>
     <div class="mx-2 mb-2">
@@ -85,23 +101,18 @@
 </template>
 
 <script>
-import { BFormGroup, BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
+import { ref } from '@vue/composition-api'
+import { formatRupiah } from '@core/utils/filter'
+import { BSpinner, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
 
 export default {
   components: {
-    BFormGroup,
-    BButton,
     BSpinner,
-    BCard,
     BRow,
     BCol,
     BFormInput,
     BTable,
     BPagination,
-    BDropdown,
-    BDropdownItem,
-    vSelect,
-    Revisi,
   },
   data() {
     return {}
@@ -112,26 +123,10 @@ export default {
       if (query === '') {
         this.dataMak = this.dataTemp
       } else {
-        this.dataMak = this.dataTemp.filter(
-          item =>
-            item.kegiatan.nama.toLowerCase().indexOf(query) > -1 ||
-            item.kegiatan.kode.toLowerCase().indexOf(query) > -1 ||
-            item.nominal == query ||
-            item.uraian.toLowerCase().indexOf(query) > -1,
-        )
+        this.dataMak = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.kode.toLowerCase().indexOf(query) > -1)
       }
     },
     /* eslint-enable */
-    bidangFilter(x) {
-      if (x.id === '' || x.id === null || x.id === 0) {
-        this.dataMak = this.dataTemp
-      } else {
-        this.dataMak = this.dataTemp.filter(item => item.bidang.id === x.id)
-      }
-    },
-    tahun() {
-      this.loadMak()
-    },
   },
   computed: {
     dataMeta() {
@@ -145,14 +140,11 @@ export default {
     totalData() {
       return this.dataMak.length
     },
-    tahunOption() {
-      return this.$store.getters['app-general/getTahun']
-    },
-    bidangOption() {
-      return [{ id: 0, nama: 'SEMUA' }, ...this.$store.getters['app-general/getBidang']]
-    },
   },
-
+  props: {
+    tahun: Object,
+    bidang: Object,
+  },
   methods: {
     formatRupiah,
     loadMak() {
@@ -160,114 +152,31 @@ export default {
       this.$store
         .dispatch('app-mak/fetchMak', {
           tahun_id: this.tahun === null ? 1 : this.tahun.id,
-          bidang_id: 0, // ADMIN AKSES
+          bidang_id: this.bidang.id, // ADMIN AKSES
         })
         .then(res => {
           this.isBusy = !this.isBusy
           this.dataTemp = res.data
           this.dataMak = this.dataTemp
-          this.$store.commit('app-mak/SET_MAK', res.data)
-          this.$store.commit('app-mak/SET_PASSIVE_PAGU', res.data)
         })
-    },
-    delete_data(id) {
-      this.$swal({
-        title: 'Hapus data ?',
-        text: 'Menghapus MAK akan menghapus Data Realisasi!!',
-
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ok!',
-        customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        if (result.value) {
-          this.isBusy = !this.isBusy
-          this.$store
-            .dispatch('app-mak/deleteMAK', {
-              id,
-            })
-            .then(x => {
-              if (x.status === 200) {
-                this.loadMak()
-                this.$swal({
-                  icon: 'success',
-                  title: 'Data berhasil di hapus!',
-                  customClass: {
-                    confirmButton: 'btn btn-success',
-                  },
-                })
-              } else {
-                this.$swal({
-                  icon: 'error',
-                  title: 'Oopps!! Kesalahan',
-                  customClass: {
-                    confirmButton: 'btn btn-success',
-                  },
-                })
-              }
-              this.isBusy = !this.isBusy
-            })
-        }
-      })
-    },
-    detail(id) {
-      const data = this.dataMak.find(x => x.id === id)
-      console.info(id)
-      this.$store.commit('app-mak/SET_DETAIL', data.rincian)
-      this.$router.push({ name: 'dipa-detail' })
-    },
-    loadBidang() {
-      this.$store.dispatch('app-general/fetchBidang').then(res => {
-        this.$store.commit('app-general/SET_BIDANG', res.data)
-      })
-    },
-    loadTahun() {
-      this.$store.dispatch('app-general/fetchTahun').then(res => {
-        this.$store.commit('app-general/SET_TAHUN', res.data)
-      })
-    },
-    reset() {
-      this.loadMak()
-      this.revisi = !this.revisi
-    },
-    reload() {
-      this.loadMak()
-      this.revisi = !this.revisi
     },
   },
   mounted() {
-    this.loadBidang()
-    this.loadTahun()
     this.loadMak()
   },
   setup() {
-    const tahun = ref({
-      id: 1,
-      nama: '2021',
-    })
-    const revisi = false
     const isBusy = false
     const dataMak = ref([])
     const dataTemp = ref([])
-    const tableColumns = [{ key: 'id', label: '#' }, { key: 'kode' }, { key: 'nama' }, { key: 'bidang' }, { key: 'pagu' }, { key: 'actions' }]
+    const tableColumns = [{ key: 'id', label: '#' }, { key: 'kode' }, { key: 'pagu' }, { key: 'realisasi' }, { key: 'sisa' }]
     const searchQuery = ref('')
     const perPage = ref(10)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    const bidangFilter = ref({
-      id: 0,
-      nama: 'SEMUA',
-    })
     return {
-      tahun,
       isBusy,
-      revisi,
       tableColumns,
       dataMak,
       dataTemp,
@@ -277,7 +186,6 @@ export default {
       perPageOptions,
       sortBy,
       isSortDirDesc,
-      bidangFilter,
     }
   },
 }

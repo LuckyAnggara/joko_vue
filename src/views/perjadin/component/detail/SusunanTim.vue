@@ -20,7 +20,15 @@
                     <b-link @click="showModal(data.item.id)" class="font-weight-bold">
                       <feather-icon icon="PrinterIcon" size="24" class="mx-1" />
                     </b-link>
-                    <!-- <b-tooltip noninteractive :target="`spd-${data.item.id}`">Print SPD{{ data.item.id }}</b-tooltip> -->
+                    <b-dropdown variant="link" toggle-class="p-0" no-caret boundary="window">
+                      <template #button-content>
+                        <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+                      </template>
+                      <b-dropdown-item :href="dopGet('print')" class="font-weight-bold" target="_blank">
+                        <feather-icon icon="" />
+                        <span class="align-middle ml-50">Download DOP</span>
+                      </b-dropdown-item>
+                    </b-dropdown>
                   </div>
                 </template>
               </b-table>
@@ -86,13 +94,15 @@ import {
   BModal,
   BTable,
   BLink,
+  BDropdown,
+  BDropdownItem,
   // BTooltip,
   BCard,
   BCardBody,
   BRow,
   BCol,
 } from 'bootstrap-vue'
-import { spdGet } from '@core/utils/filter'
+import { spdGet, dopGet } from '@core/utils/filter'
 
 export default {
   components: {
@@ -103,6 +113,8 @@ export default {
     BModal,
     BTable,
     BLink,
+    BDropdown,
+    BDropdownItem,
     // BTooltip,
     BCard,
     BRow,
@@ -118,6 +130,7 @@ export default {
     },
   },
   methods: {
+    dopGet,
     spdGet,
     showModal(id) {
       this.spdId = id

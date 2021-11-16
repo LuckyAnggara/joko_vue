@@ -69,6 +69,39 @@ export default [
     },
   },
   {
+    path: '/persediaan/pembelian/daftar',
+    name: 'pembelian-daftar',
+    component: () => import('@/views/persediaan/pembelian/Daftar.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'Pembelian',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/persediaan/pembelian/detail',
+    name: 'pembelian-detail',
+    component: () => import('@/views/persediaan/pembelian/Detail.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'Pembelian',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/kepegawaian/peta-kompetensi',
     name: 'peta-kompetensi',
     component: () => import('@/views/admin/pegawai/Detail.vue'),

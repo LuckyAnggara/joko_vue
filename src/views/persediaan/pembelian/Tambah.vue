@@ -7,17 +7,22 @@
           <b-row>
             <b-col cols="12">
               <b-form-group label="Nomor Invoice" label-cols-md="3">
-                <b-form-input v-model="form.no_kwitansi" type="text" placeholder="Nomor Invoice" required />
+                <b-form-input v-model="form.no_invoice" type="text" placeholder="Nomor Invoice" required />
               </b-form-group>
             </b-col>
             <b-col cols="12">
               <b-form-group label="Tanggal Invoice" label-cols-md="3">
-                <b-form-datepicker v-model="form.tanggal" locale="id" placeholder="Tanggal Invoice" />
+                <b-form-datepicker v-model="form.tanggal_invoice" locale="id" placeholder="Tanggal Invoice" />
               </b-form-group>
             </b-col>
             <b-col cols="12">
               <b-form-group label="Nama Supplier" label-cols-md="3">
                 <b-form-input v-model="form.nama_supplier" type="text" placeholder="Nama Supplier" required />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Keterangan" label-cols-md="3">
+                <b-form-textarea v-model="form.keterangan" type="text" placeholder="Keterangan" />
               </b-form-group>
             </b-col>
 
@@ -33,18 +38,17 @@
             </b-col>
 
             <b-col cols="2" class="mt-2" md="6" sm="12" offset-lg="3">
-              <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="submit">
+              <b-button v-ripple.400="'rgba(255, 255, 255, 0.15)'" variant="primary" class="mb-75" block type="submit" @click="store">
                 Proses
               </b-button>
             </b-col>
           </b-row>
-          <b-row> </b-row>
         </b-card>
       </b-col>
       <b-col lg="8" sm="12">
         <b-card title="Detail Pembelian">
           <b-form-group label="Nama Barang" label-cols-md="3">
-            <v-select v-model="barang" :reduce="x => x.id" placeholder="Mata Anggaran Kegiatan" label="nama" :options="barangOption" @input="showModal" />
+            <v-select v-model="barang" :reduce="x => x.id" placeholder="Nama Barang" label="nama" :options="barangOption" @input="showModal" />
           </b-form-group>
           <b-table
             ref="refTable"
@@ -65,7 +69,7 @@
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="text-nowrap">
-                <feather-icon icon="TrashIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
+                <feather-icon icon="TrashIcon" size="16" class="mx-1" @click="del(data.index)" />
               </div>
             </template>
           </b-table>
@@ -108,7 +112,7 @@
 </template>
 
 <script>
-import { BModal, BTable, BBadge, BFormFile, BCard, BRow, BCol, BButton, BFormInput, BFormGroup, BFormDatepicker } from 'bootstrap-vue'
+import { BFormTextarea, BModal, BTable, BBadge, BFormFile, BCard, BRow, BCol, BButton, BFormInput, BFormGroup, BFormDatepicker } from 'bootstrap-vue'
 
 import { ref } from '@vue/composition-api'
 import Ripple from 'vue-ripple-directive'
@@ -116,6 +120,7 @@ import vSelect from 'vue-select'
 
 export default {
   components: {
+    BFormTextarea,
     BModal,
     BTable,
     BCard,
@@ -137,10 +142,18 @@ export default {
       return this.$store.getters['app-barang/getBarang']
     },
   },
-
+  mounted() {
+    this.loadBarang()
+  },
   methods: {
+    loadBarang() {
+      this.$store.dispatch('app-barang/fetchBarang').then(res => {
+        this.$store.commit('app-barang/SET_BARANG', res.data)
+      })
+    },
     showModal() {
       this.barangSelect = this.barangOption.find(x => x.id === this.barang)
+      this.barangSelect.jumlah = 0
       this.$bvModal.show('modal-pembelian')
     },
     /* eslint-disable */
@@ -150,14 +163,14 @@ export default {
         return false
       }
       for (let i = 0; i < selectedFiles.length; i++) {
-        this.attachments.push(selectedFiles[i])
+        this.form.lampiran.push(selectedFiles[i])
       }
     },
     /* eslint-enable */
     success() {
       this.$swal({
         title: 'Success!',
-        text: 'Data berhasil di buat!!',
+        text: 'Pembelian berhasil di proses!!',
         icon: 'success',
         customClass: {
           confirmButton: 'btn btn-primary',
@@ -184,9 +197,30 @@ export default {
       })
     },
     store() {
+      const b = this.form
+      if (
+        b.no_invoice === null ||
+        b.no_invoice === '' ||
+        b.tanggal_invoice === null ||
+        b.tanggal_invoice === '' ||
+        b.nama_supplier === null ||
+        b.nama_supplier === '' ||
+        b.data_barang.length <= 0
+      ) {
+        this.$swal({
+          title: 'Oppss!',
+          text: 'Data belum lengkap',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        })
+        return
+      }
       this.$swal({
         title: 'Proses ?',
-        text: 'Data barang baru akan di proses !',
+        text: 'Pembelian barang akan di proses !',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -198,10 +232,21 @@ export default {
       }).then(result => {
         if (result.value) {
           this.show = !this.show
-          this.$store.dispatch('app-barang/storeBarang', this.form).then(res => {
+          this.$store.dispatch('app-barang/storePembelian', this.form).then(res => {
             if (res.status === 200) {
-              this.success()
-              this.$router.push({ name: 'barang-daftar' })
+              const file = new FormData()
+              for (let i = 0; i < this.form.lampiran.length; i += 1) {
+                file.append('lampiran[]', this.form.lampiran[i])
+              }
+              file.append('id', res.data.id)
+              file.append('user_id', this.userData.id)
+
+              this.$store.dispatch('app-barang/storeLampiranPembelian', file).then(x => {
+                if (x.status === 200) {
+                  this.success()
+                  this.$router.push({ name: 'barang-daftar' })
+                }
+              })
             } else {
               this.error(res.status)
             }
@@ -209,11 +254,34 @@ export default {
         }
       })
     },
-    tambah() {
-      const b = this.barangSelect
+    tambah(x) {
+      x.preventDefault()
+      if (this.barangSelect.jumlah <= 0) {
+        this.$swal({
+          title: 'Opss!',
+          text: 'Jumlah barang 0',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        })
+        return
+      }
+      const b = {
+        id: this.barangSelect.id,
+        nama: this.barangSelect.nama,
+        satuan: this.barangSelect.satuan,
+        jumlah: this.barangSelect.jumlah,
+      }
       this.form.data_barang.push(b)
-      this.$bvModal.hide('modal-pembelian')
+      this.$nextTick(() => {
+        this.$bvModal.hide('modal-pembelian')
+      })
       this.resetModal()
+    },
+    del(i) {
+      this.form.data_barang.splice(i, 1)
     },
   },
   setup() {
@@ -229,11 +297,11 @@ export default {
     const tableColumns = [{ key: 'no', label: '#' }, { key: 'nama', label: 'NAMA BARANG' }, { key: 'satuan' }, { key: 'jumlah' }, { key: 'actions' }]
     const form = ref({
       no_invoice: null,
-      tanggal: null,
+      tanggal_invoice: null,
       data_barang: [],
       nama_supplier: null,
       keterangan: null,
-
+      lampiran: [],
       user_data: JSON.parse(localStorage.getItem('userData')),
     })
 

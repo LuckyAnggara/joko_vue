@@ -12,6 +12,11 @@ export default [
     icon: 'ShieldIcon',
     route: 'pembelian-tambah',
   },
+  {
+    title: 'Persediaan',
+    icon: 'ShieldIcon',
+    route: 'persediaan-tambah',
+  },
   // {
   //   title: 'Servis Kendaraan',
   //   icon: 'ShieldIcon',

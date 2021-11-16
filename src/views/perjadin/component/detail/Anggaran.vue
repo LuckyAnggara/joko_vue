@@ -66,6 +66,11 @@
               <h4>{{ formatRupiah(form.total_anggaran) }}</h4>
             </b-col>
           </b-row>
+          <b-row class="mt-2" v-if="form.status !== 'PENGAJUAN' && (userData.role === 'VERIFIKATOR KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
+            <b-col cols="12">
+              <b-button variant="outline-primary" @click="printRab"> Print RAB </b-button>
+            </b-col>
+          </b-row>
         </b-card-body>
         <template #footer>
           <small
@@ -80,12 +85,13 @@
 </template>
 
 <script>
-import { BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
+import { BButton, BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { formatRupiah } from '@core/utils/filter'
 
 export default {
   components: {
+    BButton,
     BCard,
     BRow,
     BCol,
@@ -132,8 +138,20 @@ export default {
       this.form.susunan_tim.splice(i, 1)
       this.form.rencana_anggaran.splice(i, 1)
     },
+    printRab() {
+      this.$swal({
+        title: 'Opss!',
+        text: 'Fitur ini belum tersedia',
+        icon: 'error',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },
+        buttonsStyling: false,
+      })
+    },
   },
   setup() {
+    const userData = JSON.parse(localStorage.getItem('userData'))
     const tableCol = [
       { key: 'hari' },
       { key: 'uang_harian' },
@@ -149,6 +167,7 @@ export default {
       { key: 'actions' },
     ]
     return {
+      userData,
       tableCol,
     }
   },

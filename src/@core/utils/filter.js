@@ -8,6 +8,7 @@ export const formatRupiah = value => `Rp. ${value.toString().replace(/(\d)(?=(\d
 export const truncate = (str, n) => (str.length > n ? str.substr(0, n - 1) + '...' : str)
 // eslint-enable-next-line
 export const urlGet = (id, url, jenis = null) => `${axios.defaults.baseURL}${url}/download-lampiran?id=${id}&jenis=${jenis}`
+export const dopGet = url => `${axios.defaults.baseURL}${url}/download-dop`
 /* eslint-disable */
 export const spdGet = (id, spd) =>
   `${axios.defaults.baseURL}print/download-spd?id=${id}&alatangkut=${spd.alatangkut}&tanggal=${spd.tanggal}&tempat=${spd.tempat}`

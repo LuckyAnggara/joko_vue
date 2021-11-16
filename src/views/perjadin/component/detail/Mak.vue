@@ -31,14 +31,14 @@
             <b-col cols="12">
               <b-form-group label="Saldo Belum Realisasi" label-cols-md="3" label-cols-sm="12">
                 <b-form-input :value="formatRupiah(form.mak.saldo.unrealisasi)" placeholder="-" readonly />
-                <b-button
+                <!-- <b-button
                   variant="outline-primary"
                   class="mt-1"
                   @click="showModalLampiran()"
                   v-if="form.status !== 'PENGAJUAN' && (userData.role === 'VERIFIKATOR KEUANGAN' || userData.role === 'VERIFIKATOR PPK')"
                 >
                   Cek Daftar
-                </b-button>
+                </b-button> -->
               </b-form-group>
 
               <hr />
@@ -79,7 +79,7 @@
           </b-row>
           <b-row class="mt-2" v-if="form.status !== 'PENGAJUAN' && (userData.role === 'VERIFIKATOR KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
             <b-col cols="12">
-              <b-button variant="outline-primary" @click="showModalLampiran()"> Cek MAK </b-button>
+              <b-button variant="outline-primary" @click="showModalMak()"> Cek MAK </b-button>
             </b-col>
 
             <b-col cols="12">
@@ -96,6 +96,7 @@
         </template>
       </b-card>
     </b-col>
+    <daftar-mak :tahun="form.tahun" :bidang="form.bidang" />
   </b-row>
 </template>
 
@@ -114,6 +115,7 @@ import {
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { urlGet, formatRupiah } from '@core/utils/filter'
+import DaftarMak from './mak/DaftarMak.vue'
 
 export default {
   components: {
@@ -125,6 +127,7 @@ export default {
     BCol,
     BFormInput,
     BFormGroup,
+    DaftarMak,
     // BFormTextarea,
   },
   directives: {
@@ -142,6 +145,9 @@ export default {
   methods: {
     urlGet,
     formatRupiah,
+    showModalMak() {
+      this.$bvModal.show('modal-daftar-mak')
+    },
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))
