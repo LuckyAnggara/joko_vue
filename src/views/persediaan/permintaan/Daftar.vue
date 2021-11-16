@@ -6,20 +6,31 @@
           <div class="mb-2">
             <!-- Table Top -->
             <b-row>
-              <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'pembelian-daftar' }">
-                  Pembelian
+              <b-col cols="6" md="2" class="mb-2">
+                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'permintaan-persediaan-tambah' }">
+                  <feather-icon icon="PlusIcon" /> Permintaan Baru
                 </b-button>
               </b-col>
             </b-row>
             <b-row>
-              <b-col cols="6" md="1">
+              <b-col cols="6" md="2" sm="3" lg="2">
+                <label>Tahun Data</label>
+                <v-select v-model="tahun" label="nama" :options="tahunOption" :clearable="false" />
+              </b-col>
+              <b-col cols="6" lg="2" md="2" sm="3">
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
-
+              <b-col cols="6" lg="2" md="3" sm="3">
+                <label class="mr-1">Filter Status</label>
+                <v-select v-model="statusFilter" :options="statusOption" :clearable="false" />
+              </b-col>
+              <b-col cols="6" lg="3" md="3" sm="3" v-if="userData.role !== 'USER' ? true : false">
+                <label class="mr-1">Bagian / Wilayah</label>
+                <v-select v-model="bidangFilter" label="nama" :options="bidangOption" :clearable="false" />
+              </b-col>
               <!-- Search -->
-              <b-col cols="6" md="6">
+              <b-col cols="6" lg="3" md="5" sm="12">
                 <label class="mr-1">Cari Data</label>
                 <b-form-input v-model="searchQuery" placeholder="Cari data... " />
               </b-col>
@@ -31,7 +42,7 @@
             :busy="isBusy"
             responsive
             :fields="tableColumns"
-            :items="dataPembelian"
+            :items="dataPermintaan"
             :current-page="currentPage"
             :per-page="perPage"
             :sort-by.sync="sortBy"
@@ -51,19 +62,33 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(tanggal_invoice)="data">
+            <template #cell(bidang)="data">
               <span>
-                {{ $moment(data.item.tanggal_invoice).format('DD-MMM-YYYY') }}
+                {{ data.item.bidang.nama }}
               </span>
             </template>
-
-            <template #cell(lampiran)="data">
+            <template #cell(created_at)="data">
+              <span>
+                {{ $moment(data.item.created_at).format('DD-MMM-YYYY') }}
+              </span>
+            </template>
+            <template #cell(status)="data">
+              <div class="text-nowrap">
+                <template>
+                  <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
+                  <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI UMUM'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
+                </template>
+              </div>
+            </template>
+            <!-- <template #cell(lampiran)="data">
               <ol>
                 <li v-for="item in data.item.lampiran" :key="item.id">
                   <b-link :href="urlGet(item.id, 'barang')" class="font-weight-bold" target="_blank"> {{ item.nama }} </b-link>
                 </li>
               </ol>
-            </template>
+            </template> -->
 
             <!-- Column: Actions -->
             <template #cell(actions)="data">
@@ -73,7 +98,7 @@
                   <template #button-content>
                     <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                   </template>
-                  <b-dropdown-item @click="del(data.item.id)">
+                  <b-dropdown-item v-if="userData.role === 'USER' ? true : false" @click="del(data.item.id)">
                     <span class="align-middle ml-50">Delete</span>
                   </b-dropdown-item>
                 </b-dropdown>
@@ -115,13 +140,27 @@
 
 <script>
 import { ref } from '@vue/composition-api'
-import { BLink, BDropdown, BDropdownItem, BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
+import {
+  // BLink,
+  BBadge,
+  BDropdown,
+  BDropdownItem,
+  BButton,
+  BSpinner,
+  BCard,
+  BRow,
+  BCol,
+  BFormInput,
+  BTable,
+  BPagination,
+} from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import { urlGet } from '@core/utils/filter'
 
 export default {
   components: {
-    BLink,
+    BBadge,
+    // BLink,
     BDropdown,
     BDropdownItem,
     BButton,
@@ -138,20 +177,23 @@ export default {
     return {}
   },
   watch: {
+    tahun() {
+      this.loadPermintaan()
+    },
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataPembelian = this.dataTemp
+        this.dataPermintaan = this.dataTemp
       } else {
-        this.dataPembelian = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
+        this.dataPermintaan = this.dataTemp.filter(item => item.keterangan.toLowerCase().indexOf(query) > -1)
       }
     },
     /* eslint-enable */
     bidangFilter(x) {
       if (x.id === '' || x.id === null || x.id === 0) {
-        this.dataPembelian = this.dataTemp
+        this.dataPermintaan = this.dataTemp
       } else {
-        this.dataPembelian = this.dataTemp.filter(item => item.bidang.id === x.id)
+        this.dataPermintaan = this.dataTemp.filter(item => item.bidang.id === x.id)
       }
     },
   },
@@ -165,22 +207,54 @@ export default {
       }
     },
     totalData() {
-      return this.dataPembelian.length
+      return this.dataPermintaan.length
+    },
+    tahunOption() {
+      return this.$store.getters['app-general/getTahun']
+    },
+    bidangOption() {
+      return [
+        {
+          id: 0,
+          nama: 'SEMUA',
+        },
+        ...this.$store.getters['app-general/getBidang'],
+      ]
     },
   },
   methods: {
     urlGet,
     detail(id) {
       const data = this.dataTemp.find(x => x.id === id)
-      this.$store.commit('app-barang/SET_DETAIL_PEMBELIAN', data)
-      this.$router.push({ name: 'pembelian-detail' })
+      this.$store.commit('app-barang/SET_DETAIL_PERMINTAAN', data)
+      this.$router.push({ name: 'permintaan-persediaan-detail' })
     },
-    loadPembelian() {
-      this.$store.dispatch('app-barang/fetchPembelian').then(res => {
-        this.$store.commit('app-barang/SET_PEMBELIAN', res.data)
-        this.dataTemp = res.data
-        this.dataPembelian = this.dataTemp
+    loadTahun() {
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
+        this.$store.commit('app-general/SET_TAHUN', res.data)
       })
+    },
+    loadBidang() {
+      this.$store.dispatch('app-general/fetchBidang').then(res => {
+        this.$store.commit('app-general/SET_BIDANG', res.data)
+      })
+    },
+    loadPermintaan() {
+      this.isBusy = !this.isBusy
+      this.$store
+        .dispatch('app-barang/fetchPermintaan', {
+          tahun_id: this.tahun.id,
+          bidang_id: this.userData.role === 'USER' ? this.userData.bidang_id : 0,
+        })
+        .then(res => {
+          this.isBusy = !this.isBusy
+          if (this.userData.role === 'USER') {
+            this.dataTemp = res.data
+          } else if (this.userData.role === 'ADMIN UMUM') {
+            this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI UMUM')
+          }
+          this.dataPermintaan = this.dataTemp
+        })
     },
     del(id) {
       this.$swal({
@@ -211,7 +285,7 @@ export default {
               })
               const b = this.dataTemp.findIndex(x => x.id === id)
               this.dataTemp.splice(b, 1)
-              this.dataPembelian = this.dataTemp
+              this.dataPermintaan = this.dataTemp
             }
           })
         }
@@ -219,19 +293,26 @@ export default {
     },
   },
   mounted() {
-    this.loadPembelian()
+    console.info(this.userData.role)
+    this.loadPermintaan()
+    this.loadTahun()
+    this.loadBidang()
   },
   setup() {
+    const tahun = ref({
+      id: 1,
+      nama: 2021,
+    })
     const userData = JSON.parse(localStorage.getItem('userData'))
     const isBusy = false
-    const dataPembelian = ref([])
+    const dataPermintaan = ref([])
     const dataTemp = ref([])
     const tableColumns = [
       { key: 'id', label: '#' },
-      { key: 'no_invoice' },
-      { key: 'tanggal_invoice' },
-      { key: 'nama_supplier' },
-      { key: 'lampiran' },
+      { key: 'bidang', label: 'WILAYAH / BAGIAN', thClass: userData.role !== 'USER' ? '' : 'd-none', tdClass: userData.role !== 'USER' ? '' : 'd-none' },
+      { key: 'created_at', label: 'Tanggal Permintaan' },
+      { key: 'status' },
+      { key: 'keterangan' },
       { key: 'actions' },
     ]
     const searchQuery = ref('')
@@ -240,12 +321,15 @@ export default {
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-
+    const statusFilter = ref('SEMUA')
+    const bidangFilter = ref({ nama: 'SEMUA', id: 0 })
+    const statusOption = ref(['SEMUA', 'PENGAJUAN', 'REVISI', 'VERIFIKASI UMUM', 'SELESAI'])
     return {
+      tahun,
       userData,
       isBusy,
       tableColumns,
-      dataPembelian,
+      dataPermintaan,
       dataTemp,
       searchQuery,
       perPage,
@@ -253,6 +337,9 @@ export default {
       perPageOptions,
       sortBy,
       isSortDirDesc,
+      statusFilter,
+      bidangFilter,
+      statusOption,
     }
   },
 }

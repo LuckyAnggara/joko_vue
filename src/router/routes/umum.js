@@ -102,6 +102,39 @@ export default [
     },
   },
   {
+    path: '/persediaan/permintaan/daftar',
+    name: 'permintaan-persediaan-daftar',
+    component: () => import('@/views/persediaan/permintaan/Daftar.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'Permintaan Persediaan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/persediaan/permintaan/tambah',
+    name: 'permintaan-persediaan-tambah',
+    component: () => import('@/views/persediaan/permintaan/Tambah.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'Permintaan Persediaan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Tambah',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/kepegawaian/peta-kompetensi',
     name: 'peta-kompetensi',
     component: () => import('@/views/admin/pegawai/Detail.vue'),

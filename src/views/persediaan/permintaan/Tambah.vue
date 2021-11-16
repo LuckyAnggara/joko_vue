@@ -3,24 +3,16 @@
   <section>
     <b-overlay :show="show" rounded="lg" variant="transparent" blur="15px" opacity="0.70">
       <b-row>
-        <b-col lg="4" sm="12">
-          <b-card title="Pembelian Barang">
+        <b-col lg="5" sm="12">
+          <b-card title="Permintaan Barang">
             <b-row>
               <b-col cols="12">
-                <b-form-group label="Nomor Invoice" label-cols-md="3">
-                  <b-form-input v-model="form.no_invoice" type="text" placeholder="Nomor Invoice" required />
+                <b-form-group label="Tahun Anggaran" label-cols-md="3">
+                  <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" @input="loadMak()" />
                 </b-form-group>
+                <hr />
               </b-col>
-              <b-col cols="12">
-                <b-form-group label="Tanggal Invoice" label-cols-md="3">
-                  <b-form-datepicker v-model="form.tanggal_invoice" locale="id" placeholder="Tanggal Invoice" />
-                </b-form-group>
-              </b-col>
-              <b-col cols="12">
-                <b-form-group label="Nama Supplier" label-cols-md="3">
-                  <b-form-input v-model="form.nama_supplier" type="text" placeholder="Nama Supplier" required />
-                </b-form-group>
-              </b-col>
+
               <b-col cols="12">
                 <b-form-group label="Keterangan" label-cols-md="3">
                   <b-form-textarea v-model="form.keterangan" type="text" placeholder="Keterangan" />
@@ -29,7 +21,7 @@
 
               <b-col cols="12">
                 <b-form-group label="Lampiran" label-cols-md="3">
-                  <b-form-file @change="uploadFiles" placeholder="Pilih data" drop-placeholder="Drop file disini..." ref="file_input">
+                  <b-form-file @change="uploadFiles" placeholder="Pilih data" :multiple="false" drop-placeholder="Drop file disini..." ref="file_input">
                     <template slot="file-name" slot-scope="{ names }">
                       <b-badge variant="dark">{{ names[0] }}</b-badge>
                       <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
@@ -46,8 +38,8 @@
             </b-row>
           </b-card>
         </b-col>
-        <b-col lg="8" sm="12">
-          <b-card title="Detail Pembelian">
+        <b-col lg="7" sm="12">
+          <b-card title="Detail Barang">
             <b-form-group label="Nama Barang" label-cols-md="3">
               <v-select v-model="barang" :reduce="x => x.id" placeholder="Nama Barang" label="nama" :options="barangOption" @input="showModal" />
             </b-form-group>
@@ -78,16 +70,15 @@
         </b-col>
       </b-row>
       <b-modal
-        id="modal-pembelian"
+        id="modal-permintaan"
         scrollable
-        hide-backdrop
         ok-only
         centered
         no-close-on-backdrop
         content-class="shadow"
-        title="Detail Pembelian"
+        title="Detail Barang"
         ok-variant="success"
-        ok-title="Submit"
+        ok-title="Tambah"
         @ok="tambah"
         @hidden="resetModal"
       >
@@ -98,13 +89,20 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label="Satuan" label-cols-md="3">
-              <b-form-input v-model="barangSelect.satuan" type="text" placeholder="Satuan" readonly />
+            <b-form-group label="Sisa Saldo" label-cols-md="3">
+              <b-row>
+                <b-col cols="8">
+                  <b-form-input v-model="barangSelect.saldo_akhir" type="text" placeholder="Satuan" readonly />
+                </b-col>
+                <b-col cols="4">
+                  <b-form-input v-model="barangSelect.satuan" type="text" placeholder="Satuan" readonly />
+                </b-col>
+              </b-row>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label="Jumlah Pembelian" label-cols-md="3">
-              <b-form-input v-model="barangSelect.jumlah" value="0" type="number" placeholder="Jumlah Pembelian" />
+            <b-form-group label="Jumlah Permintaan" label-cols-md="3">
+              <b-form-input v-model="barangSelect.jumlah" value="0" type="number" placeholder="Jumlah" />
             </b-form-group>
           </b-col>
         </template>
@@ -124,7 +122,21 @@
 </template>
 
 <script>
-import { BOverlay, BFormTextarea, BModal, BTable, BBadge, BFormFile, BCard, BRow, BCol, BButton, BFormInput, BFormGroup, BFormDatepicker } from 'bootstrap-vue'
+import {
+  BOverlay,
+  BFormTextarea,
+  BModal,
+  BTable,
+  BBadge,
+  BFormFile,
+  BCard,
+  BRow,
+  BCol,
+  BButton,
+  BFormInput,
+  BFormGroup,
+  // BFormDatepicker,
+} from 'bootstrap-vue'
 
 import { ref } from '@vue/composition-api'
 import Ripple from 'vue-ripple-directive'
@@ -142,7 +154,7 @@ export default {
     BButton,
     BFormInput,
     BFormGroup,
-    BFormDatepicker,
+    // BFormDatepicker,
     BBadge,
     BFormFile,
     vSelect,
@@ -154,11 +166,20 @@ export default {
     barangOption() {
       return this.$store.getters['app-barang/getBarang']
     },
+    tahunOption() {
+      return this.$store.getters['app-general/getTahun']
+    },
   },
   mounted() {
     this.loadBarang()
+    this.loadTahun()
   },
   methods: {
+    loadTahun() {
+      this.$store.dispatch('app-general/fetchTahun').then(res => {
+        this.$store.commit('app-general/SET_TAHUN', res.data)
+      })
+    },
     loadBarang() {
       this.$store.dispatch('app-barang/fetchBarang').then(res => {
         this.$store.commit('app-barang/SET_BARANG', res.data)
@@ -167,7 +188,7 @@ export default {
     showModal() {
       this.barangSelect = this.barangOption.find(x => x.id === this.barang)
       this.barangSelect.jumlah = 0
-      this.$bvModal.show('modal-pembelian')
+      this.$bvModal.show('modal-permintaan')
     },
     /* eslint-disable */
     uploadFiles(e) {
@@ -211,15 +232,7 @@ export default {
     },
     store() {
       const b = this.form
-      if (
-        b.no_invoice === null ||
-        b.no_invoice === '' ||
-        b.tanggal_invoice === null ||
-        b.tanggal_invoice === '' ||
-        b.nama_supplier === null ||
-        b.nama_supplier === '' ||
-        b.data_barang.length <= 0
-      ) {
+      if (b.tahun === null || b.tahun === '' || b.keterangan === null || b.keterangan === '' || b.data_barang.length <= 0) {
         this.$swal({
           title: 'Oppss!',
           text: 'Data belum lengkap',
@@ -233,7 +246,7 @@ export default {
       }
       this.$swal({
         title: 'Proses ?',
-        text: 'Pembelian barang akan di proses !',
+        text: 'Permintaan barang akan di proses !',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -245,7 +258,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.show = !this.show
-          this.$store.dispatch('app-barang/storePembelian', this.form).then(res => {
+          this.$store.dispatch('app-barang/storePermintaan', this.form).then(res => {
             if (res.status === 200) {
               this.titleLoading = 'Upload lampiran pendukung...'
               const file = new FormData()
@@ -255,15 +268,17 @@ export default {
               file.append('id', res.data.id)
               file.append('user_id', this.userData.id)
 
-              this.$store.dispatch('app-barang/storeLampiranPembelian', file).then(x => {
+              this.$store.dispatch('app-barang/storeLampiranPermintaan', file).then(x => {
                 if (x.status === 200) {
                   this.success()
-                  this.$router.push({ name: 'barang-daftar' })
+                  // this.$router.push({ name: 'barang-daftar' })
                 }
               })
             } else {
               this.error(res.status)
             }
+            this.show = !this.show
+            // this.processing = !this.processing
           })
         }
       })
@@ -290,7 +305,7 @@ export default {
       }
       this.form.data_barang.push(b)
       this.$nextTick(() => {
-        this.$bvModal.hide('modal-pembelian')
+        this.$bvModal.hide('modal-permintaan')
       })
       this.resetModal()
     },
@@ -299,7 +314,7 @@ export default {
     },
   },
   setup() {
-    const titleLoading = 'Membuat data Pembelian ...'
+    const titleLoading = 'Membuat data Permintaan ...'
     const show = ref(false)
     const processing = ref(false)
     const barang = null
@@ -308,14 +323,11 @@ export default {
       satuan: null,
       jumlah: 0,
     }
-    const title = ref('Store data Barang .... ')
     const userData = JSON.parse(localStorage.getItem('userData'))
     const tableColumns = [{ key: 'no', label: '#' }, { key: 'nama', label: 'NAMA BARANG' }, { key: 'satuan' }, { key: 'jumlah' }, { key: 'actions' }]
     const form = ref({
-      no_invoice: null,
-      tanggal_invoice: null,
+      tanggal: null,
       data_barang: [],
-      nama_supplier: null,
       keterangan: null,
       lampiran: [],
       user_data: JSON.parse(localStorage.getItem('userData')),
@@ -328,7 +340,6 @@ export default {
       barang,
       barangSelect,
       tableColumns,
-      title,
       userData,
       form,
     }

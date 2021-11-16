@@ -15,7 +15,7 @@ export default [
   {
     title: 'Persediaan',
     icon: 'ShieldIcon',
-    route: 'persediaan-tambah',
+    route: 'permintaan-persediaan-daftar',
   },
   // {
   //   title: 'Servis Kendaraan',

@@ -89,10 +89,60 @@ export default {
           .catch(error => reject(error))
       })
     },
+    deletePembelian(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`${axios.defaults.baseURL}barang/delete-pembelian?id=${id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     storeLampiranPembelian(ctx, data) {
       return new Promise((resolve, reject) => {
         axios
           .post(`${axios.defaults.baseURL}barang/store-pembelian-lampiran`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchPermintaan(ctx, params) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}barang/daftar-permintaan?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storePermintaan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}barang/store-permintaan`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    deletePermintaan(ctx, id) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`${axios.defaults.baseURL}barang/delete-permintaan?id=${id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    storeLampiranPermintaan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}barang/store-permintaan-lampiran`, data)
           .then(response => {
             resolve(response)
           })
