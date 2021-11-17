@@ -8,7 +8,7 @@
             <b-row>
               <b-col cols="12">
                 <b-form-group label="Tahun Anggaran" label-cols-md="3">
-                  <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" @input="loadMak()" />
+                  <v-select v-model="form.tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" />
                 </b-form-group>
                 <hr />
               </b-col>
@@ -270,14 +270,15 @@ export default {
 
               this.$store.dispatch('app-barang/storeLampiranPermintaan', file).then(x => {
                 if (x.status === 200) {
+                  this.show = !this.show
                   this.success()
-                  // this.$router.push({ name: 'barang-daftar' })
+                  this.$router.push({ name: 'permintaan-persediaan-daftar' })
                 }
               })
             } else {
               this.error(res.status)
+              this.show = !this.show
             }
-            this.show = !this.show
             // this.processing = !this.processing
           })
         }

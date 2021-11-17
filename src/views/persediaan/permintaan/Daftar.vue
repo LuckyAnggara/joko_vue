@@ -77,7 +77,8 @@
                 <template>
                   <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI UMUM'"> {{ data.item.status }}</b-badge>
-                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI UMUM'"> {{ data.item.status }}</b-badge>
+                  <b-badge pill variant="danger" v-if="data.item.status === 'DITOLAK'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
                 </template>
               </div>
@@ -94,14 +95,6 @@
             <template #cell(actions)="data">
               <div class="text-nowrap">
                 <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
-                <b-dropdown variant="link" toggle-class="p-0" no-caret boundary="window">
-                  <template #button-content>
-                    <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-                  </template>
-                  <b-dropdown-item v-if="userData.role === 'USER' ? true : false" @click="del(data.item.id)">
-                    <span class="align-middle ml-50">Delete</span>
-                  </b-dropdown-item>
-                </b-dropdown>
               </div>
             </template>
           </b-table>
@@ -143,8 +136,6 @@ import { ref } from '@vue/composition-api'
 import {
   // BLink,
   BBadge,
-  BDropdown,
-  BDropdownItem,
   BButton,
   BSpinner,
   BCard,
@@ -161,8 +152,6 @@ export default {
   components: {
     BBadge,
     // BLink,
-    BDropdown,
-    BDropdownItem,
     BButton,
     BSpinner,
     BCard,
@@ -194,6 +183,13 @@ export default {
         this.dataPermintaan = this.dataTemp
       } else {
         this.dataPermintaan = this.dataTemp.filter(item => item.bidang.id === x.id)
+      }
+    },
+    statusFilter(x) {
+      if (x === 'SEMUA') {
+        this.dataPermintaan = this.dataTemp
+      } else {
+        this.dataPermintaan = this.dataTemp.filter(item => item.status === x)
       }
     },
   },
@@ -255,41 +251,6 @@ export default {
           }
           this.dataPermintaan = this.dataTemp
         })
-    },
-    del(id) {
-      this.$swal({
-        title: 'Delete ?',
-        text: 'Data pembelian akan di Delete ?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Delete!',
-        customClass: {
-          confirmButton: 'btn btn-danger',
-          cancelButton: 'btn btn-outline-primary ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        if (result.isConfirmed) {
-          this.$store.dispatch('app-barang/deletePembelian', id).then(res => {
-            if (res.status === 200) {
-              this.$swal({
-                title: 'Sukses!',
-                text: 'Data pembelian berhasil di Delete!',
-                icon: 'success',
-                timer: 1000,
-                showConfirmButton: false,
-                customClass: {
-                  confirmButton: 'btn btn-primary',
-                },
-                buttonsStyling: false,
-              })
-              const b = this.dataTemp.findIndex(x => x.id === id)
-              this.dataTemp.splice(b, 1)
-              this.dataPermintaan = this.dataTemp
-            }
-          })
-        }
-      })
     },
   },
   mounted() {

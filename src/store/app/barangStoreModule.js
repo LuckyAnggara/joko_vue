@@ -7,12 +7,15 @@ export default {
     pembelian: [],
     detailBarang: {},
     detailPembelian: {},
+    detailPermintaan: {},
   },
   getters: {
     getBarang: state => state.barang,
     getPembelian: state => state.pembelian,
     getDetailBarang: state => state.detailBarang,
     getDetailPembelian: state => state.detailPembelian,
+    getDetailPermintaan: state => state.detailPermintaan,
+    getPermintaanLog: state => state.detailPermintaan.log,
   },
   mutations: {
     SET_BARANG(state, data) {
@@ -26,6 +29,9 @@ export default {
     },
     SET_DETAIL_PEMBELIAN(state, data) {
       state.detailPembelian = data
+    },
+    SET_DETAIL_PERMINTAAN(state, data) {
+      state.detailPermintaan = data
     },
   },
   actions: {
@@ -129,6 +135,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    prosesPermintaan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}barang/proses-permintaan`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     deletePermintaan(ctx, id) {
       return new Promise((resolve, reject) => {
         axios
@@ -143,6 +159,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post(`${axios.defaults.baseURL}barang/store-permintaan-lampiran`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    statusPermintaan(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}barang/status-permintaan`, data)
           .then(response => {
             resolve(response)
           })

@@ -135,6 +135,24 @@ export default [
     },
   },
   {
+    path: '/persediaan/permintaan/detail',
+    name: 'permintaan-persediaan-detail',
+    component: () => import('@/views/persediaan/permintaan/Detail.vue'),
+    meta: {
+      // resource: 'ACL',
+      pageTitle: 'Permintaan Persediaan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/kepegawaian/peta-kompetensi',
     name: 'peta-kompetensi',
     component: () => import('@/views/admin/pegawai/Detail.vue'),
