@@ -12,6 +12,7 @@ import admin from './routes/admin'
 import perjadin from './routes/perjadin'
 import kepegawaian from './routes/kepegawaian'
 import umum from './routes/umum'
+import auth from './routes/auth'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,7 @@ const router = new VueRouter({
   },
   routes: [
     { path: '/', redirect: { name: 'dashboard-ecommerce' } },
+    ...auth,
     ...kegiatan,
     ...laporan,
     ...dipa,

@@ -92,7 +92,7 @@ export default {
                   total: {
                     show: true,
                     offsetY: 15,
-                    label: 'App',
+                    label: 'Pegawai',
                     formatter() {
                       return '53%'
                     },

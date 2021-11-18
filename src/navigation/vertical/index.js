@@ -35,6 +35,7 @@ import dashboard from './dashboard'
 import keuangan from './keuangan'
 import kepegawaian from './kepegawaian'
 import umum from './umum'
+import laporan from './laporan'
 
 // Array of sections
-export default [...dashboard, ...keuangan, ...kepegawaian, ...umum, ...admin]
+export default [...dashboard, ...keuangan, ...kepegawaian, ...umum, ...admin, ...laporan]

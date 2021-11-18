@@ -2,8 +2,6 @@ export default [
   {
     title: 'Dashboards',
     icon: 'HomeIcon',
-    tag: '2',
-    tagVariant: 'light-warning',
     children: [
       {
         title: 'eCommerce',
@@ -18,5 +16,35 @@ export default [
         route: 'dashboard-user',
       },
     ],
+  },
+  {
+    title: 'Dashboards',
+    icon: 'HomeIcon',
+    resource: 'user',
+    route: 'dashboard-user',
+  },
+  {
+    title: 'Dashboards',
+    icon: 'HomeIcon',
+    route: 'dashboard-umum',
+    resource: 'admin_umum',
+  },
+  {
+    title: 'Dashboards',
+    icon: 'HomeIcon',
+    route: 'dashboard-keuangan',
+    resource: 'admin_keuangan',
+  },
+  {
+    title: 'Dashboards',
+    icon: 'HomeIcon',
+    route: 'dashboard-ppk',
+    resource: 'dashboard_ppk',
+  },
+  {
+    title: 'Dashboards',
+    icon: 'HomeIcon',
+    route: 'dashboard-bendahara',
+    resource: 'dashboard_bendahara',
   },
 ]

@@ -69,26 +69,6 @@
               <template #table-colgroup="scope">
                 <col v-for="field in scope.fields" :key="field.key" :style="{ width: field.size === 'sm' ? '4%' : '' }" />
               </template>
-              <!-- <template #cell(tanggal_berangkat)>
-                <b-form-datepicker
-                  boundary="window"
-                  locale="id"
-                  :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                  v-model="form.rencana_anggaran[index].tanggal_berangkat"
-                  size="sm"
-                  placeholder="-"
-                />
-              </template>
-              <template #cell(tanggal_kembali)>
-                <b-form-datepicker
-                  boundary="window"
-                  locale="id"
-                  :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                  v-model="form.rencana_anggaran[index].tanggal_kembali"
-                  size="sm"
-                  placeholder="-"
-                />
-              </template> -->
 
               <template #cell(hari)>
                 <b-form-input v-model="form.rencana_anggaran[index].jumlah_hari" size="sm" type="number" />

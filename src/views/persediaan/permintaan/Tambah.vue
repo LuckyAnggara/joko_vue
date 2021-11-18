@@ -327,6 +327,7 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'))
     const tableColumns = [{ key: 'no', label: '#' }, { key: 'nama', label: 'NAMA BARANG' }, { key: 'satuan' }, { key: 'jumlah' }, { key: 'actions' }]
     const form = ref({
+      tahun: null,
       tanggal: null,
       data_barang: [],
       keterangan: null,

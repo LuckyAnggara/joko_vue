@@ -1,9 +1,7 @@
 <template>
   <b-card v-if="data" no-body>
     <b-card-header>
-      <h4 class="mb-0">
-        Penyerapan Anggaran
-      </h4>
+      <h4 class="mb-0">Penyerapan Anggaran {{ userData.bidang.nama }}</h4>
     </b-card-header>
 
     <!-- apex chart -->
@@ -118,6 +116,11 @@ export default {
         },
       },
     }
+  },
+  setup() {
+    const userData = JSON.parse(localStorage.getItem('userData'))
+
+    return { userData }
   },
 }
 </script>

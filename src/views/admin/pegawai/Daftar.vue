@@ -31,6 +31,7 @@
           <b-table
             ref="refTable"
             small
+            :striped="true"
             :busy="isBusy"
             responsive
             :fields="tableColumns"

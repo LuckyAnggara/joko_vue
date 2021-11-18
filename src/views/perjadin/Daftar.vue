@@ -21,7 +21,7 @@
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
-              <b-col cols="6" lg="2" md="3" sm="3">
+              <b-col cols="6" lg="2" md="3" sm="3" v-if="userData.role === 'USER' ? true : false">
                 <label class="mr-1">Filter Status</label>
                 <v-select v-model="statusFilter" :options="statusOption" :clearable="false" />
               </b-col>
@@ -296,8 +296,8 @@ export default {
             this.dataTemp = res.data
           } else if (this.userData.role === 'PPK') {
             this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI PPK')
-          } else if (this.userData.role === 'VERIFIKATOR KEUANGAN') {
-            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN')
+          } else if (this.userData.role === 'ADMIN KEUANGAN') {
+            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN' && x.status !== 'SELESAI')
           } else if (this.userData.role === 'BENDAHARA') {
             this.dataTemp = res.data.filter(x => x.status === 'VERIFIED PPK')
           }

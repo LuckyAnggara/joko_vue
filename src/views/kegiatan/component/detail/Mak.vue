@@ -35,7 +35,7 @@
                   variant="outline-primary"
                   class="mt-1"
                   @click="showModalLampiran()"
-                  v-if="data.status !== 'RENCANA' && (userData.role === 'VERIFIKATOR KEUANGAN' || userData.role === 'VERIFIKATOR PPK')"
+                  v-if="data.status !== 'RENCANA' && (userData.role === 'ADMIN KEUANGAN' || userData.role === 'VERIFIKATOR PPK')"
                 >
                   Cek Daftar
                 </b-button>
@@ -62,7 +62,7 @@
               </b-form-group>
             </b-col>
           </b-row>
-          <b-row class="mt-2" v-if="data.status !== 'PENGAJUAN' && (userData.role === 'VERIFIKATOR KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
+          <b-row class="mt-2" v-if="data.status !== 'PENGAJUAN' && (userData.role === 'ADMIN KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
             <b-col cols="12">
               <b-button variant="outline-primary" @click="showModalLampiran()"> Cek MAK </b-button>
             </b-col>

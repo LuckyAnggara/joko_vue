@@ -204,7 +204,7 @@ export default {
     },
     /* eslint-enable */
     statusFilter(x) {
-      if (x === '' || x === null) {
+      if (x === 'SEMUA' || x === null) {
         this.dataKegiatan = this.dataTemp
       } else {
         this.dataKegiatan = this.dataTemp.filter(item => item.status === x)
@@ -257,7 +257,7 @@ export default {
             this.dataTemp = res.data
           } else if (this.userData.role === 'PPK') {
             this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI PPK')
-          } else if (this.userData.role === 'VERIFIKATOR KEUANGAN') {
+          } else if (this.userData.role === 'ADMIN KEUANGAN') {
             this.dataTemp = res.data.filter(x => x.status !== 'RENCANA')
           } else if (this.userData.role === 'BENDAHARA') {
             this.dataTemp = res.data.filter(x => x.status === 'VERIFIED PPK')
@@ -309,7 +309,6 @@ export default {
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    // eslint-disable-next-line
     const bidangFilter = ref({ nama: 'SEMUA', id: 0 })
     const statusFilter = ref('SEMUA')
     const statusOption = ref([

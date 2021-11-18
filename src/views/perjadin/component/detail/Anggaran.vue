@@ -66,7 +66,7 @@
               <h4>{{ formatRupiah(form.total_anggaran) }}</h4>
             </b-col>
           </b-row>
-          <b-row class="mt-2" v-if="form.status !== 'PENGAJUAN' && (userData.role === 'VERIFIKATOR KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
+          <b-row class="mt-2" v-if="form.status !== 'PENGAJUAN' && (userData.role === 'ADMIN KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
             <b-col cols="12">
               <b-button variant="outline-primary" @click="printRab"> Print RAB </b-button>
             </b-col>

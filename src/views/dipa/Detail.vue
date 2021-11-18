@@ -1,8 +1,8 @@
 <template>
   <!-- <b-card> -->
   <b-tabs>
-    <b-tab title="Realisasi" active> <rincian :data-rincian="dataRealisasi"/></b-tab>
-    <b-tab title="Rencana"><rincian :data-rincian="dataRencana" /> </b-tab>
+    <b-tab title="Realisasi" active> <rincian :data-rincian="dataRealisasi" :type="`REALISASI`"/></b-tab>
+    <b-tab title="Rencana"><rincian :data-rincian="dataRencana" :type="`RENCANA`" /> </b-tab>
   </b-tabs>
   <!-- </b-card> -->
 </template>

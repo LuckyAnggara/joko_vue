@@ -32,7 +32,10 @@
           <span> {{ data.index + 1 }} </span>
         </template>
         <template #cell(mak)="data">
-          <span> {{ data.item.kode }} - {{ data.item.nama }} </span>
+          <b
+            ><span> {{ data.item.kode }} </span></b
+          >
+          <br /><span> {{ data.item.nama }} </span>
         </template>
         <template #cell(pagu)="data">
           <span>
@@ -197,7 +200,7 @@ export default {
       { key: 'realisasi' },
       { key: 'sisa_saldo', label: 'sisa' },
       { key: 'unrealisasi', label: 'Rencana Realisasi' },
-      { key: 'sisa_saldo_unrealisasi', label: 'sisa' },
+      { key: 'sisa_saldo_unrealisasi', label: 'sisa perkiraan' },
       { key: 'actions' },
     ]
 

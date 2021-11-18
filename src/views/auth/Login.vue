@@ -32,7 +32,7 @@
           <b-form class="auth-login-form mt-2" @submit.prevent>
             <!-- email -->
             <b-form-group label="Username" label-for="login-email">
-              <b-form-input id="login-email" v-model="form.username" name="login-email" placeholder="username" />
+              <b-form-input id="login-email" v-model="form.username" type="number" name="login-email" placeholder="Nomor Induk Pegawai" />
             </b-form-group>
 
             <!-- forgot password -->

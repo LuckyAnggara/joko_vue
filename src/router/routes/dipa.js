@@ -4,7 +4,7 @@ export default [
     name: 'dipa-daftar',
     component: () => import('@/views/dipa/Daftar.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'mak',
       pageTitle: 'DIPA',
       breadcrumb: [
         {
@@ -19,7 +19,7 @@ export default [
     name: 'dipa-detail',
     component: () => import('@/views/dipa/Detail.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'mak',
       pageTitle: 'DIPA',
       breadcrumb: [
         {

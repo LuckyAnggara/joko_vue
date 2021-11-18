@@ -82,7 +82,6 @@
       size="md"
       centered
       scrollable
-      hide-backdrop
       ok-only
       no-close-on-backdrop
       content-class="shadow"
@@ -109,7 +108,6 @@
       size="md"
       centered
       scrollable
-      hide-backdrop
       ok-only
       no-close-on-backdrop
       content-class="shadow"

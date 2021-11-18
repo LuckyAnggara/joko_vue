@@ -1,18 +1,34 @@
 <template>
   <section>
     <b-card>
-      <b-table bordered responsive :fields="tableColumns" :items="dataRincian" show-empty empty-text="Tidak ada data" class="position-relative">
+      <b-table
+        small
+        bordered
+        responsive
+        :fields="tableColumns"
+        :items="dataRincian"
+        show-empty
+        empty-text="Tidak ada data"
+        class="position-relative"
+        foot-clone
+      >
         <template #cell(id)="data">
           <span> {{ data.index + 1 }} </span>
         </template>
         <template #cell(nama_kegiatan)="data">
-          <span> {{ data.item.jenis === 'perjadin' ? data.item.maksud : data.item.uraian }} </span>
+          <span> {{ data.item.uraian === undefined ? data.item.maksud : data.item.uraian }} </span>
         </template>
         <template #cell(tanggal_kegiatan)="data">
-          <span> {{ $moment(data.item.jenis === 'perjadin' ? data.item.tanggal_realisasi_kegiatan : data.item.created_at).format('DD MMMM YYYY') }} </span>
+          <span> {{ $moment(data.item.uraian === undefined ? data.item.tanggal_realisasi_kegiatan : data.item.created_at).format('DD MMMM YYYY') }} </span>
         </template>
         <template #cell(total)="data">
           <span> {{ formatRupiah(data.item.status === 'SELESAI' ? data.item.total_realisasi : data.item.total_anggaran) }} </span>
+        </template>
+        <template #foot(tanggal_kegiatan)>
+          <span>Total</span>
+        </template>
+        <template #foot(total)>
+          <span>{{ type === 'RENCANA' ? formatRupiah(totalRealisasi) : formatRupiah(totalAnggaran) }}</span>
         </template>
       </b-table>
     </b-card>
@@ -32,8 +48,24 @@ export default {
 
   props: {
     dataRincian: Array,
+    type: String,
   },
-
+  computed: {
+    totalRealisasi() {
+      let total = 0
+      this.dataRincian.forEach(x => {
+        total += x.total_realisasi
+      })
+      return total
+    },
+    totalAnggaran() {
+      let total = 0
+      this.dataRincian.forEach(x => {
+        total += x.total_anggaran
+      })
+      return total
+    },
+  },
   methods: {
     formatRupiah,
   },

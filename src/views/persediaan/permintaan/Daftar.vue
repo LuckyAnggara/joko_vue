@@ -7,7 +7,7 @@
             <!-- Table Top -->
             <b-row>
               <b-col cols="6" md="2" class="mb-2">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'permintaan-persediaan-tambah' }">
+                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'permintaan-persediaan-tambah' }" v-if="userData.role === 'USER'">
                   <feather-icon icon="PlusIcon" /> Permintaan Baru
                 </b-button>
               </b-col>

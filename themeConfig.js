@@ -11,7 +11,7 @@ export const $themeConfig = {
   app: {
     appName: 'KATALIS', // Will update name in navigation menu (Branding)
     // eslint-disable-next-line global-require
-    appLogoImage: require('@/assets/images/logo/logo.svg'), // Will update logo in navigation menu (Branding)
+    appLogoImage: require('@/assets/images/logo/LogoKatalis.svg'), // Will update logo in navigation menu (Branding)
   },
   layout: {
     isRTL: false,
@@ -31,7 +31,7 @@ export const $themeConfig = {
     footer: {
       type: 'static', // static, sticky, hidden
     },
-    customizer: true,
+    customizer: false,
     enableScrollToTop: true,
   },
 }

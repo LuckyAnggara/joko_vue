@@ -12,24 +12,59 @@ export default [
   {
     path: '/dashboard/user',
     name: 'dashboard-user',
+    meta: {
+      resource: 'dashboard_user',
+    },
     component: () => import('@/views/dashboard/user/Dashboard.vue'),
   },
   {
-    path: '/login',
-    name: 'auth-login',
-    component: () => import('@/views/auth/Login.vue'),
+    path: '/dashboard/admin/umum',
+    name: 'dashboard-umum',
     meta: {
-      layout: 'full',
-      resource: 'Auth',
-      redirectIfLoggedIn: true,
+      resource: 'dashboard_umum',
     },
+    component: () => import('@/views/dashboard/user/Dashboard.vue'),
   },
   {
-    path: '/kwitansi',
-    name: 'print-kwitansi',
-    component: () => import('@/views/print/Kwitansi2.vue'),
+    path: '/dashboard/admin/keuangan',
+    name: 'dashboard-keuangan',
     meta: {
-      layout: 'full',
+      resource: 'dashboard_keuangan',
     },
+    component: () => import('@/views/dashboard/keuangan/Dashboard.vue'),
   },
+  {
+    path: '/dashboard/admin/keuangan',
+    name: 'dashboard-ppk',
+    meta: {
+      resource: 'dashboard_ppk',
+    },
+    component: () => import('@/views/dashboard/keuangan/Dashboard.vue'),
+  },
+  {
+    path: '/dashboard/admin/keuangan',
+    name: 'dashboard-bendahara',
+    meta: {
+      resource: 'dashboard_bendahara',
+    },
+    component: () => import('@/views/dashboard/keuangan/Dashboard.vue'),
+  },
+  // {
+  //   path: '/login',
+  //   name: 'auth-login',
+  //   component: () => import('@/views/auth/Login.vue'),
+  //   meta: {
+  //     layout: 'full',
+  //     resource: 'Auth',
+  //     redirectIfLoggedIn: true,
+  //   },
+  // },
+  // {
+  //   path: '/kwitansi',
+  //   name: 'print-kwitansi',
+  //   component: () => import('@/views/print/Kwitansi2.vue'),
+  //   meta: {
+  //     layout: 'full',
+  //   },
+  // },
 ]

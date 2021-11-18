@@ -10,12 +10,12 @@
         <div>
           <template v-if="userData.role === 'USER' && (form.status === 'PENGAJUAN' || form.status === 'REVISI UMUM') ? true : false">
             <b-button variant="outline-danger" class="mr-1" @click="destroy()"> Delete </b-button>
-            <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button>
+            <!-- <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button> -->
             <b-button variant="outline-primary" class="ml-1" @click="kirimUmum('VERIFIKASI UMUM')"> Kirim </b-button>
           </template>
 
           <template v-if="userData.role === 'ADMIN UMUM' && form.status === 'VERIFIKASI UMUM' ? true : false">
-            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <!-- <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button> -->
             <b-button variant="danger" class="mr-1" @click="tolak()"> Tolak </b-button>
             <b-button variant="success" class="ml-1" @click="proses('SELESAI')"> Proses </b-button>
           </template>
@@ -97,7 +97,7 @@
             </template>
 
             <template #cell(disetujui)="data">
-              <b-form-input v-model="data.item.jumlah_disetujui" type="number" />
+              <b-form-input v-model="data.item.jumlah_disetujui" type="number" :plaintext="form.status === 'VERIFIKASI UMUM' ? false : true" />
             </template>
 
             <template #cell(sisa_saldo)="data">
@@ -417,8 +417,6 @@ export default {
       { key: 'jumlah_permintaan' },
       {
         key: 'disetujui',
-        thClass: userData.role !== 'USER' ? '' : this.form.status === 'selesai' ? '' : 'd-none',
-        tdClass: userData.role !== 'USER' ? '' : this.form.status === 'selesai' ? '' : 'd-none',
       },
       // { key: 'actions' },
     ]

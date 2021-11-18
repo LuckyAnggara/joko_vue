@@ -13,55 +13,86 @@
                 </b-col>
               </b-row>
               <hr />
-              <b-table small responsive :fields="tableCol" :items="data.realisasi">
-                <template #cell(nama_pegawai)="data">
+              <b-row v-for="(tim, index) in data.realisasi" :key="tim.id" class="mb-2">
+                <b-col cols="3" lg="3" md="3" sm="12">
+                  <h5 class="mt-2">{{ tim.pegawai.nama }}</h5>
+                  <!-- <b-form-input :value="tim.pegawai.nama" plaintext /> -->
+                </b-col>
+                <b-col cols="3" lg="3" md="3" sm="12">
+                  <b-form-group label="Tanggal Berangkat">
+                    <b-form-input :value="$moment(tim.tanggal_berangkat).format('DD, MMMM YYYY')" size="sm" readonly />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="3" lg="3" md="3" sm="12">
+                  <b-form-group label="Tanggal Berangkat">
+                    <b-form-input :value="$moment(tim.tanggal_kembali).format('DD, MMMM YYYY')" size="sm" readonly />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12" lg="12" md="12" sm="12">
+                  <b-table small responsive :fields="tableCol" :items="[...tim]" striped bordered>
+                    <!-- <template #cell(nama_pegawai)="data">
                   {{ data.item.pegawai.nama }}
-                </template>
-                <template #cell(total_harian)="data">
-                  {{ formatRupiah(data.item.total_harian) }}
-                </template>
-                <template #cell(total_hotel)="data">
-                  {{ formatRupiah(data.item.total_hotel) }}
-                  <b-badge variant="light-danger">
-                    {{ data.item.jenis_hotel === 0 ? 'FULL' : '30%' }}
-                  </b-badge>
-                </template>
-                <template #cell(udara)="data">
-                  {{ formatRupiah(data.item.udara) }}
-                </template>
-                <template #cell(laut)="data">
-                  {{ formatRupiah(data.item.laut) }}
-                </template>
-                <template #cell(darat)="data">
-                  {{ formatRupiah(data.item.darat) }}
-                </template>
-                <template #cell(taksi_jakarta)="data">
-                  {{ formatRupiah(data.item.taksi_jakarta) }}
-                </template>
-                <template #cell(taksi_provinsi)="data">
-                  {{ formatRupiah(data.item.taksi_provinsi) }}
-                </template>
-                <template #cell(representatif)="data">
-                  {{ formatRupiah(data.item.representatif) }}
-                </template>
-                <template #cell(lampiran)="data">
-                  <ul>
-                    <li v-for="item in data.item.lampiran" :key="item.id">
-                      {{ truncate(item.name, 15) }}
-                    </li>
-                  </ul>
-                </template>
-                <template #cell(total)="data">
-                  {{ formatRupiah(data.item.total) }}
-                </template>
+                </template> -->
+                    <template #cell(total_harian)>
+                      {{ formatRupiah(tim.total_harian) }}
+                    </template>
+                    <template #cell(total_hotel)>
+                      {{ formatRupiah(tim.total_hotel) }}
+                      <b-badge variant="light-danger">
+                        {{ tim.jenis_hotel === 0 ? 'FULL' : '30%' }}
+                      </b-badge>
+                    </template>
+                    <template #cell(udara)>
+                      {{ formatRupiah(tim.udara) }}
+                    </template>
+                    <template #cell(laut)>
+                      {{ formatRupiah(tim.laut) }}
+                    </template>
+                    <template #cell(darat)>
+                      {{ formatRupiah(tim.darat) }}
+                    </template>
+                    <template #cell(taksi_jakarta)>
+                      {{ formatRupiah(tim.taksi_jakarta) }}
+                    </template>
+                    <template #cell(taksi_provinsi)>
+                      {{ formatRupiah(tim.taksi_provinsi) }}
+                    </template>
+                    <template #cell(representatif)>
+                      {{ formatRupiah(tim.representatif) }}
+                    </template>
+                    <template #cell(lampiran)>
+                      <ul>
+                        <li v-for="item in tim.lampiran" :key="item.id">
+                          {{ truncate(item.name, 15) }}
+                        </li>
+                      </ul>
+                    </template>
+                    <template #cell(total)>
+                      {{ formatRupiah(tim.total) }}
+                    </template>
 
-                <template #cell(actions)="data">
-                  <div class="text-nowrap" v-if="!proses">
-                    <feather-icon :id="`spd-${data.item.id}`" icon="TrashIcon" size="24" class="mx-1 text-danger" @click="deletePegawai(data.index)" />
-                    <!-- <b-tooltip noninteractive :target="`spd-${data.item.id}`">Print SPD{{ data.item.id }}</b-tooltip> -->
-                  </div>
-                </template>
-              </b-table>
+                    <template #cell(actions)="data">
+                      <b-dropdown boundary="window" variant="link" no-caret v-if="!proses">
+                        <template #button-content>
+                          <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+                        </template>
+                        <b-dropdown-item :to="{ name: 'apps-users-view', params: { id: data.item.id } }">
+                          <feather-icon icon="FileTextIcon" />
+                          <span class="align-middle ml-50">Tambah Lampiran</span>
+                        </b-dropdown-item>
+                        <b-dropdown-item :to="{ name: 'apps-users-view', params: { id: data.item.id } }">
+                          <feather-icon icon="PrinterIcon" />
+                          <span class="align-middle ml-50">Cetak RPD</span>
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="deletePegawai(index)">
+                          <feather-icon icon="TrashIcon" />
+                          <span class="align-middle ml-50">Delete</span>
+                        </b-dropdown-item>
+                      </b-dropdown>
+                    </template>
+                  </b-table>
+                </b-col>
+              </b-row>
               <hr />
               <b-row class="mt-2" v-if="!proses">
                 <b-button variant="outline-success" class="ml-1" @click="prosesRealisasi()"> Proses </b-button>
@@ -93,187 +124,261 @@
       id="modal-realisasi"
       size="lg"
       scrollable
-      hide-backdrop
-      ok-only
       no-close-on-backdrop
       content-class="shadow"
       title="Input Realisasi "
-      ok-variant="success"
-      ok-title="Submit"
-      @ok="tambahRealisasi()"
       @hidden="resetModal"
+      hide-footer
       lazy
     >
-      <b-row>
-        <b-col cols="12">
-          <b-form-group label="Tanggal Pelaksanaan" label-cols-md="3">
-            <b-row>
-              <b-col md="6">
-                <b-form-group label="Tanggal Berangkat">
-                  <b-form-datepicker
-                    locale="id"
-                    :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                    v-model="realisasi.tanggal_berangkat"
-                    placeholder="Tanggal Berangkat"
-                  />
-                </b-form-group>
-              </b-col>
-              <b-col md="6">
-                <b-form-group label="Tanggal Kembali">
-                  <b-form-datepicker
-                    locale="id"
-                    :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                    v-model="realisasi.tanggal_kembali"
-                    placeholder="Tanggal Kembali"
-                  />
-                </b-form-group>
-              </b-col>
-            </b-row>
-          </b-form-group>
-        </b-col>
-
-        <b-col cols="12">
-          <b-form-group label="Uang Harian" label-cols-md="3">
-            <b-row>
-              <b-col md="2">
-                <b-form-group label="Hari">
-                  <b-form-input v-model="realisasi.jumlah_hari" type="number" placeholder="0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="5">
-                <b-form-group label="Uang Harian">
-                  <b-form-input v-model="realisasi.uang_harian" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="5">
-                <b-form-group label="Total">
-                  <b-form-input
-                    :value="formatRupiah(parseFloat(realisasi.uang_harian) * parseFloat(realisasi.jumlah_hari))"
-                    type="text"
-                    placeholder="Rp. 0"
-                    readonly
-                  />
-                </b-form-group>
-              </b-col>
-            </b-row>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12">
-          <b-form-group label="Uang Hotel" label-cols-md="3">
-            <b-row>
-              <b-col md="6">
+      <form-wizard
+        color="#7367F0"
+        :subtitle="null"
+        layout="vertical"
+        finish-button-text="Submit"
+        back-button-text="Previous"
+        class="wizard-vertical mb-1"
+        @on-complete="tambahRealisasi"
+      >
+        <h4 slot="title">Total Realisasi {{ formatRupiah(total) }}</h4>
+        <tab-content title="Tanggal">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Tanggal Pelaksanaan
+              </h5>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Tanggal Berangkat" label-cols-md="4">
+                <b-form-datepicker
+                  locale="id"
+                  :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                  v-model="realisasi.tanggal_berangkat"
+                  placeholder="Tanggal Berangkat"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Tanggal Kembali" label-cols-md="4">
+                <b-form-datepicker
+                  locale="id"
+                  :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                  v-model="realisasi.tanggal_kembali"
+                  placeholder="Tanggal Kembali"
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
+        <tab-content title="Uang Harian">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Uang Harian
+              </h5>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.hari_riil" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Jumlah Hari" label-cols-md="4">
+                <b-form-input v-model="realisasi.jumlah_hari" type="number" placeholder="0" />
+              </b-form-group>
+              <b-form-group label="Nominal" label-cols-md="4">
+                <b-form-input v-model="realisasi.uang_harian" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+              <hr />
+              <b-form-group label="Total" label-cols-md="4">
+                <b-form-input
+                  :value="formatRupiah(parseFloat(realisasi.uang_harian) * parseFloat(realisasi.jumlah_hari))"
+                  type="text"
+                  placeholder="Rp. 0"
+                  readonly
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
+        <tab-content title="Hotel">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Hotel
+              </h5>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.hotel_riil" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Jenis" label-cols-md="4">
                 <v-select v-model="realisasi.jenis_hotel" :reduce="x => x.key" placeholder="Jenis Pengunaan Uang Hotel" :options="hotelOption" label="nama" />
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col md="2">
-                <b-form-group label="Malam">
-                  <b-form-input v-model="realisasi.jumlah_malam" type="number" placeholder="0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="5">
-                <b-form-group label="Harga">
-                  <b-form-input v-model="realisasi.uang_hotel" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="5">
-                <b-form-group label="Total">
-                  <b-form-input
-                    :value="formatRupiah(parseFloat(realisasi.jumlah_malam) * parseFloat(realisasi.uang_hotel))"
-                    type="text"
-                    placeholder="Rp. 0"
-                    readonly
-                  />
-                </b-form-group>
-              </b-col>
-            </b-row>
-          </b-form-group>
-        </b-col>
+              </b-form-group>
+              <b-form-group label="Jumlah Malam" label-cols-md="4">
+                <b-form-input v-model="realisasi.jumlah_malam" type="number" placeholder="0" />
+              </b-form-group>
+              <b-form-group label="Harga" label-cols-md="4">
+                <b-form-input v-model="realisasi.uang_hotel" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+              <hr />
+              <b-form-group label="Total" label-cols-md="4">
+                <b-form-input
+                  :value="formatRupiah(parseFloat(realisasi.jumlah_malam) * parseFloat(realisasi.uang_hotel))"
+                  type="text"
+                  placeholder="Rp. 0"
+                  readonly
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
+        <tab-content title="Transport">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Transport
+              </h5>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.darat_riil" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill Darat
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Darat" label-cols-md="4">
+                <b-form-input v-model="realisasi.darat" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+              <hr />
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.laut_riil" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill Laut
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Laut" label-cols-md="4">
+                <b-form-input v-model="realisasi.laut" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+              <hr />
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.udara_rill" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill Udara
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Udara" label-cols-md="4">
+                <b-form-input v-model="realisasi.udara" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
+        <tab-content title="Taksi">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Taksi
+              </h5>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.jakarta_riil" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill Taksi Jakarta
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Jakarta" label-cols-md="4">
+                <b-form-input v-model="realisasi.taksi_jakarta" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+              <hr />
+              <b-form-group label="Riil" label-cols-md="4">
+                <b-form-checkbox v-model="realisasi.provinsi_riil" value="true" class="custom-control-primary mt-50">
+                  Pengeluaran Rill Taksi Provinsi
+                </b-form-checkbox>
+              </b-form-group>
+              <b-form-group label="Provinsi" label-cols-md="4">
+                <b-form-input v-model="realisasi.taksi_provinsi" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
+        <tab-content title="Representatif">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Representatif
+              </h5>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Uang Representatif" label-cols-md="4">
+                <b-form-input v-model="realisasi.representatif" type="number" placeholder="Rp. 0" />
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
 
-        <b-col cols="12">
-          <b-form-group label="Transport" label-cols-md="3">
-            <b-row>
-              <b-col md="4">
-                <b-form-group label="Darat">
-                  <b-form-input v-model="realisasi.darat" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="4">
-                <b-form-group label="Laut">
-                  <b-form-input v-model="realisasi.laut" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="4">
-                <b-form-group label="Udara">
-                  <b-form-input v-model="realisasi.udara" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-            </b-row>
-          </b-form-group>
-        </b-col>
-
-        <b-col cols="12">
-          <b-form-group label="Taksi" label-cols-md="3">
-            <b-row>
-              <b-col md="6">
-                <b-form-group label="Jakarta">
-                  <b-form-input v-model="realisasi.taksi_jakarta" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-              <b-col md="6">
-                <b-form-group label="Provinsi">
-                  <b-form-input v-model="realisasi.taksi_provinsi" type="number" placeholder="Rp. 0" />
-                </b-form-group>
-              </b-col>
-            </b-row>
-          </b-form-group>
-        </b-col>
-
-        <b-col cols="12">
-          <b-form-group label="Representatif" label-cols-md="3">
-            <b-form-input v-model="realisasi.representatif" type="number" placeholder="Rp. 0" />
-          </b-form-group>
-        </b-col>
-        <b-col cols="12">
-          <b-form-group label="Total" label-cols-md="3">
-            <b-form-input :value="formatRupiah(total)" type="text" placeholder="Rp. 0" readonly />
-          </b-form-group>
-        </b-col>
-      </b-row>
-
-      <hr />
-
-      <b-row>
-        <b-col cols="12">
-          <b-form-group label="Lampiran / Bukti" label-cols-md="3">
-            <b-form-file
-              @change="uploadLampiran"
-              placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
-              drop-placeholder="Drop file disini..."
-              multiple
-              ref="file_input"
-            >
-              <template slot="file-name" slot-scope="{ names }">
-                <b-badge variant="dark">{{ names[0] }}</b-badge>
-                <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
-              </template>
-            </b-form-file>
-          </b-form-group>
-        </b-col>
-      </b-row>
+        <tab-content title="Lampiran">
+          <b-row>
+            <b-col cols="12" class="mb-2">
+              <h5 class="mb-0">
+                Lampiran
+              </h5>
+              <small class="text-muted">Pilih data atau Drag and Drop, bisa upload sekaligus</small>
+            </b-col>
+            <b-col cols="12">
+              <b-form-group label="Lampiran / Bukti" label-cols-md="4">
+                <b-form-file
+                  @change="uploadLampiran"
+                  placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                  drop-placeholder="Drop file disini..."
+                  multiple
+                  ref="file_input"
+                >
+                  <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="dark">{{ names[0] }}</b-badge>
+                    <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                  </template>
+                </b-form-file>
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </tab-content>
+      </form-wizard>
     </b-modal>
   </section>
 </template>
 
 <script>
 import { ref } from '@vue/composition-api'
-import { BOverlay, BFormDatepicker, BButton, BBadge, BModal, BCard, BCardBody, BRow, BCol, BTable, BFormGroup, BFormInput, BFormFile } from 'bootstrap-vue'
+import { FormWizard, TabContent } from 'vue-form-wizard'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import {
+  BFormCheckbox,
+  BDropdown,
+  BDropdownItem,
+  BOverlay,
+  BFormDatepicker,
+  BButton,
+  BBadge,
+  BModal,
+  BCard,
+  BCardBody,
+  BRow,
+  BCol,
+  BTable,
+  BFormGroup,
+  BFormInput,
+  BFormFile,
+} from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { formatRupiah, truncate } from '@core/utils/filter'
 import vSelect from 'vue-select'
 
 export default {
   components: {
+    FormWizard,
+    TabContent,
+    BFormCheckbox,
+    BDropdown,
+    BDropdownItem,
     BOverlay,
     BFormDatepicker,
     BButton,
@@ -413,6 +518,7 @@ export default {
         }
       })
     },
+
     showModal() {
       const b = this.data.realisasi.find(x => x.pegawai.id === this.selectedPegawai.id)
       if (b) {
@@ -447,6 +553,13 @@ export default {
       this.realisasi.representatif = 0
       this.realisasi.total = 0
       this.realisasi.jenis_hotel = 0
+      this.hari_riil = true
+      this.hotel_riil = false
+      this.darat_riil = false
+      this.laut_riil = false
+      this.pesawat_riil = false
+      this.jakarta_riil = false
+      this.provinsi_riil = false
       this.realisasi.lampiran = []
     },
     tambahRealisasi() {
@@ -535,9 +648,16 @@ export default {
       total: 0,
       jenis_hotel: 0,
       lampiran: [],
+      hari_riil: true,
+      hotel_riil: false,
+      darat_riil: false,
+      laut_riil: false,
+      pesawat_riil: false,
+      jakarta_riil: false,
+      provinsi_riil: false,
     })
     const tableCol = [
-      { key: 'nama_pegawai' },
+      // { key: 'nama_pegawai' },
       // { key: 'jumlah_hari', label: 'hari' },
       { key: 'total_harian' },
       // { key: 'jumlah_malam', label: 'malam' },
@@ -569,4 +689,5 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
+@import '@core/scss/vue/libs/vue-wizard.scss';
 </style>

@@ -4,7 +4,7 @@ export default [
     name: 'barang-daftar',
     component: () => import('@/views/persediaan/barang/Daftar.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'admin_umum',
       pageTitle: 'Barang',
       breadcrumb: [
         {
@@ -19,7 +19,7 @@ export default [
     name: 'barang-tambah',
     component: () => import('@/views/persediaan/barang/Tambah.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'admin_umum',
       pageTitle: 'Barang',
       breadcrumb: [
         {
@@ -37,7 +37,7 @@ export default [
     name: 'barang-detail',
     component: () => import('@/views/persediaan/barang/Detail.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'admin_umum',
       pageTitle: 'Barang',
       breadcrumb: [
         {
@@ -55,7 +55,7 @@ export default [
     name: 'pembelian-tambah',
     component: () => import('@/views/persediaan/pembelian/Tambah.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'admin_umum',
       pageTitle: 'Pembelian',
       breadcrumb: [
         {
@@ -73,7 +73,7 @@ export default [
     name: 'pembelian-daftar',
     component: () => import('@/views/persediaan/pembelian/Daftar.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'admin_umum',
       pageTitle: 'Pembelian',
       breadcrumb: [
         {
@@ -88,7 +88,7 @@ export default [
     name: 'pembelian-detail',
     component: () => import('@/views/persediaan/pembelian/Detail.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'admin_umum',
       pageTitle: 'Pembelian',
       breadcrumb: [
         {
@@ -106,7 +106,7 @@ export default [
     name: 'permintaan-persediaan-daftar',
     component: () => import('@/views/persediaan/permintaan/Daftar.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'permintaan_persediaan',
       pageTitle: 'Permintaan Persediaan',
       breadcrumb: [
         {
@@ -121,7 +121,7 @@ export default [
     name: 'permintaan-persediaan-tambah',
     component: () => import('@/views/persediaan/permintaan/Tambah.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'permintaan_persediaan',
       pageTitle: 'Permintaan Persediaan',
       breadcrumb: [
         {
@@ -139,7 +139,7 @@ export default [
     name: 'permintaan-persediaan-detail',
     component: () => import('@/views/persediaan/permintaan/Detail.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'permintaan_persediaan',
       pageTitle: 'Permintaan Persediaan',
       breadcrumb: [
         {
@@ -153,18 +153,18 @@ export default [
     },
   },
   {
-    path: '/kepegawaian/peta-kompetensi',
-    name: 'peta-kompetensi',
-    component: () => import('@/views/admin/pegawai/Detail.vue'),
+    path: '/service',
+    name: 'service',
+    component: () => import('@/views/pages/authentication/ComingSoon.vue'),
     meta: {
-      // resource: 'ACL',
-      pageTitle: 'Data Diri',
-      breadcrumb: [
-        {
-          text: 'Data Diri',
-          active: true,
-        },
-      ],
+      resource: 'user',
+      // pageTitle: 'Data Diri',
+      // breadcrumb: [
+      //   {
+      //     text: 'Data Diri',
+      //     active: true,
+      //   },
+      // ],
     },
   },
 ]

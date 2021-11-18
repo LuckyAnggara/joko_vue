@@ -2,7 +2,7 @@
   <b-card v-if="data" no-body>
     <!-- title and dropdown -->
     <b-card-header class="pb-0">
-      <b-card-title>Penyelesaian Keuangan</b-card-title>
+      <b-card-title>Penyelesaian Kegiatan</b-card-title>
     </b-card-header>
     <!--/ title and dropdown -->
 
@@ -12,13 +12,13 @@
           <h1 class="font-large-2 font-weight-bolder mt-2 mb-0">
             {{ data.totalKegiatan }}
           </h1>
-          <small>Penyelesaian</small>
+          <small>Kegiatan</small>
         </b-col>
 
         <!-- chart -->
         <b-col sm="10" class="d-flex justify-content-center">
           <!-- apex chart -->
-          <vue-apex-charts type="radialBar" height="270" :options="supportTrackerRadialBar.chartOptions" :series="data.series" />
+          <vue-apex-charts type="radialBar" height="280" :options="supportTrackerRadialBar.chartOptions" :series="data.series" />
         </b-col>
         <!--/ chart -->
       </b-row>

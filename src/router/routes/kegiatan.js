@@ -4,7 +4,7 @@ export default [
     name: 'kegiatan-daftar',
     component: () => import('@/views/kegiatan/Daftar.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'kegiatan',
       pageTitle: 'Kegiatan',
       breadcrumb: [
         {
@@ -19,6 +19,7 @@ export default [
     name: 'kegiatan-tambah',
     component: () => import('@/views/kegiatan/Tambah.vue'),
     meta: {
+      resource: 'kegiatan',
       pageTitle: 'Kegiatan',
       breadcrumb: [
         {
@@ -36,6 +37,7 @@ export default [
     name: 'kegiatan-rencana',
     component: () => import('@/views/kegiatan/TambahRencana.vue'),
     meta: {
+      resource: 'kegiatan',
       pageTitle: 'Kegiatan',
       breadcrumb: [
         {
@@ -57,6 +59,7 @@ export default [
     name: 'kegiatan-detail',
     component: () => import('@/views/kegiatan/Detail.vue'),
     meta: {
+      resource: 'kegiatan',
       pageTitle: 'Kegiatan',
       breadcrumb: [
         {

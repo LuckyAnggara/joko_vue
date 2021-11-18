@@ -14,17 +14,13 @@
             <b-button variant="outline-primary" class="ml-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
           </template>
           <template
-            v-if="
-              userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false
-            "
+            v-if="userData.role === 'ADMIN KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false"
           >
             <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
           </template>
           <template
-            v-if="
-              userData.role === 'VERIFIKATOR KEUANGAN' && data.status === 'VERIFIKASI REALISASI' ? (data.status_realisasi === 'SUDAH' ? true : false) : false
-            "
+            v-if="userData.role === 'ADMIN KEUANGAN' && data.status === 'VERIFIKASI REALISASI' ? (data.status_realisasi === 'SUDAH' ? true : false) : false"
           >
             <b-button variant="outline-danger" class="mr-1" @click="retur1()"> Retur </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>

@@ -9,31 +9,10 @@
         </b-col>
       </b-row>
     </div>
-    <b-row class="match-height">
-      <b-col lg="5" md="12">
-        <penyerapan-anggaran :data="penyerapanAnggaran" />
-      </b-col>
-      <b-col lg="7" md="12">
-        <penyelesaian-kegiatan :data="dataMak" />
-        <!-- <penyelesaian-kegiatan :data="penyelesaianKegiatan" /> -->
-      </b-col>
-    </b-row>
 
     <b-row>
       <b-col lg="8" md="12">
         <penyerapan :tahun="tahun" />
-      </b-col>
-    </b-row>
-    <b-row class="match-height">
-      <b-col lg="6" md="12">
-        <pegawai-dinas :data="dataPegawaiJadin" />
-      </b-col>
-      <b-col lg="4">
-        <b-row class="match-height">
-          <b-col lg="12" md="6">
-            <rincian-pegawai-bidang :data="dataPegawai" />
-          </b-col>
-        </b-row>
       </b-col>
     </b-row>
   </section>
@@ -44,21 +23,13 @@ import { ref } from '@vue/composition-api'
 import { BRow, BCol } from 'bootstrap-vue'
 import { kFormatter, formatRupiah } from '@core/utils/filter'
 import vSelect from 'vue-select'
-import PenyerapanAnggaran from '../component/PenyerapanAnggaran.vue'
-import PenyelesaianKegiatan from '../component/PenyelesaianKegiatan.vue'
-import RincianPegawaiBidang from '../component/RincianPegawaiBidang.vue'
-import PegawaiDinas from '../component/PegawaiDinas.vue'
-// import Penyerapan from '../component/Penyerapan.vue'
+import Penyerapan from '../component/Penyerapan.vue'
 
 export default {
   components: {
     BRow,
     BCol,
-    PenyerapanAnggaran,
-    PegawaiDinas,
-    PenyelesaianKegiatan,
-    RincianPegawaiBidang,
-    // Penyerapan,
+    Penyerapan,
     vSelect,
   },
   data() {
@@ -169,7 +140,7 @@ export default {
           })
           .then(res => {
             this.dataMak = res.data
-            this.$store.commit('app-mak/SET_MAK', res.data)
+            console.info(this.dataMak)
           })
       }
     },

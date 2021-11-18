@@ -4,7 +4,7 @@ export default [
     name: 'perjadin-daftar',
     component: () => import('@/views/perjadin/Daftar.vue'),
     meta: {
-      // resource: 'ACL',
+      resource: 'perjadin',
       pageTitle: 'Perjadin',
       breadcrumb: [
         {
@@ -19,6 +19,7 @@ export default [
     name: 'perjadin-tambah',
     component: () => import('@/views/perjadin/Tambah.vue'),
     meta: {
+      resource: 'perjadin',
       pageTitle: 'Perjadin',
       breadcrumb: [
         {
@@ -36,6 +37,7 @@ export default [
     name: 'perjadin-detail',
     component: () => import('@/views/perjadin/Detail.vue'),
     meta: {
+      resource: 'perjadin',
       pageTitle: 'Perjadin',
       breadcrumb: [
         {

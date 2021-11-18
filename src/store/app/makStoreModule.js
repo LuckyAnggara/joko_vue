@@ -5,10 +5,12 @@ export default {
   state: {
     detail: {},
     mak: [],
+    penyerapanSemua: [],
   },
   getters: {
     getDetail: state => state.detail,
     getMak: state => state.mak,
+    getPenyerapanSemua: state => state.penyerapanSemua,
   },
   mutations: {
     SET_MAK(state, data) {
@@ -16,6 +18,9 @@ export default {
     },
     SET_DETAIL(state, data) {
       state.detail = data
+    },
+    SET_PENYERAPAN_SEMUA(state, data) {
+      state.penyerapanSemua = data
     },
 
     /* eslint-disable */
@@ -41,6 +46,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}mak?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchPenyerapanSemua(ctx, params) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}mak/penyerapan-semua?tahun_id=${params.tahun_id}`)
           .then(response => {
             resolve(response)
           })
