@@ -8,47 +8,92 @@
               <h5 class="mt-2">{{ tim.pegawai.nama }}</h5>
               <!-- <b-form-input :value="tim.pegawai.nama" plaintext /> -->
             </b-col>
-            <b-col cols="6" lg="6" md="6" sm="12">
-              <p class="mt-2">
-                {{ $moment(tim.realisasi.tanggal_berangkat).format('DD MMMM YYYY') }} - {{ $moment(tim.realisasi.tanggal_kembali).format('DD MMMM YYYY') }}
-              </p>
+            <b-col cols="3" lg="3" md="3" sm="12">
+              <b-form-group label="Tanggal Berangkat">
+                <b-form-input :value="$moment(tim.tanggal_berangkat).format('DD, MMMM YYYY')" size="sm" readonly />
+              </b-form-group>
+            </b-col>
+            <b-col cols="3" lg="3" md="3" sm="12">
+              <b-form-group label="Tanggal Berangkat">
+                <b-form-input :value="$moment(tim.tanggal_kembali).format('DD, MMMM YYYY')" size="sm" readonly />
+              </b-form-group>
             </b-col>
 
             <b-col cols="12" lg="12" md="12" sm="12">
               <b-table small :fields="tableCol" :items="[...tim.realisasi]" responsive bordered>
-                <template #cell(hari)="data">
-                  <span>{{ data.item.jumlah_hari }}</span>
+                <template #cell(total_harian)>
+                  <ul class="list-unstyled" v-for="i in tim.realisasi.uang_harian" :key="i.id">
+                    <li>
+                      -
+                      {{ i.jumlah_hari }}
+                      @
+                      {{ formatRupiah(i.uang_harian) }} = {{ formatRupiah(parseFloat(i.jumlah_hari) * parseFloat(i.uang_harian)) }}
+                      <b-badge variant="light-success" v-if="i.hari_riil === true">
+                        riil
+                      </b-badge>
+                    </li>
+                  </ul>
+                  <hr />
+                  {{ formatRupiah(tim.realisasi.total_harian) }}
                 </template>
-                <template #cell(uang_harian)="data">
-                  <span>{{ formatRupiah(data.item.uang_harian) }}</span>
+                <template #cell(total_hotel)>
+                  <ul class="list-unstyled">
+                    <li v-for="i in tim.realisasi.uang_hotel" :key="i.id">
+                      -
+                      {{ i.jumlah_malam }}
+                      @
+                      {{ formatRupiah(i.uang_hotel) }} = {{ formatRupiah(parseFloat(i.jumlah_malam) * parseFloat(i.uang_hotel)) }}
+                      <b-badge variant="light-danger">
+                        {{ i.jenis_hotel === 0 ? 'FULL' : '30%' }}
+                      </b-badge>
+                      <b-badge variant="light-success" v-if="i.hotel_riil === true">
+                        riil
+                      </b-badge>
+                    </li>
+                  </ul>
+                  <hr />
+                  {{ formatRupiah(tim.realisasi.total_hotel) }}
                 </template>
-                <template #cell(malam)="data">
-                  <span>{{ data.item.jumlah_malam }}</span>
+                <template #cell(transport)>
+                  <ul class="list-unstyled">
+                    <li v-for="i in tim.realisasi.transport" :key="i.id">
+                      -
+                      {{ i.jenis_transport }}
+                      =
+                      {{ formatRupiah(i.total) }}
+
+                      <b-badge variant="light-success" v-if="i.transport_riil === true">
+                        riil
+                      </b-badge>
+                    </li>
+                  </ul>
+                  <hr />
+                  {{ formatRupiah(tim.realisasi.total_transport) }}
                 </template>
-                <template #cell(uang_hotel)="data">
-                  <span>{{ formatRupiah(data.item.uang_hotel) }}</span>
+                <template #cell(taksi)>
+                  <ul class="list-unstyled">
+                    <li>
+                      - Jakarta = {{ formatRupiah(tim.realisasi.taksi_jakarta) }}
+                      <b-badge variant="light-success" v-if="tim.realisasi.jakarta_riil === true">
+                        riil
+                      </b-badge>
+                    </li>
+
+                    <li>
+                      - Provinsi = {{ formatRupiah(tim.realisasi.taksi_provinsi) }}
+                      <b-badge variant="light-success" v-if="tim.realisasi.provinsi_riil === true">
+                        riil
+                      </b-badge>
+                    </li>
+                  </ul>
                 </template>
-                <template #cell(udara)="data">
-                  <span>{{ formatRupiah(data.item.udara) }}</span>
+                <template #cell(representatif)>
+                  {{ formatRupiah(tim.realisasi.representatif) }}
                 </template>
-                <template #cell(laut)="data">
-                  <span>{{ formatRupiah(data.item.laut) }}</span>
+                <template #cell(total)>
+                  {{ formatRupiah(tim.realisasi.total) }}
                 </template>
-                <template #cell(darat)="data">
-                  <span>{{ formatRupiah(data.item.darat) }}</span>
-                </template>
-                <template #cell(taksi_jakarta)="data">
-                  <span>{{ formatRupiah(data.item.taksi_jakarta) }}</span>
-                </template>
-                <template #cell(taksi_provinsi)="data">
-                  <span>{{ formatRupiah(data.item.taksi_provinsi) }}</span>
-                </template>
-                <template #cell(representatif)="data">
-                  <span>{{ formatRupiah(data.item.representatif) }}</span>
-                </template>
-                <template #cell(total)="data">
-                  <span>{{ formatRupiah(data.item.total) }}</span>
-                </template>
+
                 <template #cell(actions)="data">
                   <div class="text-nowrap">
                     <feather-icon icon="PaperclipIcon" size="24" class="mx-1" @click="showLampiran(data.item.lampiran)" />
@@ -122,12 +167,15 @@
 
 <script>
 import { ref } from '@vue/composition-api'
-import { BLink, BModal, BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
+import { BBadge, BFormGroup, BFormInput, BLink, BModal, BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { formatRupiah, urlGet } from '@core/utils/filter'
 
 export default {
   components: {
+    BBadge,
+    BFormGroup,
+    BFormInput,
     BLink,
     BModal,
     BCard,
@@ -160,15 +208,10 @@ export default {
   setup() {
     const lampiran = ref([])
     const tableCol = [
-      { key: 'hari' },
-      { key: 'uang_harian' },
-      { key: 'malam' },
-      { key: 'uang_hotel' },
-      { key: 'udara' },
-      { key: 'laut' },
-      { key: 'darat' },
-      { key: 'taksi_jakarta' },
-      { key: 'taksi_provinsi' },
+      { key: 'total_harian' },
+      { key: 'total_hotel' },
+      { key: 'transport' },
+      { key: 'taksi' },
       { key: 'representatif' },
       { key: 'total' },
       { key: 'actions' },
