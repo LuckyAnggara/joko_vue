@@ -3,7 +3,7 @@
     <b-col lg="12" sm="12">
       <b-card title="Rincian Realisasi" footer-tag="footer">
         <b-card-body>
-          <b-row v-for="tim in form.susunan_tim" :key="tim.id">
+          <b-row v-for="(tim, index) in form.susunan_tim" :key="tim.id">
             <b-col cols="3" lg="3" md="3" sm="12">
               <h5 class="mt-2">{{ tim.pegawai.nama }}</h5>
               <!-- <b-form-input :value="tim.pegawai.nama" plaintext /> -->
@@ -95,12 +95,12 @@
                 </template>
 
                 <template #cell(actions)="data">
-                  <b-dropdown boundary="window" variant="link" no-caret v-if="!proses">
+                  <b-dropdown boundary="window" variant="link" no-caret>
                     <template #button-content>
                       <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                     </template>
 
-                    <b-dropdown-item>
+                    <b-dropdown-item @click="tambahLampiran(data.item.id, index)">
                       <feather-icon icon="FileTextIcon" />
                       <span class="align-middle ml-50">Tambah Lampiran</span>
                     </b-dropdown-item>
@@ -118,7 +118,7 @@
                       <feather-icon icon="PrinterIcon" />
                       <span class="align-middle ml-50">Cetak DPR</span>
                     </b-dropdown-item>
-                    <b-dropdown-item :to="{ name: 'apps-users-view', params: { id: data.item.id } }">
+                    <b-dropdown-item @click="showPrint('SPTJM', data.item.id)">
                       <feather-icon icon="PrinterIcon" />
                       <span class="align-middle ml-50">Cetak SPTJM</span>
                     </b-dropdown-item>
@@ -189,6 +189,16 @@
       ok-title="Tutup"
       lazy
     >
+      <template v-if="lampiran.length > 0 ? true : false">
+        <ul>
+          <li v-for="item in lampiran" :key="item.id">
+            <b-link :href="urlGet(item.id, 'perjadin')" class="font-weight-bold" target="_blank"> {{ item.nama }} </b-link>
+          </li>
+        </ul>
+      </template>
+      <template v-else>
+        <span>Tidak ada lampiran</span>
+      </template>
     </b-modal>
     <b-modal id="modal-cetak" size="md" centered no-close-on-backdrop ok-variant="success" ok-title="print" hide-footer @hidden="reset">
       <b-form-group label="Tempat" v-if="jenis === 'KUITANSI' ? false : true">
@@ -198,6 +208,39 @@
         <b-form-datepicker locale="id" v-model="tanggal" placeholder="Tangggal Surat" />
       </b-form-group>
       <b-button variant="primary" :href="href" class="ml-1"> Download </b-button>
+    </b-modal>
+    <b-modal
+      id="modal-tambah-lampiran"
+      size="md"
+      centered
+      scrollable
+      ok-only
+      no-close-on-backdrop
+      content-class="shadow"
+      title="Tambahan Lampiran"
+      ok-variant="success"
+      ok-title="Upload"
+      @ok="submit"
+      lazy
+    >
+      <b-row>
+        <b-col cols="12">
+          <b-form-group label="Lampiran">
+            <b-form-file
+              @change="uploadLampiran"
+              placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+              drop-placeholder="Drop file disini..."
+              multiple
+              ref="file_input"
+            >
+              <template slot="file-name" slot-scope="{ names }">
+                <b-badge variant="dark">{{ names[0] }}</b-badge>
+                <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+              </template>
+            </b-form-file>
+          </b-form-group>
+        </b-col>
+      </b-row>
     </b-modal>
   </b-row>
 </template>
@@ -213,6 +256,7 @@ import {
   BBadge,
   BFormGroup,
   BFormInput,
+  BFormFile,
   BLink,
   BModal,
   BCard,
@@ -222,7 +266,7 @@ import {
   BTable,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import { formatRupiah, dprGet, sptjmGet, kuitansiGet } from '@core/utils/filter'
+import { urlGet, formatRupiah, dprGet, sptjmGet, kuitansiGet } from '@core/utils/filter'
 
 export default {
   components: {
@@ -236,6 +280,8 @@ export default {
     BFormInput,
     BLink,
     BModal,
+    BFormFile,
+
     BCard,
     BRow,
     BCol,
@@ -252,6 +298,7 @@ export default {
     },
   },
   methods: {
+    urlGet,
     dprGet,
     kuitansiGet,
     sptjmGet,
@@ -260,6 +307,11 @@ export default {
       this.tanggal = null
       this.tempat = null
       this.href = null
+    },
+    tambahLampiran(x, i) {
+      this.idLampiran = x
+      this.index = i
+      this.$bvModal.show('modal-tambah-lampiran')
     },
     showLampiran(x) {
       this.lampiran = x
@@ -275,15 +327,82 @@ export default {
       } else if (x === 'SPTJM') {
         this.href = this.sptjmGet(id, this.tanggal, this.tempat)
       }
-      this.$bvModal.hide('modal-cetak')
+      // this.$bvModal.hide('modal-cetak')
+    },
+    /* eslint-disable */
+    uploadLampiran(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.upload.push(selectedFiles[i])
+      }
+      /* eslint-enable */
+    },
+    submit() {
+      if (this.upload.length > 0) {
+        // this.show = !this.show
+        const file = new FormData()
+        for (let i = 0; i < this.upload.length; i += 1) {
+          file.append('lampiran[]', this.upload[i])
+        }
+        file.append('id', this.idLampiran)
+        file.append('user_id', this.userData.id)
+        this.$store.dispatch('app-perjadin/storePerjadinRealisasiLampiran', file).then(x => {
+          if (x.status === 200) {
+            this.$swal({
+              title: 'Sukses!',
+              text: 'File berhasil di Upload!',
+              icon: 'success',
+              customClass: {
+                confirmButton: 'btn btn-primary',
+              },
+              buttonsStyling: false,
+            })
+            this.form.susunan_tim[this.index].realisasi.lampiran.push(...x.data)
+            console.info(this.form.susunan_tim[this.index])
+            // console.info(x.data)
+            // this.show = !this.show
+          }
+        })
+        // .catch(err => {
+        //   // this.show = !this.show
+        //   this.$swal({
+        //     title: 'Error!',
+        //     text: err,
+        //     icon: 'error',
+        //     customClass: {
+        //       confirmButton: 'btn btn-primary',
+        //     },
+        //     buttonsStyling: false,
+        //   })
+        // })
+        this.upload = []
+        this.idLampiran = null
+      } else {
+        this.$swal({
+          title: 'Error!',
+          text: 'Cek file yang akan di Upload',
+          icon: 'error',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+          },
+          buttonsStyling: false,
+        })
+      }
     },
   },
   setup() {
+    const userData = JSON.parse(localStorage.getItem('userData'))
+    const index = ref(null)
+    const idLampiran = ref(null)
     const jenis = ref(null)
     const href = ref(null)
     const tanggal = ref(null)
     const tempat = ref(null)
     const lampiran = ref([])
+    const upload = ref([])
     const tableCol = [
       { key: 'total_harian' },
       { key: 'total_hotel' },
@@ -294,11 +413,15 @@ export default {
       { key: 'actions' },
     ]
     return {
+      userData,
+      index,
+      idLampiran,
       jenis,
       href,
       tanggal,
       tempat,
       lampiran,
+      upload,
       tableCol,
     }
   },

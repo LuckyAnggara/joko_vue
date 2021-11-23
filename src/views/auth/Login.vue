@@ -31,7 +31,7 @@
           <!-- form -->
           <b-form class="auth-login-form mt-2" @submit.prevent>
             <!-- email -->
-            <b-form-group label="Username" label-for="login-email">
+            <b-form-group label="Nomor Induk Pegawai" label-for="login-email">
               <b-form-input id="login-email" v-model="form.username" type="number" name="login-email" placeholder="Nomor Induk Pegawai" />
             </b-form-group>
 
@@ -56,11 +56,11 @@
             </b-form-group>
 
             <!-- checkbox -->
-            <b-form-group>
+            <!-- <b-form-group>
               <b-form-checkbox id="remember-me" v-model="form.status" name="checkbox-1">
                 Ingat saya
               </b-form-checkbox>
-            </b-form-group>
+            </b-form-group> -->
 
             <!-- submit buttons -->
             <b-button type="submit" variant="primary" block @click="login">
@@ -94,7 +94,7 @@ import {
   BFormInput,
   BInputGroupAppend,
   BInputGroup,
-  BFormCheckbox,
+  // BFormCheckbox,
   BCardText,
   BCardTitle,
   BImg,
@@ -114,7 +114,7 @@ export default {
     BFormInput,
     BInputGroupAppend,
     BInputGroup,
-    BFormCheckbox,
+    // BFormCheckbox,
     BCardText,
     BCardTitle,
     BImg,
