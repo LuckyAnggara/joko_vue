@@ -14,6 +14,9 @@ export const spdGet = (id, spd) =>
   `${axios.defaults.baseURL}print/download-spd?id=${id}&alatangkut=${spd.alatangkut}&tanggal=${spd.tanggal}&tempat=${spd.tempat}`
 /* eslint-enable */
 export const spbGet = (id, tanggal) => `${axios.defaults.baseURL}print/download-spb?id=${id}&tanggal=${tanggal}`
+export const dprGet = (id, tanggal, tempat) => `${axios.defaults.baseURL}print/download-dpr?id=${id}&tanggal=${tanggal}&tempat=${tempat}`
+export const kuitansiGet = (id, tanggal) => `${axios.defaults.baseURL}print/download-kuitansi?id=${id}&tanggal=${tanggal}`
+export const sptjmGet = (id, tanggal, tempat) => `${axios.defaults.baseURL}print/download-sptjm?id=${id}&tanggal=${tanggal}&tempat=${tempat}`
 
 export const title = (value, replacer = ' ') => {
   if (!value) return ''

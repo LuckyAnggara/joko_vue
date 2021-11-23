@@ -95,10 +95,38 @@
                 </template>
 
                 <template #cell(actions)="data">
-                  <div class="text-nowrap">
-                    <feather-icon icon="PaperclipIcon" size="24" class="mx-1" @click="showLampiran(data.item.lampiran)" />
-                    <feather-icon icon="PrinterIcon" size="24" class="mx-1" @click="showPrint(data.item.id)" />
-                  </div>
+                  <b-dropdown boundary="window" variant="link" no-caret v-if="!proses">
+                    <template #button-content>
+                      <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+                    </template>
+
+                    <b-dropdown-item>
+                      <feather-icon icon="FileTextIcon" />
+                      <span class="align-middle ml-50">Tambah Lampiran</span>
+                    </b-dropdown-item>
+                    <b-dropdown-item @click="showLampiran(data.item.lampiran)">
+                      <feather-icon icon="FileTextIcon" />
+                      <span class="align-middle ml-50">Lihat Lampiran</span>
+                    </b-dropdown-item>
+                    <b-dropdown-divider />
+
+                    <b-dropdown-item @click="showPrint('KUITANSI', data.item.id)">
+                      <feather-icon icon="PrinterIcon" />
+                      <span class="align-middle ml-50">Cetak Kwitansi</span>
+                    </b-dropdown-item>
+                    <b-dropdown-item @click="showPrint('DPR', data.item.id)">
+                      <feather-icon icon="PrinterIcon" />
+                      <span class="align-middle ml-50">Cetak DPR</span>
+                    </b-dropdown-item>
+                    <b-dropdown-item :to="{ name: 'apps-users-view', params: { id: data.item.id } }">
+                      <feather-icon icon="PrinterIcon" />
+                      <span class="align-middle ml-50">Cetak SPTJM</span>
+                    </b-dropdown-item>
+                    <b-dropdown-item v-if="form.status_realisasi !== 'SUDAH'" @click="deletePegawai(index)">
+                      <feather-icon icon="TrashIcon" />
+                      <span class="align-middle ml-50">Delete</span>
+                    </b-dropdown-item>
+                  </b-dropdown>
                 </template>
               </b-table>
             </b-col>
@@ -130,7 +158,7 @@
       ok-only
       no-close-on-backdrop
       content-class="shadow"
-      title="Lampiran Realisasi"
+      title="Lampiran"
       ok-variant="danger"
       ok-title="Tutup"
       lazy
@@ -162,17 +190,47 @@
       lazy
     >
     </b-modal>
+    <b-modal id="modal-cetak" size="md" centered no-close-on-backdrop ok-variant="success" ok-title="print" hide-footer @hidden="reset">
+      <b-form-group label="Tempat" v-if="jenis === 'KUITANSI' ? false : true">
+        <b-form-input locale="id" v-model="tempat" placeholder="Tempat Surat" />
+      </b-form-group>
+      <b-form-group label="Tanggal" v-if="jenis === 'KUITANSI' ? false : true">
+        <b-form-datepicker locale="id" v-model="tanggal" placeholder="Tangggal Surat" />
+      </b-form-group>
+      <b-button variant="primary" :href="href" class="ml-1"> Download </b-button>
+    </b-modal>
   </b-row>
 </template>
 
 <script>
 import { ref } from '@vue/composition-api'
-import { BBadge, BFormGroup, BFormInput, BLink, BModal, BCard, BCardBody, BRow, BCol, BTable } from 'bootstrap-vue'
+import {
+  BButton,
+  BFormDatepicker,
+  BDropdownDivider,
+  BDropdown,
+  BDropdownItem,
+  BBadge,
+  BFormGroup,
+  BFormInput,
+  BLink,
+  BModal,
+  BCard,
+  BCardBody,
+  BRow,
+  BCol,
+  BTable,
+} from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
-import { formatRupiah, urlGet } from '@core/utils/filter'
+import { formatRupiah, dprGet, sptjmGet, kuitansiGet } from '@core/utils/filter'
 
 export default {
   components: {
+    BButton,
+    BFormDatepicker,
+    BDropdownDivider,
+    BDropdown,
+    BDropdownItem,
     BBadge,
     BFormGroup,
     BFormInput,
@@ -194,18 +252,37 @@ export default {
     },
   },
   methods: {
-    urlGet,
+    dprGet,
+    kuitansiGet,
+    sptjmGet,
     formatRupiah,
+    reset() {
+      this.tanggal = null
+      this.tempat = null
+      this.href = null
+    },
     showLampiran(x) {
       this.lampiran = x
-      console.info(this.lampiran)
       this.$bvModal.show('modal-lampiran-realisasi')
     },
-    showPrint() {
-      this.$bvModal.show('modal-print')
+    showPrint(x, id) {
+      this.$bvModal.show('modal-cetak')
+      this.jenis = x
+      if (x === 'DPR') {
+        this.href = this.dprGet(id, this.tanggal, this.tempat)
+      } else if (x === 'KUITANSI') {
+        this.href = this.kuitansiGet(id, this.tanggal)
+      } else if (x === 'SPTJM') {
+        this.href = this.sptjmGet(id, this.tanggal, this.tempat)
+      }
+      this.$bvModal.hide('modal-cetak')
     },
   },
   setup() {
+    const jenis = ref(null)
+    const href = ref(null)
+    const tanggal = ref(null)
+    const tempat = ref(null)
     const lampiran = ref([])
     const tableCol = [
       { key: 'total_harian' },
@@ -217,6 +294,10 @@ export default {
       { key: 'actions' },
     ]
     return {
+      jenis,
+      href,
+      tanggal,
+      tempat,
       lampiran,
       tableCol,
     }
