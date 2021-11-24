@@ -295,9 +295,9 @@ export default {
           if (this.userData.role === 'USER') {
             this.dataTemp = res.data
           } else if (this.userData.role === 'PPK') {
-            this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI PPK')
+            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN')
           } else if (this.userData.role === 'ADMIN KEUANGAN') {
-            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN' && x.status !== 'SELESAI')
+            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN')
           } else if (this.userData.role === 'BENDAHARA') {
             this.dataTemp = res.data.filter(x => x.status === 'VERIFIED PPK')
           }

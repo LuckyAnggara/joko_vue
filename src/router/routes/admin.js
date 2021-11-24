@@ -33,6 +33,24 @@ export default [
     },
   },
   {
+    path: '/mak/detail',
+    name: 'mak-detail',
+    component: () => import('@/views/mak/Detail.vue'),
+    meta: {
+      resource: 'admin_keuangan',
+      pageTitle: 'Mata Anggaran Kegiatan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/pegawai/daftar',
     name: 'pegawai-daftar',
     component: () => import('@/views/admin/pegawai/Daftar.vue'),

@@ -8,9 +8,4 @@ export default [
     icon: 'ShieldIcon',
     resource: 'admin_keuangan',
   },
-  {
-    title: 'Pegawai',
-    route: 'pegawai-daftar',
-    icon: 'ShieldIcon',
-  },
 ]

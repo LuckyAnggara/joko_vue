@@ -23,33 +23,30 @@
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Saldo Realisasi" label-cols-md="3" label-cols-sm="12">
+              <b-form-group label="Realisasi" label-cols-md="3" label-cols-sm="12">
                 <b-form-input :value="formatRupiah(data.mak.saldo.realisasi)" placeholder="-" readonly />
               </b-form-group>
             </b-col>
 
-            <b-col cols="12">
-              <b-form-group label="Saldo Belum Realisasi" label-cols-md="3" label-cols-sm="12">
-                <b-form-input :value="formatRupiah(data.mak.saldo.unrealisasi)" placeholder="-" readonly />
+            <!-- <b-col cols="12">
+              <b-form-group label="Sisa Saldo" label-cols-md="3" label-cols-sm="12">
+                <b-form-input :value="formatRupiah(sisa_saldo)" placeholder="-" readonly />
                 <b-button
                   variant="outline-primary"
                   class="mt-1"
                   @click="showModalLampiran()"
-                  v-if="data.status !== 'RENCANA' && (userData.role === 'ADMIN KEUANGAN' || userData.role === 'VERIFIKATOR PPK')"
+                  v-if="data.status !== 'RENCANA' && (userData.role === 'ADMIN KEUANGAN' || userData.role === 'PPK')"
                 >
                   Cek Daftar
                 </b-button>
               </b-form-group>
 
               <hr />
-            </b-col>
+            </b-col> -->
+          </b-row>
+          <hr />
 
-            <b-col cols="12">
-              <b-form-group label="Sisa Saldo Tersedia" label-cols-md="3" label-cols-sm="12">
-                <b-form-input :value="formatRupiah(data.mak.saldo.saldo)" placeholder="-" readonly />
-              </b-form-group>
-            </b-col>
-
+          <b-row>
             <b-col cols="12">
               <b-form-group label="Untuk Kegiatan Ini" label-cols-md="3" label-cols-sm="12">
                 <b-form-input :value="formatRupiah(data.total_anggaran)" placeholder="-" readonly />
@@ -57,14 +54,14 @@
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Sisa Saldo Setelah Kegiatan" label-cols-md="3" label-cols-sm="12">
-                <b-form-input :value="formatRupiah(parseFloat(data.mak.saldo.saldo) - parseFloat(data.total_anggaran))" placeholder="-" readonly />
+              <b-form-group label="Sisa Saldo Perkiraan" label-cols-md="3" label-cols-sm="12">
+                <b-form-input :value="formatRupiah(sisa_saldo_perkiraan)" placeholder="-" readonly />
               </b-form-group>
             </b-col>
           </b-row>
           <b-row class="mt-2" v-if="data.status !== 'PENGAJUAN' && (userData.role === 'ADMIN KEUANGAN' || userData.role === 'VERIFIKATOR PPK')">
             <b-col cols="12">
-              <b-button variant="outline-primary" @click="showModalLampiran()"> Cek MAK </b-button>
+              <b-button variant="outline-primary" @click="showModalMak()"> Cek MAK </b-button>
             </b-col>
 
             <b-col cols="12">
@@ -81,6 +78,7 @@
         </template>
       </b-card>
     </b-col>
+    <daftar-mak :tahun="data.tahun" :bidang="data.bidang" />
   </b-row>
 </template>
 
@@ -98,6 +96,7 @@ import {
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { urlGet, formatRupiah } from '@core/utils/filter'
+import DaftarMak from '@/views/mak/DaftarMak.vue'
 
 export default {
   components: {
@@ -108,6 +107,7 @@ export default {
     BCol,
     BFormInput,
     BFormGroup,
+    DaftarMak,
     // BFormTextarea,
   },
   directives: {
@@ -117,11 +117,20 @@ export default {
     data() {
       return this.$store.getters['app-kegiatan/getDetail']
     },
+    sisa_saldo() {
+      return parseFloat(this.data.mak.pagu) - parseFloat(this.data.mak.saldo.realisasi)
+    },
+    sisa_saldo_perkiraan() {
+      return parseFloat(this.data.mak.pagu) - parseFloat(this.data.mak.saldo.realisasi) - parseFloat(this.data.mak.saldo.unrealisasi)
+    },
   },
 
   methods: {
     urlGet,
     formatRupiah,
+    showModalMak() {
+      this.$bvModal.show('modal-daftar-mak')
+    },
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))

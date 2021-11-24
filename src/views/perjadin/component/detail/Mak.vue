@@ -115,7 +115,7 @@ import {
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { urlGet, formatRupiah } from '@core/utils/filter'
-import DaftarMak from './mak/DaftarMak.vue'
+import DaftarMak from '@/views/mak/DaftarMak.vue'
 
 export default {
   components: {

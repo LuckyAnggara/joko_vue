@@ -261,9 +261,8 @@ export default {
     },
     detail(id) {
       const data = this.dataMak.find(x => x.id === id)
-      console.info(id)
       this.$store.commit('app-mak/SET_DETAIL', data.rincian)
-      this.$router.push({ name: 'dipa-detail' })
+      this.$router.push({ name: 'mak-detail' })
     },
     loadBidang() {
       this.$store.dispatch('app-general/fetchBidang').then(res => {

@@ -244,11 +244,11 @@ export default {
         })
         .then(res => {
           this.isBusy = !this.isBusy
-          // if (this.userData.role === 'USER') {
-          this.dataTemp = res.data
-          // } else if (this.userData.role === 'ADMIN UMUM') {
-          //   this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI UMUM')
-          // }
+          if (this.userData.role === 'USER') {
+            this.dataTemp = res.data
+          } else if (this.userData.role === 'ADMIN UMUM') {
+            this.dataTemp = res.data.filter(x => x.status === 'VERIFIKASI UMUM')
+          }
           this.dataPermintaan = this.dataTemp
         })
     },
