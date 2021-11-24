@@ -15,6 +15,11 @@
         <penyerapan :tahun="tahun" />
       </b-col>
     </b-row>
+    <b-row>
+      <b-col lg="8" md="12">
+        <pegawai-belum-realisasi :tahun="tahun" />
+      </b-col>
+    </b-row>
   </section>
 </template>
 
@@ -24,6 +29,7 @@ import { BRow, BCol } from 'bootstrap-vue'
 import { kFormatter, formatRupiah } from '@core/utils/filter'
 import vSelect from 'vue-select'
 import Penyerapan from '../component/Penyerapan.vue'
+import PegawaiBelumRealisasi from '../component/PegawaiBelumRealisasi.vue'
 
 export default {
   components: {
@@ -31,6 +37,7 @@ export default {
     BCol,
     Penyerapan,
     vSelect,
+    PegawaiBelumRealisasi,
   },
   data() {
     return {
@@ -43,6 +50,7 @@ export default {
       this.loadPerjadin()
       this.loadPegawai()
       this.loadPenyerapanSemua()
+      this.loadPegawaiBelumRealisasi()
     },
   },
   mounted() {
@@ -51,6 +59,7 @@ export default {
     this.loadPerjadin()
     this.loadPegawai()
     this.loadPenyerapanSemua()
+    this.loadPegawaiBelumRealisasi()
   },
   computed: {
     penyerapanAnggaran() {
@@ -81,7 +90,6 @@ export default {
         y.susunan_tim.forEach(x => {
           const tt = x
           tt.tujuan = y.tujuan
-          console.info(tt)
           t.push(tt)
         })
 
@@ -121,6 +129,15 @@ export default {
   methods: {
     formatRupiah,
     kFormatter,
+    loadPegawaiBelumRealisasi() {
+      this.$store
+        .dispatch('app-perjadin/fetchPegawaiBelumRealisasi', {
+          tahun_id: this.tahun.id,
+        })
+        .then(res => {
+          this.dataPegawaiBelumRealisasi = res.data
+        })
+    },
     loadPerjadin() {
       this.$store
         .dispatch('app-perjadin/fetchPerjadin', {
@@ -168,6 +185,7 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'))
     const dataMak = ref([])
     const dataPerjadin = ref([])
+    const dataPegawaiBelumRealisasi = ref([])
 
     const tahun = ref({
       id: 1,
@@ -178,6 +196,7 @@ export default {
       dataPerjadin,
       dataMak,
       tahun,
+      dataPegawaiBelumRealisasi,
     }
   },
 }

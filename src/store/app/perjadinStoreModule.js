@@ -30,6 +30,16 @@ export default {
     },
   },
   actions: {
+    fetchPegawaiBelumRealisasi(ctx, params) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}perjadin?tahun_id=${params.tahun_id}&bidang_id=${params.bidang_id}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchPerjadin(ctx, params) {
       return new Promise((resolve, reject) => {
         axios
