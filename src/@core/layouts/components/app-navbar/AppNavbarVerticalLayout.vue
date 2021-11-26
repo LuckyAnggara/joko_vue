@@ -10,7 +10,7 @@
     </ul>
 
     <b-navbar-nav class="nav align-items-center">
-      <p class="ml-2 user-name font-weight-bolder mb-0">Selamat Datang {{ userData.role !== 'USER' ? '' : 'di' + userData.bidang.nama }}</p>
+      <p class="ml-2 user-name font-weight-bolder mb-0">Selamat Datang {{ userData.role !== 'USER' ? '' : 'di ' + userData.bidang.nama }}</p>
     </b-navbar-nav>
     <b-navbar-nav class="nav align-items-center ml-auto">
       <!-- <locale /> -->

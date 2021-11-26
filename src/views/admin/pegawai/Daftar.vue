@@ -173,8 +173,13 @@ export default {
     loadPegawai() {
       this.$store.dispatch('app-general/fetchPegawai').then(res => {
         this.$store.commit('app-general/SET_PEGAWAI', res.data)
-        this.dataTemp = res.data
+        if (this.userData.role === 'USER') {
+          this.dataTemp = res.data.filter(x => x.bidang_id === this.userData.bidang_id)
+        } else {
+          this.dataTemp = res.data
+        }
         this.dataPegawai = this.dataTemp
+        console.info(this.userData)
       })
     },
     loadBidang() {
