@@ -15,13 +15,13 @@
           <template
             v-if="userData.role === 'ADMIN KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false"
           >
-            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur(1, 'KEUANGAN')"> Retur </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
           </template>
           <template
             v-if="userData.role === 'ADMIN KEUANGAN' && data.status === 'VERIFIKASI REALISASI' ? (data.status_realisasi === 'SUDAH' ? true : false) : false"
           >
-            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur(2, 'KEUANGAN')"> Retur </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>
           </template>
           <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
@@ -39,11 +39,11 @@
           </template>
           <template v-if="userData.role === 'PPK' && data.status === 'VERIFIKASI PPK' ? true : false">
             <b-button variant="danger" class="mr-1" @click="tolak()"> Tolak </b-button>
-            <b-button variant="outline-danger" class="mr-1" @click="retur2()"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur(3, 'PPK')"> Retur </b-button>
             <b-button variant="primary" class="ml-1" @click="verifikasiPPK('VERIFIED PPK')"> Setuju </b-button>
           </template>
           <template v-if="userData.role === 'BENDAHARA' && data.status === 'VERIFIED PPK' ? true : false">
-            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur(4, 'BENDAHARA')"> Retur </b-button>
             <b-button variant="success" class="ml-1" @click="bayar('SELESAI')"> Bayar </b-button>
           </template>
         </div>
@@ -158,7 +158,21 @@ export default {
         }
       })
     },
-    retur() {
+    retur(i, dari) {
+      let status = 'VERIFIKASI KEUANGAN'
+      switch (i) {
+        case 4:
+          status = 'VERIFIKASI PPK'
+          break
+        case 3:
+          status = 'VERIFIKASI REALISASI'
+          break
+        case 2:
+          status = 'PELAKSANAAN'
+          break
+        default:
+          status = 'VERIFIKASI KEUANGAN'
+      }
       this.$swal({
         title: 'Retur ?',
         text: 'kegiatan akan dikembalikan untuk di revisi',
@@ -182,8 +196,8 @@ export default {
           this.$store
             .dispatch('app-kegiatan/statusKegiatan', {
               id: this.data.id,
-              status: 'REVISI KEUANGAN',
-              status_log: 'RETUR DARI KEUANGAN',
+              status,
+              status_log: `RETUR DARI ${dari}`,
               message_log: 'kegiatan di retur oleh keuangan untuk di revisi ',
               user_data: this.userData,
               catatan: result.value,
