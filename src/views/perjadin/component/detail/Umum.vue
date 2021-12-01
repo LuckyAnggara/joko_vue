@@ -240,6 +240,9 @@ export default {
       return this.$store.getters['app-general/getKanwil']
     },
     satkerOption() {
+      if (this.edit === false) {
+        return []
+      }
       return this.kanwilOption.find(x => x.id === this.kanwilId.id).satker
     },
     urusanOption() {
@@ -292,7 +295,7 @@ export default {
         if (result.isConfirmed) {
           this.$store.dispatch('app-perjadin/editUmum', this.fake).then(res => {
             if (res.status === 200) {
-              // this.$store.commit('app-perjadin/SET_DETAIL', this.fake)
+              this.$store.commit('app-perjadin/SET_DETAIL', this.fake)
               this.$swal({
                 title: 'Sukses!',
                 text: 'Data berhasil di ubah',
@@ -303,6 +306,7 @@ export default {
                 buttonsStyling: false,
               })
             }
+            this.edit = !this.edit
           })
         }
       })
@@ -310,7 +314,6 @@ export default {
   },
   mounted() {
     this.fake = _.cloneDeep(this.form)
-    console.info(this.fake)
   },
   setup() {
     const kanwilId = ref({

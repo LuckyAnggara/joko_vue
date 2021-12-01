@@ -13,9 +13,9 @@
           <b-form-group label="Wilayah / Bagian" label-cols-lg="3">
             <v-select v-model="bidangFilter" label="nama" :options="bidangOption" :clearable="false" />
           </b-form-group>
-          <b-form-group label="Interval" label-cols-lg="3">
+          <!-- <b-form-group label="Interval" label-cols-lg="3">
             <b-form-input v-model="interval" />
-          </b-form-group>
+          </b-form-group> -->
 
           <b-row>
             <b-col cols="6" md="1" class="mb-2">
@@ -51,13 +51,13 @@
                   <b-form-group label="Sebelum" class="text-primary">
                     <!-- <b-form-input :value="formatRupiah(data.item.passive_pagu)" /> -->
                     <cleave
+                      disabled
                       v-model="data.item.passive_pagu"
                       :options="{
                         numeral: true,
                         numeralThousandsGroupStyle: 'thousand',
                       }"
                       class="form-control"
-                      @blur="cek(data.item.pagu, data.item.realisasi, max(data.item.pagu), data.index)"
                     />
                   </b-form-group>
                 </b-col>
@@ -75,7 +75,7 @@
                   </b-form-group>
                 </b-col>
               </b-row>
-              <vue-slider
+              <!-- <vue-slider
                 silent
                 v-model="data.item.pagu"
                 :interval="interval"
@@ -83,7 +83,7 @@
                 :max="max(data.item.pagu)"
                 :tooltip-formatter="formatRupiah(data.item.pagu / 1000000) + 'K'"
                 :contained="true"
-              />
+              /> -->
             </template>
 
             <template #cell(bidang)="data">
@@ -103,7 +103,7 @@
 import { ref } from '@vue/composition-api'
 import { formatRupiah } from '@core/utils/filter'
 import { BButton, BFormGroup, BSpinner, BCard, BRow, BCol, BFormInput, BTable } from 'bootstrap-vue'
-import VueSlider from 'vue-slider-component'
+// import VueSlider from 'vue-slider-component'
 import Cleave from 'vue-cleave-component'
 import vSelect from 'vue-select'
 
@@ -117,7 +117,7 @@ export default {
     BCol,
     BFormInput,
     BTable,
-    VueSlider,
+    // VueSlider,
     Cleave,
     vSelect,
   },
@@ -233,7 +233,7 @@ export default {
   },
 
   setup() {
-    const interval = 10000
+    // const interval = 10000
     const min = 0
     const value = 0
     const tableColumns = [
@@ -247,7 +247,7 @@ export default {
       nama: 'SEMUA',
     })
     return {
-      interval,
+      // interval,
       min,
       value,
       tableColumns,

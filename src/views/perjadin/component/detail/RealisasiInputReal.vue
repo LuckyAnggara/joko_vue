@@ -557,7 +557,6 @@ export default {
         }
       })
     },
-
     showModal() {
       const b = this.data.realisasi.find(x => x.pegawai.id === this.selectedPegawai.id)
       if (b) {

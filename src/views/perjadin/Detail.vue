@@ -57,9 +57,9 @@
       </b-col>
       <b-tabs v-model="index" class="mt-1" pills>
         <b-tab title="Umum" active> <umum /></b-tab>
-        <b-tab title="Susunan Tim"><susunan-tim /></b-tab>
         <b-tab title="Mak"> <mak /></b-tab>
-        <b-tab title="Anggaran"><anggaran /></b-tab>
+        <!-- <b-tab title="Susunan Tim"><susunan-tim /></b-tab> -->
+        <b-tab title="Susunan Tim dan Anggaran"><anggaran /></b-tab>
         <b-tab title="Realisasi" v-if="data.status_realisasi === 'SUDAH' ? true : false"><realisasi-view /></b-tab>
         <b-tab title="Realisasi" v-if="inputRealisasi" active><realisasi-input /></b-tab>
         <b-tab title="Lampiran"> <lampiran /></b-tab>
@@ -80,7 +80,7 @@ import {
 } from 'bootstrap-vue'
 import Umum from './component/detail/Umum.vue'
 import Mak from './component/detail/Mak.vue'
-import SusunanTim from './component/detail/SusunanTim.vue'
+// import SusunanTim from './component/detail/SusunanTim.vue'
 import Anggaran from './component/detail/Anggaran.vue'
 import RealisasiInput from './component/detail/RealisasiInput.vue'
 import RealisasiView from './component/detail/RealisasiView.vue'
@@ -91,13 +91,14 @@ export default {
   components: {
     BCol,
     BRow,
+
     // BCard,
     BButton,
     BTab,
     BTabs,
     Umum,
     Mak,
-    SusunanTim,
+    // SusunanTim,
     Lampiran,
     Anggaran,
     RealisasiInput,
@@ -146,7 +147,7 @@ export default {
     realisasi() {
       this.inputRealisasi = !this.inputRealisasi
       // eslint-disable-next-line
-      setTimeout(() => (this.index = 4), 200)
+      setTimeout(() => (this.index = 3), 200)
       // eslint-enable-next-line
     },
     destroy() {
@@ -536,6 +537,7 @@ export default {
     this.loadPegawai()
     this.loadUrusan()
     this.loadKanwil()
+    this.loadPeran()
   },
   setup() {
     const index = 0

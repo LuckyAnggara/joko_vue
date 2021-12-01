@@ -56,7 +56,6 @@
       title="Print Surat Perjalanan Dinas "
       ok-variant="danger"
       ok-title="Tutup"
-      @hidden="alatangkut = null"
     >
       <b-row>
         <b-col cols="12">
@@ -86,22 +85,7 @@
 
 <script>
 import { ref } from '@vue/composition-api'
-import {
-  BFormDatepicker,
-  BButton,
-  BFormGroup,
-  BFormInput,
-  BModal,
-  BTable,
-  BLink,
-  BDropdown,
-  BDropdownItem,
-  // BTooltip,
-  BCard,
-  BCardBody,
-  BRow,
-  BCol,
-} from 'bootstrap-vue'
+import { BFormDatepicker, BButton, BFormGroup, BFormInput, BModal, BTable, BLink, BDropdown, BDropdownItem, BCard, BCardBody, BRow, BCol } from 'bootstrap-vue'
 import { spdGet, dopGet } from '@core/utils/filter'
 
 export default {
@@ -115,7 +99,6 @@ export default {
     BLink,
     BDropdown,
     BDropdownItem,
-    // BTooltip,
     BCard,
     BRow,
     BCol,

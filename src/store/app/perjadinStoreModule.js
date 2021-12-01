@@ -141,16 +141,37 @@ export default {
           .catch(error => reject(error))
       })
     },
-  },
-  // EDIT
-  editUmum(ctx, data) {
-    return new Promise((resolve, reject) => {
-      axios
-        .post(`${axios.defaults.baseURL}perjadin/edit-umum`, data)
-        .then(response => {
-          resolve(response)
-        })
-        .catch(error => reject(error))
-    })
+    // EDIT
+
+    editUmum(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}perjadin/edit-umum`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    editMak(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}perjadin/edit-mak`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    editTim(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}perjadin/edit-tim`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
   },
 }
