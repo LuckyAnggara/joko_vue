@@ -26,7 +26,7 @@ export default [
     route: 'permintaan-persediaan-daftar',
   },
   {
-    title: 'Service',
+    title: 'Perawatan',
     icon: 'ShieldIcon',
     resource: 'user',
     route: 'service',

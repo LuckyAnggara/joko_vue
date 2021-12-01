@@ -766,7 +766,6 @@ export default {
         id: null,
         nama: null,
       }
-      console.info(this.data.realisasi)
       this.$bvModal.hide('modal-realisasi')
     },
     deletePegawai(i) {

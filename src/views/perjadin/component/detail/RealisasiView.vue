@@ -361,8 +361,6 @@ export default {
               buttonsStyling: false,
             })
             this.form.susunan_tim[this.index].realisasi.lampiran.push(...x.data)
-            console.info(this.form.susunan_tim[this.index])
-            // console.info(x.data)
             // this.show = !this.show
           }
         })

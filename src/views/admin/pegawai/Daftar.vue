@@ -179,7 +179,6 @@ export default {
           this.dataTemp = res.data
         }
         this.dataPegawai = this.dataTemp
-        console.info(this.userData)
       })
     },
     loadBidang() {

@@ -47,8 +47,6 @@ export default {
     },
   },
   data() {
-    console.info(this.data)
-
     return {
       earningsChart: {
         chartOptions: {

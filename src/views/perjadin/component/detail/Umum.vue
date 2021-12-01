@@ -165,7 +165,7 @@
         </template>
       </b-card>
     </b-col>
-    <b-modal id="modal-obrik" size="md" centered no-close-on-backdrop content-class="shadow" title="Objek Pemeriksaan" @submit="tambahObrik()" lazy>
+    <b-modal ok-title="Tambah" id="modal-obrik" size="md" centered no-close-on-backdrop content-class="shadow" title="Objek Pemeriksaan" @ok="tambahObrik">
       <b-row>
         <b-col cols="12" sm="12">
           <b-form-group label="Kantor Wilayah">
@@ -174,12 +174,12 @@
         </b-col>
         <b-col cols="12" sm="12">
           <b-form-group label="Satuan Kerja">
-            <v-select placeholder="Pilih Satuan Kerja" label="nama" :options="satkerOption" />
+            <v-select v-model="chooseSatker" placeholder="Pilih Satuan Kerja" label="nama" :options="satkerOption" />
           </b-form-group>
         </b-col>
         <b-col cols="12" sm="12">
           <b-form-group label="Urusan">
-            <v-select placeholder="Pilih Urusan" label="nama" :options="urusanOption" />
+            <v-select v-model="chooseUrusan" placeholder="Pilih Urusan" label="nama" :options="urusanOption" />
           </b-form-group>
         </b-col>
       </b-row>
@@ -247,6 +247,25 @@ export default {
     },
   },
   methods: {
+    tambahObrik(bvModal) {
+      if (this.chooseSatker === null || this.chooseSatker === '' || this.chooseUrusan === null || this.chooseUrusan === '') {
+        this.$swal({
+          title: 'Error!',
+          text: 'Data belum di Isi Lengkap!',
+          icon: 'error',
+        })
+        bvModal.preventDefault()
+        return false
+      }
+      this.$bvModal.hide('modal-obrik')
+
+      const dataObrik = {
+        satker: this.chooseSatker,
+        urusan: this.chooseUrusan,
+      }
+      this.fake.obrik.push(dataObrik)
+      return true
+    },
     tambahObrikModal() {
       this.$bvModal.show('modal-obrik')
     },
@@ -257,21 +276,57 @@ export default {
     hapusObrik(i) {
       this.fake.obrik.splice(i, 1)
     },
+    ubah() {
+      this.$swal({
+        title: 'Ubah Data ?',
+        text: 'Data Umum akan di ubah ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ok!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          this.$store.dispatch('app-perjadin/editUmum', this.fake).then(res => {
+            if (res.status === 200) {
+              // this.$store.commit('app-perjadin/SET_DETAIL', this.fake)
+              this.$swal({
+                title: 'Sukses!',
+                text: 'Data berhasil di ubah',
+                icon: 'success',
+                customClass: {
+                  confirmButton: 'btn btn-primary',
+                },
+                buttonsStyling: false,
+              })
+            }
+          })
+        }
+      })
+    },
   },
   mounted() {
     this.fake = _.cloneDeep(this.form)
+    console.info(this.fake)
   },
   setup() {
     const kanwilId = ref({
       nama: 'Aceh',
       id: 1,
     })
+    const chooseSatker = ref(null)
+    const chooseUrusan = ref(null)
     const edit = ref(false)
     const fake = ref(null)
     const tableCol = [{ key: 'no' }, { key: 'satker' }, { key: 'urusan' }]
     const tableColEdit = [{ key: 'no' }, { key: 'satker' }, { key: 'urusan' }, { key: 'action' }]
     return {
       kanwilId,
+      chooseSatker,
+      chooseUrusan,
       edit,
       fake,
       tableCol,

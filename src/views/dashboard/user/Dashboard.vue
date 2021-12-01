@@ -110,7 +110,6 @@ export default {
         y.susunan_tim.forEach(x => {
           const tt = x
           tt.tujuan = y.tujuan
-          console.info(tt)
           t.push(tt)
         })
 

@@ -157,7 +157,6 @@ export default {
           })
           .then(res => {
             this.dataMak = res.data
-            console.info(this.dataMak)
           })
       }
     },

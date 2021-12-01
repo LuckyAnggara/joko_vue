@@ -161,8 +161,6 @@ export default {
   methods: {
     formatRupiah,
     cek(x, y, z, i) {
-      console.info(x)
-      console.info(y)
       if (y > x) {
         this.dataTemp[i].pagu = y
       } else if (x > z) {

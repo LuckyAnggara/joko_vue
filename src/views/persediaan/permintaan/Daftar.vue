@@ -254,7 +254,6 @@ export default {
     },
   },
   mounted() {
-    console.info(this.userData.role)
     this.loadPermintaan()
     this.loadTahun()
     this.loadBidang()

@@ -142,4 +142,15 @@ export default {
       })
     },
   },
+  // EDIT
+  editUmum(ctx, data) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(`${axios.defaults.baseURL}perjadin/edit-umum`, data)
+        .then(response => {
+          resolve(response)
+        })
+        .catch(error => reject(error))
+    })
+  },
 }

@@ -136,8 +136,6 @@ export default {
   },
   beforeMount() {
     this.loadData()
-
-    console.info(this.$router.currentRoute.params)
   },
 
   methods: {

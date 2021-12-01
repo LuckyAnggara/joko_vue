@@ -115,7 +115,6 @@ export default {
       this.busyCekMak = !this.busyCekMak
       this.$store.dispatch('app-mak/cekKodeMak', { kode: this.form.kode }).then(res => {
         this.busyCekMak = !this.busyCekMak
-        console.info(res)
 
         if (res.data > 0) {
           this.kode = true
