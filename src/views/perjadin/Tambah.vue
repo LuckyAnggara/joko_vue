@@ -94,7 +94,6 @@ export default {
   },
   methods: {
     submit() {
-      this.show = !this.show
       this.$swal({
         title: 'Proses ?',
         text: 'Apa anda yakin Data Perjadin sudah sesuai ?',
@@ -107,7 +106,8 @@ export default {
         },
         buttonsStyling: false,
       }).then(result => {
-        if (result.value) {
+        if (result.isConfirmed) {
+          this.show = !this.show
           this.$store
             .dispatch('app-perjadin/storePerjadin', this.form)
             .then(res => {

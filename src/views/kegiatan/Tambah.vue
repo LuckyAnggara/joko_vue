@@ -197,9 +197,6 @@ export default {
         buttonsStyling: false,
       })
       this.file = new FormData()
-      // this.$router.push({
-      //   name: 'master-barang',
-      // })
     },
     error(x) {
       this.$swal({

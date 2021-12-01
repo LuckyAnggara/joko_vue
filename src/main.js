@@ -9,6 +9,7 @@ import App from './App.vue'
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css'
 import 'vue-slider-component/theme/default.css'
+import '@core/scss/vue/libs/vue-sweetalert.scss'
 
 // Global Components
 import './global-components'

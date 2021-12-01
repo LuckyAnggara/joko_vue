@@ -13,6 +13,7 @@ export default {
     jabatan: [],
     mak: [],
     kanwil: [],
+    jenisKegiatan: [],
   },
   getters: {
     getTahun: state => state.tahun,
@@ -25,6 +26,7 @@ export default {
     getJabatan: state => state.jabatan,
     getMak: state => state.mak,
     getKanwil: state => state.kanwil,
+    getJenisKegiatan: state => state.jenisKegiatan,
   },
   mutations: {
     SET_TAHUN(state, data) {
@@ -56,6 +58,9 @@ export default {
     },
     SET_KANWIL(state, data) {
       state.kanwil = data
+    },
+    SET_JENIS_KEGIATAN(state, data) {
+      state.jenisKegiatan = data
     },
   },
   actions: {

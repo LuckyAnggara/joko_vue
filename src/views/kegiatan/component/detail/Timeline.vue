@@ -10,6 +10,12 @@
               >Created By {{ data.user.pegawai.nama }} - {{ data.bidang.nama }} at <strong>{{ $moment(data.created_at).format('DD MMMM YYYY') }}</strong></em
             ></small
           >
+          <br />
+          <small
+            ><em
+              >Updated at <strong>{{ $moment(data.updated_at).format('DD MMMM YYYY') }}</strong></em
+            ></small
+          >
         </template>
       </b-card>
     </b-col>

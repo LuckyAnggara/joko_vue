@@ -21,7 +21,7 @@
                 <label>Tampilkan</label>
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
-              <b-col cols="6" lg="2" md="3" sm="3" v-if="userData.role === 'USER' ? true : false">
+              <b-col cols="6" lg="2" md="3" sm="3">
                 <label class="mr-1">Filter Status</label>
                 <v-select v-model="statusFilter" :options="statusOption" :clearable="false" />
               </b-col>
@@ -96,7 +96,7 @@
             <template #cell(status)="data">
               <div class="text-nowrap">
                 <template>
-                  <b-badge pill variant="light-primary" v-if="data.item.status === 'PENGAJUAN'"> {{ data.item.status }} </b-badge>
+                  <b-badge pill variant="light-primary" v-if="data.item.status === 'RENCANA'"> {{ data.item.status }} </b-badge>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI KEUANGAN'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="warning" v-if="data.item.status === 'VERIFIKASI REALISASI'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>
@@ -112,19 +112,6 @@
             <template #cell(actions)="data">
               <div class="text-nowrap">
                 <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
-                <b-dropdown variant="link" toggle-class="p-0" no-caret boundary="window">
-                  <template #button-content>
-                    <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-                  </template>
-                  <b-dropdown-item @click="kirim_keuangan(data.item.id)" v-if="data.item.status === 'PENGAJUAN' || data.item.status === 'REVISI KEUANGAN'">
-                    <feather-icon icon="" />
-                    <span class="align-middle ml-50">Kirim</span>
-                  </b-dropdown-item>
-                  <b-dropdown-item @click="log(data.item.log)">
-                    <feather-icon icon="" />
-                    <span class="align-middle ml-50">Log</span>
-                  </b-dropdown-item>
-                </b-dropdown>
               </div>
             </template>
           </b-table>
@@ -165,7 +152,7 @@
       ok-only
       no-close-on-backdrop
       content-class="shadow"
-      title="Log Pengajuan Perjadin"
+      title="Log Rencana Perjadin"
       ok-variant="danger"
       ok-title="Tutup"
       lazy
@@ -178,7 +165,7 @@
 <script>
 import { ref } from '@vue/composition-api'
 import { formatRupiah, truncate } from '@core/utils/filter'
-import { BModal, BTooltip, BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
+import { BModal, BTooltip, BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import Timeline from './component/LogTimeline.vue'
 
@@ -195,8 +182,6 @@ export default {
     BFormInput,
     BTable,
     BPagination,
-    BDropdown,
-    BDropdownItem,
     vSelect,
     Timeline,
   },
@@ -260,6 +245,12 @@ export default {
         ...this.$store.getters['app-general/getBidang'],
       ]
     },
+    statusOption() {
+      if (this.userData.role === 'USER') {
+        return ['SEMUA', 'RENCANA', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'VERIFIED PPK', 'SELESAI']
+      }
+      return ['SEMUA', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'VERIFIED PPK', 'SELESAI']
+    },
   },
   methods: {
     formatRupiah,
@@ -295,9 +286,9 @@ export default {
           if (this.userData.role === 'USER') {
             this.dataTemp = res.data
           } else if (this.userData.role === 'PPK') {
-            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN')
+            this.dataTemp = res.data.filter(x => x.status !== 'RENCANA')
           } else if (this.userData.role === 'ADMIN KEUANGAN') {
-            this.dataTemp = res.data.filter(x => x.status !== 'PENGAJUAN')
+            this.dataTemp = res.data.filter(x => x.status !== 'RENCANA')
           } else if (this.userData.role === 'BENDAHARA') {
             this.dataTemp = res.data.filter(x => x.status === 'VERIFIED PPK')
           }
@@ -386,7 +377,7 @@ export default {
     const isSortDirDesc = ref(true)
     const statusFilter = ref('SEMUA')
     const bidangFilter = ref({ nama: 'SEMUA', id: 0 })
-    const statusOption = ref(['SEMUA', 'PENGAJUAN', 'REVISI', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'SELESAI'])
+    const statusOption = ref(['SEMUA', 'RENCANA', 'REVISI', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'SELESAI'])
     return {
       catatan,
       userData,

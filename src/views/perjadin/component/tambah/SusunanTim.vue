@@ -22,10 +22,10 @@
             <b-col lg="3">
               <label>NAMA PEGAWAI </label>
             </b-col>
-            <b-col lg="2">
+            <b-col lg="3">
               <label>JABATAN </label>
             </b-col>
-            <b-col lg="3">
+            <b-col lg="2">
               <label>PERAN </label>
             </b-col>
             <b-col lg="1">
@@ -45,10 +45,10 @@
             <b-col lg="3">
               <v-select v-model="form.susunan_tim[index].pegawai" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
             </b-col>
-            <b-col lg="2">
+            <b-col lg="3">
               <b-form-input plaintext :value="form.susunan_tim[index].pegawai.jabatan.nama" />
             </b-col>
-            <b-col lg="3">
+            <b-col lg="2">
               <v-select v-model="form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
             </b-col>
             <b-col lg="1">

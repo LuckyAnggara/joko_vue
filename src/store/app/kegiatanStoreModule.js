@@ -118,6 +118,36 @@ export default {
           .catch(error => reject(error))
       })
     },
+    editRealisasi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}kegiatan/edit-realisasi`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    editMak(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}kegiatan/edit-mak`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    editUmum(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`${axios.defaults.baseURL}kegiatan/edit-umum`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     //
     fetchListRealisasiKegiatan(ctx, params) {
       return new Promise((resolve, reject) => {

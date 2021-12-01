@@ -138,7 +138,6 @@ export default {
         this.realisasi.ppk === null ||
         this.realisasi.bendahara === null
       ) {
-        console.info(this.realisasi)
         this.$swal({
           title: 'Opss!',
           text: 'Data belum lengkap!',
@@ -162,7 +161,7 @@ export default {
         },
         buttonsStyling: false,
       }).then(result => {
-        if (result.value) {
+        if (result.isConfirmed) {
           this.realisasi.id = this.data.id
           this.realisasi.user_data = this.userData
           this.show = !this.show

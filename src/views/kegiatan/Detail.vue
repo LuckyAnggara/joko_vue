@@ -9,19 +9,25 @@
         <div>
           <template v-if="userData.role === 'USER' && data.status === 'RENCANA' ? true : false">
             <b-button variant="outline-danger" class="mr-1" @click="destroy()"> Delete </b-button>
-            <b-button variant="outline-secondary" class="mr-1" @click="destroy()"> Edit </b-button>
-            <b-button variant="outline-primary" class="ml-1" @click="kirimKeuangan('VERIFIKASI KEUANGAN')" v-if="!inputRealisasi"> Kirim </b-button>
+            <b-button
+              variant="outline-primary"
+              class="ml-1"
+              @click="kirimKeuangan(data.status_realisasi === 'SUDAH' ? 'VERIFIKASI REALISASI' : 'VERIFIKASI KEUANGAN')"
+              v-if="!inputRealisasi"
+            >
+              Kirim
+            </b-button>
           </template>
           <template
             v-if="userData.role === 'ADMIN KEUANGAN' && data.status === 'VERIFIKASI KEUANGAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false"
           >
-            <b-button variant="outline-danger" class="mr-1" @click="retur(1, 'KEUANGAN')"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('PELAKSANAAN')"> Proses </b-button>
           </template>
           <template
             v-if="userData.role === 'ADMIN KEUANGAN' && data.status === 'VERIFIKASI REALISASI' ? (data.status_realisasi === 'SUDAH' ? true : false) : false"
           >
-            <b-button variant="outline-danger" class="mr-1" @click="retur(2, 'KEUANGAN')"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="verifikasiKeuangan('VERIFIKASI PPK')"> Proses </b-button>
           </template>
           <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
@@ -39,11 +45,11 @@
           </template>
           <template v-if="userData.role === 'PPK' && data.status === 'VERIFIKASI PPK' ? true : false">
             <b-button variant="danger" class="mr-1" @click="tolak()"> Tolak </b-button>
-            <b-button variant="outline-danger" class="mr-1" @click="retur(3, 'PPK')"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
             <b-button variant="primary" class="ml-1" @click="verifikasiPPK('VERIFIED PPK')"> Setuju </b-button>
           </template>
           <template v-if="userData.role === 'BENDAHARA' && data.status === 'VERIFIED PPK' ? true : false">
-            <b-button variant="outline-danger" class="mr-1" @click="retur(4, 'BENDAHARA')"> Retur </b-button>
+            <b-button variant="outline-danger" class="mr-1" @click="retur()"> Retur </b-button>
             <b-button variant="success" class="ml-1" @click="bayar('SELESAI')"> Bayar </b-button>
           </template>
         </div>
@@ -108,6 +114,36 @@ export default {
     },
   },
   computed: {
+    returOption() {
+      if (this.data.status === 'VERIFIKASI KEUANGAN') {
+        return {
+          maker: `${this.data.bidang.nama}`,
+        }
+      }
+      if (this.data.status === 'VERIFIKASI REALISASI') {
+        return {
+          maker: `${this.data.bidang.nama}`,
+        }
+      }
+      if (this.data.status === 'VERIFIKASI PPK') {
+        return {
+          maker: `${this.data.bidang.nama}`,
+          keuangan: 'KEUANGAN',
+          ppk: 'PPK',
+        }
+      }
+      if (this.data.status === 'VERIFIED PPK') {
+        return {
+          maker: `${this.data.bidang.nama}`,
+          keuangan: 'KEUANGAN',
+          ppk: 'PPK',
+        }
+      }
+      return {
+        maker: `${this.data.bidang.nama}`,
+        keuangan: 'KEUANGAN',
+      }
+    },
     data() {
       return this.$store.getters['app-kegiatan/getDetail']
     },
@@ -158,64 +194,78 @@ export default {
         }
       })
     },
-    retur(i, dari) {
-      let status = 'VERIFIKASI KEUANGAN'
-      switch (i) {
-        case 4:
-          status = 'VERIFIKASI PPK'
-          break
-        case 3:
-          status = 'VERIFIKASI REALISASI'
-          break
-        case 2:
-          status = 'PELAKSANAAN'
-          break
-        default:
-          status = 'VERIFIKASI KEUANGAN'
-      }
+    retur() {
       this.$swal({
-        title: 'Retur ?',
-        text: 'kegiatan akan dikembalikan untuk di revisi',
-        icon: 'warning',
-        input: 'textarea',
-        inputLabel: 'Catatan ?',
-        inputPlaceholder: 'Ketik catatan mu disini...',
-        inputAttributes: {
-          'aria-label': 'Ketik catatan mu disini',
-        },
+        title: 'Berkas akan di kembalikan ?',
+        input: 'select',
+        inputOptions: this.returOption,
+        inputPlaceholder: 'Retur ke...',
         showCancelButton: true,
-        confirmButtonText: 'Retur!',
+        confirmButtonText: 'Ok!',
         customClass: {
           confirmButton: 'btn btn-danger',
           cancelButton: 'btn btn-outline-primary ml-1',
         },
-        buttonsStyling: false,
       }).then(result => {
-        console.info(result)
         if (result.isConfirmed) {
-          this.$store
-            .dispatch('app-kegiatan/statusKegiatan', {
-              id: this.data.id,
-              status,
-              status_log: `RETUR DARI ${dari}`,
-              message_log: 'kegiatan di retur oleh keuangan untuk di revisi ',
-              user_data: this.userData,
-              catatan: result.value,
-            })
-            .then(x => {
-              if (x.status === 200) {
-                this.$swal({
-                  title: 'Sukses!',
-                  text: 'kegiatan berhasil di Retur !',
-                  icon: 'success',
-                  customClass: {
-                    confirmButton: 'btn btn-primary',
-                  },
-                  buttonsStyling: false,
-                })
-                this.$router.push({ name: 'kegiatan-daftar' })
+          this.$swal({
+            title: `Retur ke ${result.value} ?`,
+            text: 'kegiatan akan dikembalikan untuk di revisi',
+            icon: 'warning',
+            input: 'textarea',
+            inputLabel: 'Catatan ?',
+            inputPlaceholder: 'Ketik catatan mu disini...',
+            inputAttributes: {
+              'aria-label': 'Ketik catatan mu disini',
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Retur!',
+            customClass: {
+              confirmButton: 'btn btn-danger',
+              cancelButton: 'btn btn-outline-primary ml-1',
+            },
+            buttonsStyling: false,
+          }).then(y => {
+            if (y.isConfirmed) {
+              let status = 'RENCANA'
+              switch (result.value) {
+                case 'KEUANGAN':
+                  status = 'VERIFIKASI KEUANGAN'
+                  break
+                case 'PPK':
+                  status = 'VERIFIKASI PPK'
+                  break
+                case 'BENDAHARA':
+                  status = 'BENDAHARA'
+                  break
+                default:
+                  status = 'RENCANA'
               }
-            })
+              this.$store
+                .dispatch('app-kegiatan/statusKegiatan', {
+                  id: this.data.id,
+                  status,
+                  status_log: `RETUR DARI ${this.userData.role}`,
+                  message_log: `kegiatan di retur oleh ${this.userData.role} untuk di revisi `,
+                  user_data: this.userData,
+                  catatan: y.value,
+                })
+                .then(x => {
+                  if (x.status === 200) {
+                    this.$swal({
+                      title: 'Sukses!',
+                      text: `kegiatan berhasil di Retur ke ${result.value} !`,
+                      icon: 'success',
+                      customClass: {
+                        confirmButton: 'btn btn-primary',
+                      },
+                      buttonsStyling: false,
+                    })
+                    this.$router.push({ name: 'kegiatan-daftar' })
+                  }
+                })
+            }
+          })
         }
       })
     },
@@ -238,7 +288,6 @@ export default {
         },
         buttonsStyling: false,
       }).then(result => {
-        console.info(result)
         if (result.isConfirmed) {
           this.$store
             .dispatch('app-kegiatan/statusKegiatan', {
@@ -469,3 +518,7 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
+</style>
