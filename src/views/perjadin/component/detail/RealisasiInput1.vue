@@ -30,33 +30,73 @@
                 </b-col>
                 <b-col cols="12" lg="12" md="12" sm="12">
                   <b-table small responsive :fields="tableCol" :items="[...tim]" striped bordered>
-                    <!-- <template #cell(nama_pegawai)="data">
-                  {{ data.item.pegawai.nama }}
-                </template> -->
                     <template #cell(total_harian)>
+                      <ul class="list-unstyled" v-for="i in tim.uang_harian" :key="i.id">
+                        <li>
+                          -
+                          {{ i.jumlah_hari }}
+                          @
+                          {{ formatRupiah(i.uang_harian) }} = {{ formatRupiah(parseFloat(i.jumlah_hari) * parseFloat(i.uang_harian)) }}
+                          <b-badge variant="light-success" v-if="i.hari_riil === true">
+                            riil
+                          </b-badge>
+                        </li>
+                      </ul>
+                      <hr />
                       {{ formatRupiah(tim.total_harian) }}
                     </template>
                     <template #cell(total_hotel)>
+                      <ul class="list-unstyled">
+                        <li v-for="i in tim.uang_hotel" :key="i.id">
+                          -
+                          {{ i.jumlah_malam }}
+                          @
+                          {{ formatRupiah(i.uang_hotel) }} = {{ formatRupiah(parseFloat(i.jumlah_malam) * parseFloat(i.uang_hotel)) }}
+                          <b-badge variant="light-danger">
+                            {{ i.jenis_hotel === 0 ? 'FULL' : '30%' }}
+                          </b-badge>
+                          <b-badge variant="light-success" v-if="i.hotel_riil === true">
+                            riil
+                          </b-badge>
+                        </li>
+                      </ul>
+                      <hr />
                       {{ formatRupiah(tim.total_hotel) }}
-                      <b-badge variant="light-danger">
-                        {{ tim.jenis_hotel === 0 ? 'FULL' : '30%' }}
-                      </b-badge>
                     </template>
-                    <template #cell(udara)>
-                      {{ formatRupiah(tim.udara) }}
+                    <template #cell(transport)>
+                      <ul class="list-unstyled">
+                        <li v-for="i in tim.transport" :key="i.id">
+                          -
+                          {{ i.jenis_transport }}
+                          =
+                          {{ formatRupiah(i.total) }}
+
+                          <b-badge variant="light-success" v-if="i.transport_riil === true">
+                            riil
+                          </b-badge>
+                        </li>
+                      </ul>
+                      <hr />
+                      {{ formatRupiah(tim.total_transport) }}
                     </template>
-                    <template #cell(laut)>
-                      {{ formatRupiah(tim.laut) }}
+                    <template #cell(taksi)>
+                      <ul class="list-unstyled">
+                        <li>
+                          - Jakarta = {{ formatRupiah(tim.taksi_jakarta) }}
+                          <b-badge variant="light-success" v-if="tim.jakarta_riil === true">
+                            riil
+                          </b-badge>
+                        </li>
+
+                        <li>
+                          - Provinsi = {{ formatRupiah(tim.taksi_provinsi) }}
+                          <b-badge variant="light-success" v-if="tim.provinsi_riil === true">
+                            riil
+                          </b-badge>
+                        </li>
+                      </ul>
                     </template>
-                    <template #cell(darat)>
-                      {{ formatRupiah(tim.darat) }}
-                    </template>
-                    <template #cell(taksi_jakarta)>
-                      {{ formatRupiah(tim.taksi_jakarta) }}
-                    </template>
-                    <template #cell(taksi_provinsi)>
-                      {{ formatRupiah(tim.taksi_provinsi) }}
-                    </template>
+
                     <template #cell(representatif)>
                       {{ formatRupiah(tim.representatif) }}
                     </template>
@@ -71,12 +111,20 @@
                       {{ formatRupiah(tim.total) }}
                     </template>
 
-                    <template #cell(actions)="data">
+                    <template #cell(actions)>
+                      <div class="text-nowrap" v-if="!proses">
+                        <b-link @click="deletePegawai(index)" class="font-weight-bold">
+                          <feather-icon icon="TrashIcon" size="20" />
+                        </b-link>
+                      </div>
+                    </template>
+
+                    <!-- <template #cell(actions)="data">
                       <b-dropdown boundary="window" variant="link" no-caret v-if="!proses">
                         <template #button-content>
                           <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                         </template>
-                        <b-dropdown-item :to="{ name: 'apps-users-view', params: { id: data.item.id } }">
+                        <b-dropdown-item>
                           <feather-icon icon="FileTextIcon" />
                           <span class="align-middle ml-50">Tambah Lampiran</span>
                         </b-dropdown-item>
@@ -89,7 +137,7 @@
                           <span class="align-middle ml-50">Delete</span>
                         </b-dropdown-item>
                       </b-dropdown>
-                    </template>
+                    </template> -->
                   </b-table>
                 </b-col>
               </b-row>
@@ -125,6 +173,7 @@
       size="lg"
       scrollable
       no-close-on-backdrop
+      centered
       content-class="shadow"
       title="Input Realisasi "
       @hidden="resetModal"
@@ -177,51 +226,46 @@
                 Uang Harian
               </h5>
             </b-col>
-            <b-tabs>
-              <!-- Render Tabs, supply a unique `key` to each tab -->
-              <b-tab v-for="i in tabs" :key="'dyn-tab-' + i" :title="'Uang Harian ' + i">
-                <b-col cols="12">
+            <b-col cols="12">
+              <b-tabs>
+                <!-- Render Tabs, supply a unique `key` to each tab -->
+                <b-tab lazy v-for="(i, index) in realisasi.uang_harian" :key="'dyn-tab-' + index" :title="'Uang Harian ' + (index + 1)">
                   <b-form-group label="Riil" label-cols-md="4">
-                    <b-form-checkbox v-model="realisasi.hari_riil" value="true" class="custom-control-primary mt-50">
+                    <b-form-checkbox v-model="i.hari_riil" checked="true" switch class="custom-control-primary mt-50">
                       Pengeluaran Rill
                     </b-form-checkbox>
                   </b-form-group>
                   <b-form-group label="Jumlah Hari" label-cols-md="4">
-                    <b-form-input v-model="realisasi.jumlah_hari" type="number" placeholder="0" />
+                    <b-form-input v-model="i.jumlah_hari" type="number" placeholder="0" />
                   </b-form-group>
                   <b-form-group label="Nominal" label-cols-md="4">
-                    <b-form-input v-model="realisasi.uang_harian" type="number" placeholder="Rp. 0" />
+                    <b-form-input v-model="i.uang_harian" type="number" placeholder="Rp. 0" />
                   </b-form-group>
                   <hr />
                   <b-form-group label="Total" label-cols-md="4">
-                    <b-form-input
-                      :value="formatRupiah(parseFloat(realisasi.uang_harian) * parseFloat(realisasi.jumlah_hari))"
-                      type="text"
-                      placeholder="Rp. 0"
-                      readonly
-                    />
+                    <b-form-input :value="formatRupiah(parseFloat(i.uang_harian) * parseFloat(i.jumlah_hari))" type="text" placeholder="Rp. 0" readonly />
                   </b-form-group>
-                </b-col>
-                <b-button size="sm" variant="danger" class="float-right" @click="closeTab(i)">
-                  Close tab
-                </b-button>
-              </b-tab>
+                  <b-button size="sm" variant="danger" class="float-right" @click="closeTab(index, realisasi.uang_harian)">
+                    <feather-icon icon="TrashIcon" />
+                  </b-button>
+                </b-tab>
 
-              <!-- New Tab Button (Using tabs-end slot) -->
-              <template #tabs-end>
-                <b-nav-item role="presentation" @click.prevent="newTab">
-                  <b>+</b>
-                </b-nav-item>
-              </template>
+                <!-- New Tab Button (Using tabs-end slot) -->
+                <template #tabs-end>
+                  <b-nav-item role="presentation" @click.prevent="newTab('HARIAN')">
+                    <b>+</b>
+                  </b-nav-item>
+                </template>
 
-              <!-- Render this if no tabs -->
-              <template #empty>
-                <div class="text-center text-muted">
-                  There are no open tabs<br />
-                  Open a new tab using the <b>+</b> button above.
-                </div>
-              </template>
-            </b-tabs>
+                <!-- Render this if no tabs -->
+                <template #empty>
+                  <div class="text-center text-muted">
+                    Tidak ada Tab terbuka<br />
+                    Buka tab baru menggunakan tombol <b>+</b> button diatas.
+                  </div>
+                </template>
+              </b-tabs>
+            </b-col>
           </b-row>
         </tab-content>
         <tab-content title="Hotel">
@@ -232,29 +276,57 @@
               </h5>
             </b-col>
             <b-col cols="12">
-              <b-form-group label="Riil" label-cols-md="4">
-                <b-form-checkbox v-model="realisasi.hotel_riil" value="true" class="custom-control-primary mt-50">
-                  Pengeluaran Rill
-                </b-form-checkbox>
-              </b-form-group>
-              <b-form-group label="Jenis" label-cols-md="4">
-                <v-select v-model="realisasi.jenis_hotel" :reduce="x => x.key" placeholder="Jenis Pengunaan Uang Hotel" :options="hotelOption" label="nama" />
-              </b-form-group>
-              <b-form-group label="Jumlah Malam" label-cols-md="4">
-                <b-form-input v-model="realisasi.jumlah_malam" type="number" placeholder="0" />
-              </b-form-group>
-              <b-form-group label="Harga" label-cols-md="4">
-                <b-form-input v-model="realisasi.uang_hotel" type="number" placeholder="Rp. 0" />
-              </b-form-group>
-              <hr />
-              <b-form-group label="Total" label-cols-md="4">
-                <b-form-input
-                  :value="formatRupiah(parseFloat(realisasi.jumlah_malam) * parseFloat(realisasi.uang_hotel))"
-                  type="text"
-                  placeholder="Rp. 0"
-                  readonly
-                />
-              </b-form-group>
+              <b-tabs>
+                <!-- Render Tabs, supply a unique `key` to each tab -->
+                <b-tab lazy v-for="(i, index) in realisasi.uang_hotel" :key="'dyn-tab-' + index" :title="'Hotel ' + (index + 1)">
+                  <b-form-group label="Riil" label-cols-md="4">
+                    <b-form-checkbox v-model="i.hotel_riil" checked="true" switch class="custom-control-primary mt-50">
+                      Pengeluaran Rill
+                    </b-form-checkbox>
+                  </b-form-group>
+                  <b-form-group label="Jenis" label-cols-md="4">
+                    <v-select
+                      v-model="i.jenis_hotel"
+                      :reduce="x => x.key"
+                      placeholder="Jenis Pengunaan Uang Hotel"
+                      :options="hotelOption"
+                      label="nama"
+                      :clearable="false"
+                    />
+                  </b-form-group>
+                  <b-form-group label="Nama Hotel" label-cols-md="4" v-if="i.jenis_hotel === 0">
+                    <b-form-input v-model="i.nama_hotel" placeholder="Nama Hotel" :options="hotelOption" label="nama" />
+                  </b-form-group>
+                  <b-form-group label="Jumlah Malam" label-cols-md="4">
+                    <b-form-input v-model="i.jumlah_malam" type="number" placeholder="0" />
+                  </b-form-group>
+                  <b-form-group label="Harga" label-cols-md="4">
+                    <b-form-input v-model="i.uang_hotel" type="number" placeholder="Rp. 0" />
+                  </b-form-group>
+                  <hr />
+                  <b-form-group label="Total" label-cols-md="4">
+                    <b-form-input :value="formatRupiah(parseFloat(i.jumlah_malam) * parseFloat(i.uang_hotel))" type="text" placeholder="Rp. 0" readonly />
+                  </b-form-group>
+                  <b-button size="sm" variant="danger" class="float-right" @click="closeTab(index, realisasi.uang_hotel)">
+                    <feather-icon icon="TrashIcon" />
+                  </b-button>
+                </b-tab>
+
+                <!-- New Tab Button (Using tabs-end slot) -->
+                <template #tabs-end>
+                  <b-nav-item role="presentation" @click.prevent="newTab('HOTEL')">
+                    <b>+</b>
+                  </b-nav-item>
+                </template>
+
+                <!-- Render this if no tabs -->
+                <template #empty>
+                  <div class="text-center text-muted">
+                    Tidak ada Tab terbuka<br />
+                    Buka tab baru menggunakan tombol <b>+</b> button diatas.
+                  </div>
+                </template>
+              </b-tabs>
             </b-col>
           </b-row>
         </tab-content>
@@ -266,32 +338,41 @@
               </h5>
             </b-col>
             <b-col cols="12">
-              <b-form-group label="Riil" label-cols-md="4">
-                <b-form-checkbox v-model="realisasi.darat_riil" value="true" class="custom-control-primary mt-50">
-                  Pengeluaran Rill Darat
-                </b-form-checkbox>
-              </b-form-group>
-              <b-form-group label="Darat" label-cols-md="4">
-                <b-form-input v-model="realisasi.darat" type="number" placeholder="Rp. 0" />
-              </b-form-group>
-              <hr />
-              <b-form-group label="Riil" label-cols-md="4">
-                <b-form-checkbox v-model="realisasi.laut_riil" value="true" class="custom-control-primary mt-50">
-                  Pengeluaran Rill Laut
-                </b-form-checkbox>
-              </b-form-group>
-              <b-form-group label="Laut" label-cols-md="4">
-                <b-form-input v-model="realisasi.laut" type="number" placeholder="Rp. 0" />
-              </b-form-group>
-              <hr />
-              <b-form-group label="Riil" label-cols-md="4">
-                <b-form-checkbox v-model="realisasi.udara_rill" value="true" class="custom-control-primary mt-50">
-                  Pengeluaran Rill Udara
-                </b-form-checkbox>
-              </b-form-group>
-              <b-form-group label="Udara" label-cols-md="4">
-                <b-form-input v-model="realisasi.udara" type="number" placeholder="Rp. 0" />
-              </b-form-group>
+              <b-tabs>
+                <!-- Render Tabs, supply a unique `key` to each tab -->
+                <b-tab lazy v-for="(i, index) in realisasi.transport" :key="'dyn-tab-' + index" :title="'Transport ' + (index + 1)">
+                  <b-form-group label="Riil" label-cols-md="4">
+                    <b-form-checkbox v-model="i.transport_riil" checked="true" switch class="custom-control-primary mt-50">
+                      Pengeluaran Rill
+                    </b-form-checkbox>
+                  </b-form-group>
+                  <b-form-group label="Jenis" label-cols-md="4">
+                    <v-select v-model="i.jenis_transport" placeholder="Jenis Pengunaan Transport" :options="transportOption" :clearable="false" />
+                  </b-form-group>
+
+                  <b-form-group label="Darat" label-cols-md="4">
+                    <b-form-input v-model="i.total" type="number" placeholder="Rp. 0" />
+                  </b-form-group>
+                  <b-button size="sm" variant="danger" class="float-right" @click="closeTab(index, realisasi.transport)">
+                    <feather-icon icon="TrashIcon" />
+                  </b-button>
+                </b-tab>
+
+                <!-- New Tab Button (Using tabs-end slot) -->
+                <template #tabs-end>
+                  <b-nav-item role="presentation" @click.prevent="newTab('TRANSPORT')">
+                    <b>+</b>
+                  </b-nav-item>
+                </template>
+
+                <!-- Render this if no tabs -->
+                <template #empty>
+                  <div class="text-center text-muted">
+                    Tidak ada Tab terbuka<br />
+                    Buka tab baru menggunakan tombol <b>+</b> button diatas.
+                  </div>
+                </template>
+              </b-tabs>
             </b-col>
           </b-row>
         </tab-content>
@@ -304,7 +385,7 @@
             </b-col>
             <b-col cols="12">
               <b-form-group label="Riil" label-cols-md="4">
-                <b-form-checkbox v-model="realisasi.jakarta_riil" value="true" class="custom-control-primary mt-50">
+                <b-form-checkbox v-model="realisasi.jakarta_riil" checked="true" switch class="custom-control-primary mt-50">
                   Pengeluaran Rill Taksi Jakarta
                 </b-form-checkbox>
               </b-form-group>
@@ -313,7 +394,7 @@
               </b-form-group>
               <hr />
               <b-form-group label="Riil" label-cols-md="4">
-                <b-form-checkbox v-model="realisasi.provinsi_riil" value="true" class="custom-control-primary mt-50">
+                <b-form-checkbox v-model="realisasi.provinsi_riil" checked="true" switch class="custom-control-primary mt-50">
                   Pengeluaran Rill Taksi Provinsi
                 </b-form-checkbox>
               </b-form-group>
@@ -378,8 +459,8 @@ import {
   BTab,
   BNavItem,
   BFormCheckbox,
-  BDropdown,
-  BDropdownItem,
+  // BDropdown,
+  // BDropdownItem,
   BOverlay,
   BFormDatepicker,
   BButton,
@@ -397,6 +478,7 @@ import {
 import Ripple from 'vue-ripple-directive'
 import { formatRupiah, truncate } from '@core/utils/filter'
 import vSelect from 'vue-select'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 export default {
   components: {
@@ -406,8 +488,8 @@ export default {
     BTab,
     BNavItem,
     BFormCheckbox,
-    BDropdown,
-    BDropdownItem,
+    // BDropdown,
+    // BDropdownItem,
     BOverlay,
     BFormDatepicker,
     BButton,
@@ -422,21 +504,40 @@ export default {
     BFormInput,
     BFormFile,
     vSelect,
+    // eslint-disable-next-line vue/no-unused-components
+    ToastificationContent,
   },
   directives: {
     Ripple,
   },
   computed: {
+    total_harian() {
+      let harian = 0
+      this.realisasi.uang_harian.forEach(x => {
+        harian += parseFloat(x.jumlah_hari) * parseFloat(x.uang_harian)
+      })
+      return harian
+    },
+    total_hotel() {
+      let hotel = 0
+      this.realisasi.uang_hotel.forEach(x => {
+        hotel += parseFloat(x.jumlah_malam) * parseFloat(x.uang_hotel)
+      })
+      return hotel
+    },
+    total_transport() {
+      let transport = 0
+      this.realisasi.transport.forEach(x => {
+        transport += parseFloat(x.total)
+      })
+      return transport
+    },
     total() {
       const b = this.realisasi
-      const harian = parseFloat(b.uang_harian) * parseFloat(b.jumlah_hari)
-      const hotel = parseFloat(b.uang_hotel) * parseFloat(b.jumlah_malam)
       return (
-        parseFloat(harian) +
-        parseFloat(hotel) +
-        parseFloat(b.udara) +
-        parseFloat(b.laut) +
-        parseFloat(b.darat) +
+        parseFloat(this.total_harian) +
+        parseFloat(this.total_hotel) +
+        parseFloat(this.total_transport) +
         parseFloat(b.taksi_jakarta) +
         parseFloat(b.taksi_provinsi) +
         parseFloat(b.representatif)
@@ -462,15 +563,38 @@ export default {
   methods: {
     truncate,
     formatRupiah,
-    closeTab(x) {
-      for (let i = 0; i < this.tabs.length; i += 1) {
-        if (this.tabs[i] === x) {
-          this.tabs.splice(i, 1)
-        }
-      }
+
+    closeTab(i, array) {
+      array.splice(i, 1)
     },
-    newTab() {
-      this.tabs.push((this.tabCounter += 1))
+    newTab(x) {
+      if (x === 'HARIAN') {
+        const uangHarian = {
+          jumlah_hari: 0,
+          uang_harian: 0,
+          jumlah_malam: 0,
+          hari_riil: true,
+          total: 0,
+        }
+        this.realisasi.uang_harian.push(uangHarian)
+      } else if (x === 'HOTEL') {
+        const uangHotel = {
+          nama_hotel: null,
+          jenis_hotel: 0,
+          uang_hotel: 0,
+          jumlah_malam: 0,
+          hotel_riil: false,
+          total: 0,
+        }
+        this.realisasi.uang_hotel.push(uangHotel)
+      } else if (x === 'TRANSPORT') {
+        const transport = {
+          transport_riil: false,
+          jenis_transport: 'UDARA',
+          total: 0,
+        }
+        this.realisasi.transport.push(transport)
+      }
     },
     /* eslint-disable */
     uploadLampiran(e) {
@@ -579,28 +703,49 @@ export default {
       this.selectedPegawai = null
       this.realisasi.tanggal_berangkat = null
       this.realisasi.tanggal_kembali = null
-      this.realisasi.jumlah_hari = 0
-      this.realisasi.uang_harian = 0
-      this.realisasi.jumlah_malam = 0
-      this.realisasi.uang_hotel = 0
-      this.realisasi.udara = 0
-      this.realisasi.laut = 0
-      this.realisasi.darat = 0
+      this.realisasi.total_hotel = 0
+      this.realisasi.total_harian = 0
+      this.realisasi.total_transport = 0
+      this.realisasi.uang_harian = [
+        {
+          jumlah_hari: 0,
+          uang_harian: 0,
+          jumlah_malam: 0,
+          hari_riil: true,
+          total: 0,
+        },
+      ]
+      this.realisasi.uang_hotel = [
+        {
+          nama_hotel: null,
+          jenis_hotel: 0,
+          uang_hotel: 0,
+          jumlah_malam: 0,
+          hotel_riil: false,
+          total: 0,
+        },
+      ]
+      this.realisasi.transport = [
+        {
+          jenis_transport: 'DARAT',
+          total: 0,
+          transport_riil: false,
+        },
+      ]
       this.realisasi.taksi_jakarta = 0
       this.realisasi.taksi_provinsi = 0
       this.realisasi.representatif = 0
       this.realisasi.total = 0
-      this.realisasi.jenis_hotel = 0
-      this.hari_riil = true
-      this.hotel_riil = false
-      this.darat_riil = false
-      this.laut_riil = false
-      this.pesawat_riil = false
       this.jakarta_riil = false
       this.provinsi_riil = false
-      this.tabs = [1, 2]
-      this.tabCounter = 1
-      this.realisasi.lampiran = []
+      this.realisasi.lampiran = {
+        harian: [],
+        hotel: [],
+        transport: [],
+        taksi: [],
+        representatif: [],
+        lainnya: [],
+      }
     },
     tambahRealisasi() {
       if (this.realisasi.tanggal_berangkat === null || this.realisasi.tanggal_kembali === null) {
@@ -619,29 +764,19 @@ export default {
         pegawai: this.selectedPegawai,
         tanggal_berangkat: this.realisasi.tanggal_berangkat,
         tanggal_kembali: this.realisasi.tanggal_kembali,
-        jumlah_hari: this.realisasi.jumlah_hari,
         uang_harian: this.realisasi.uang_harian,
-        total_harian: parseFloat(this.realisasi.jumlah_hari) * parseFloat(this.realisasi.uang_harian),
-        jumlah_malam: this.realisasi.jumlah_malam,
         uang_hotel: this.realisasi.uang_hotel,
-        total_hotel: parseFloat(this.realisasi.jumlah_malam) * parseFloat(this.realisasi.uang_hotel),
-        udara: this.realisasi.udara,
-        laut: this.realisasi.laut,
-        darat: this.realisasi.darat,
+        transport: this.realisasi.transport,
+        total_hotel: this.total_hotel,
+        total_harian: this.total_harian,
+        total_transport: this.total_transport,
         taksi_jakarta: this.realisasi.taksi_jakarta,
         taksi_provinsi: this.realisasi.taksi_provinsi,
+        jakarta_riil: this.realisasi.jakarta_riil,
+        provinsi_riil: this.realisasi.provinsi_riil,
         representatif: this.realisasi.representatif,
-        jenis_hotel: this.realisasi.jenis_hotel,
-        total:
-          parseFloat(parseFloat(this.realisasi.jumlah_hari) * parseFloat(this.realisasi.uang_harian)) +
-          parseFloat(parseFloat(this.realisasi.jumlah_malam) * parseFloat(this.realisasi.uang_hotel)) +
-          parseFloat(this.realisasi.udara) +
-          parseFloat(this.realisasi.laut) +
-          parseFloat(this.realisasi.darat) +
-          parseFloat(this.realisasi.taksi_jakarta) +
-          parseFloat(this.realisasi.taksi_provinsi) +
-          parseFloat(this.realisasi.representatif),
         lampiran: this.realisasi.lampiran,
+        total: this.total,
       }
       this.data.realisasi.push(realisasi)
       this.selectedPegawai = {
@@ -652,6 +787,23 @@ export default {
     },
     deletePegawai(i) {
       this.data.realisasi.splice(i, 1)
+      this.showToast('success', 'top-center', 'Data berhasil di hapus')
+    },
+    showToast(variant, position, text) {
+      this.$toast(
+        {
+          component: ToastificationContent,
+          props: {
+            title: 'Berhasil',
+            icon: 'CheckIcon',
+            text,
+            variant,
+          },
+        },
+        {
+          position,
+        },
+      )
     },
   },
   setup() {
@@ -661,6 +813,7 @@ export default {
       { key: 0, nama: 'FULL' },
       { key: 1, nama: '30%' },
     ]
+    const transportOption = ['UDARA', 'LAUT', 'DARAT']
     const titleLoading = 'Proses realisasi ....'
     const processing = ref(false)
     const show = ref(false)
@@ -677,38 +830,53 @@ export default {
       pegawai: {},
       tanggal_berangkat: null,
       tanggal_kembali: null,
-      jumlah_hari: 0,
-      uang_harian: 0,
-      jumlah_malam: 0,
-      uang_hotel: 0,
-      udara: 0,
-      laut: 0,
-      darat: 0,
+      uang_harian: [
+        {
+          jumlah_hari: 0,
+          uang_harian: 0,
+          jumlah_malam: 0,
+          hari_riil: true,
+          total: 0,
+        },
+      ],
+      uang_hotel: [
+        {
+          nama_hotel: null,
+          jenis_hotel: 0,
+          jumlah_hari: 0,
+          uang_hotel: 0,
+          jumlah_malam: 0,
+          hotel_riil: false,
+          total: 0,
+        },
+      ],
+      transport: [
+        {
+          jenis_transport: 'UDARA',
+          total: 0,
+          transport_riil: false,
+        },
+      ],
       taksi_jakarta: 0,
       taksi_provinsi: 0,
       representatif: 0,
       total: 0,
-      jenis_hotel: 0,
-      lampiran: [],
-      hari_riil: true,
-      hotel_riil: false,
-      darat_riil: false,
-      laut_riil: false,
-      pesawat_riil: false,
+      lampiran: {
+        harian: ref([]),
+        hotel: ref([]),
+        transport: ref([]),
+        taksi: ref([]),
+        representatif: ref([]),
+        lainnya: ref([]),
+      },
       jakarta_riil: false,
       provinsi_riil: false,
     })
     const tableCol = [
-      // { key: 'nama_pegawai' },
-      // { key: 'jumlah_hari', label: 'hari' },
       { key: 'total_harian' },
-      // { key: 'jumlah_malam', label: 'malam' },
       { key: 'total_hotel' },
-      { key: 'udara' },
-      { key: 'laut' },
-      { key: 'darat' },
-      { key: 'taksi_jakarta' },
-      { key: 'taksi_provinsi' },
+      { key: 'transport' },
+      { key: 'taksi' },
       { key: 'representatif' },
       { key: 'total' },
       { key: 'lampiran' },
@@ -718,6 +886,7 @@ export default {
       tabs,
       tabCounter,
       hotelOption,
+      transportOption,
       titleLoading,
       processing,
       show,

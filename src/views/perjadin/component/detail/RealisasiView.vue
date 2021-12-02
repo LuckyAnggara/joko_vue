@@ -144,7 +144,13 @@
         <template #footer>
           <small
             ><em
-              >Created By {{ form.user.pegawai.nama }} - {{ form.bidang.nama }} at <strong>{{ $moment(form.created_at).format('DD MMMM YYYY') }}</strong></em
+              >Created by {{ form.user.pegawai.nama }} - {{ form.bidang.nama }} at <strong>{{ $moment(form.created_at).format('DD MMMM YYYY') }}</strong></em
+            ></small
+          >
+          <br />
+          <small
+            ><em
+              >Updated at <strong>{{ $moment(form.updated_at).format('DD MMMM YYYY') }}</strong></em
             ></small
           >
         </template>
@@ -165,10 +171,56 @@
     >
       <b-row>
         <b-col>
+          <span>Harian</span>
           <ol>
-            <li v-for="item in lampiran" :key="item.id" class="mb-1">
+            <li v-for="item in lampiran.filter(x => x.jenis === 'HARIAN')" :key="item.id" class="mb-1">
               <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
-                <feather-icon icon="FileIcon" size="18" class="ml-1" @click="showLampiran(data.item.lampiran)" />
+                <feather-icon icon="FileIcon" size="18" class="ml-1" />
+                {{ item.nama }}
+              </b-link>
+            </li>
+          </ol>
+          <span>Hotel</span>
+          <ol>
+            <li v-for="item in lampiran.filter(x => x.jenis === 'HOTEL')" :key="item.id" class="mb-1">
+              <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
+                <feather-icon icon="FileIcon" size="18" class="ml-1" />
+                {{ item.nama }}
+              </b-link>
+            </li>
+          </ol>
+          <span>Transport</span>
+          <ol>
+            <li v-for="item in lampiran.filter(x => x.jenis === 'TRANSPORT')" :key="item.id" class="mb-1">
+              <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
+                <feather-icon icon="FileIcon" size="18" class="ml-1" />
+                {{ item.nama }}
+              </b-link>
+            </li>
+          </ol>
+          <span>Taksi</span>
+          <ol>
+            <li v-for="item in lampiran.filter(x => x.jenis === 'TAKSI')" :key="item.id" class="mb-1">
+              <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
+                <feather-icon icon="FileIcon" size="18" class="ml-1" />
+                {{ item.nama }}
+              </b-link>
+            </li>
+          </ol>
+          <span>Representatif</span>
+          <ol>
+            <li v-for="item in lampiran.filter(x => x.jenis === 'REPRESENTATIF')" :key="item.id" class="mb-1">
+              <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
+                <feather-icon icon="FileIcon" size="18" class="ml-1" />
+                {{ item.nama }}
+              </b-link>
+            </li>
+          </ol>
+          <span>Lainnya</span>
+          <ol>
+            <li v-for="item in lampiran.filter(x => x.jenis === 'LAINNYA')" :key="item.id" class="mb-1">
+              <b-link :href="urlGet(item.id, 'perjadin', 'realisasi')" class="font-weight-bold" target="_blank">
+                <feather-icon icon="FileIcon" size="18" class="ml-1" />
                 {{ item.nama }}
               </b-link>
             </li>
@@ -213,7 +265,6 @@
       id="modal-tambah-lampiran"
       size="md"
       centered
-      scrollable
       ok-only
       no-close-on-backdrop
       content-class="shadow"
@@ -225,6 +276,9 @@
     >
       <b-row>
         <b-col cols="12">
+          <b-form-group label="Jenis Lampiran / Bukti">
+            <v-select v-model="upload.jenis" placeholder="Jenis Lampiran" label="name" :options="jenisOption" />
+          </b-form-group>
           <b-form-group label="Lampiran">
             <b-form-file
               @change="uploadLampiran"
@@ -267,6 +321,7 @@ import {
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import { urlGet, formatRupiah, dprGet, sptjmGet, kuitansiGet } from '@core/utils/filter'
+import vSelect from 'vue-select'
 
 export default {
   components: {
@@ -287,6 +342,7 @@ export default {
     BCol,
     BCardBody,
     BTable,
+    vSelect,
   },
   directives: {
     Ripple,
@@ -336,17 +392,41 @@ export default {
         return false
       }
       for (let i = 0; i < selectedFiles.length; i++) {
-        this.upload.push(selectedFiles[i])
+        this.upload.file.push(selectedFiles[i])
       }
       /* eslint-enable */
     },
-    submit() {
-      if (this.upload.length > 0) {
-        // this.show = !this.show
+    submit(bvModalEvt) {
+      bvModalEvt.preventDefault()
+      console.info(this.upload)
+      if (this.upload.file.length > 0) {
         const file = new FormData()
-        for (let i = 0; i < this.upload.length; i += 1) {
-          file.append('lampiran[]', this.upload[i])
+        if (this.upload.jenis.key === 'HARIAN') {
+          for (let i = 0; i < this.upload.file.length; i += 1) {
+            file.append('lampiran_harian[]', this.upload.file[i])
+          }
+        } else if (this.upload.jenis.key === 'HOTEL') {
+          for (let i = 0; i < this.upload.file.length; i += 1) {
+            file.append('lampiran_hotel[]', this.upload.file[i])
+          }
+        } else if (this.upload.jenis.key === 'TRANSPORT') {
+          for (let i = 0; i < this.upload.file.length; i += 1) {
+            file.append('lampiran_transport[]', this.upload.file[i])
+          }
+        } else if (this.upload.jenis.key === 'TAKSI') {
+          for (let i = 0; i < this.upload.file.length; i += 1) {
+            file.append('lampiran_taksi[]', this.upload.file[i])
+          }
+        } else if (this.upload.jenis.key === 'REPRESENTATIF') {
+          for (let i = 0; i < this.upload.file.length; i += 1) {
+            file.append('lampiran_representatif[]', this.upload.file[i])
+          }
+        } else if (this.upload.jenis.key === 'LAINNYA') {
+          for (let i = 0; i < this.upload.file.length; i += 1) {
+            file.append('lampiran_lainnya[]', this.upload.file[i])
+          }
         }
+
         file.append('id', this.idLampiran)
         file.append('user_id', this.userData.id)
         this.$store.dispatch('app-perjadin/storePerjadinRealisasiLampiran', file).then(x => {
@@ -361,22 +441,10 @@ export default {
               buttonsStyling: false,
             })
             this.form.susunan_tim[this.index].realisasi.lampiran.push(...x.data)
-            // this.show = !this.show
+            this.$bvModal.hide('modal-tambah-lampiran')
           }
         })
-        // .catch(err => {
-        //   // this.show = !this.show
-        //   this.$swal({
-        //     title: 'Error!',
-        //     text: err,
-        //     icon: 'error',
-        //     customClass: {
-        //       confirmButton: 'btn btn-primary',
-        //     },
-        //     buttonsStyling: false,
-        //   })
-        // })
-        this.upload = []
+        this.upload.file = []
         this.idLampiran = null
       } else {
         this.$swal({
@@ -400,7 +468,18 @@ export default {
     const tanggal = ref(null)
     const tempat = ref(null)
     const lampiran = ref([])
-    const upload = ref([])
+    const upload = ref({
+      jenis: ref(null),
+      file: ref([]),
+    })
+    const jenisOption = [
+      { key: 'HARIAN', name: 'UANG HARIAN' },
+      { key: 'HOTEL', name: 'UANG HOTEL' },
+      { key: 'TRANSPORT', name: 'TRANSPORT' },
+      { key: 'TAKSI', name: 'TAKSI' },
+      { key: 'REPRESENTATIF', name: 'REPRESENTATIF' },
+      { key: 'LAINNYA', name: 'LAINNYA' },
+    ]
     const tableCol = [
       { key: 'total_harian' },
       { key: 'total_hotel' },
@@ -420,6 +499,7 @@ export default {
       tempat,
       lampiran,
       upload,
+      jenisOption,
       tableCol,
     }
   },

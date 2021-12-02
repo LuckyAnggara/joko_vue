@@ -63,7 +63,7 @@
                         <feather-icon icon="" />
                         <span class="align-middle ml-50">Edit</span>
                       </b-dropdown-item>
-                      <b-dropdown-item v-if="edit" @click="hapusTim(index)" class="font-weight-bold">
+                      <b-dropdown-item v-if="edit" @click="hapusTim(tim, index)" class="font-weight-bold">
                         <feather-icon icon="" />
                         <span class="align-middle ml-50">Hapus</span>
                       </b-dropdown-item>
@@ -96,11 +96,14 @@
           </b-row>
           <b-row class="mt-4">
             <section v-if="fake.status === 'RENCANA'">
-              <b-button variant="outline-warning" class="ml-1" @click="edit = !edit" v-if="!edit"> Edit </b-button>
+              <b-button variant="outline-warning" class="ml-1" @click="editTim()" v-if="!edit"> Edit </b-button>
               <b-button variant="outline-danger" class="ml-1" @click="batal()" v-if="edit"> Batal </b-button>
               <b-button variant="outline-primary" class="ml-1" v-if="edit" @click="ubah()"> Simpan </b-button>
             </section>
           </b-row>
+          <small v-if="fake.status_realisasi === 'SUDAH' ? true : false"
+            >Mengubah data Tim dan Anggaran, saat Perjadin sudah dilakukan Input Realisasi akan menghapus Realisasi Eksisting</small
+          >
         </b-card-body>
         <template #footer>
           <small
@@ -360,6 +363,7 @@ import { FormWizard, TabContent } from 'vue-form-wizard'
 import { spdGet, dopGet, formatRupiah } from '@core/utils/filter'
 import _ from 'lodash'
 import vSelect from 'vue-select'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 export default {
   components: {
@@ -381,6 +385,8 @@ export default {
     FormWizard,
     TabContent,
     vSelect,
+    // eslint-disable-next-line vue/no-unused-components
+    ToastificationContent,
   },
   directives: {
     Ripple,
@@ -469,8 +475,46 @@ export default {
       this.anggaran = _.cloneDeep(x.anggaran)
       this.$bvModal.show('modal-tambah-tim')
     },
-    hapusTim(i) {
-      this.fake.susunan_tim.splice(i, 1)
+    hapusTim(x, i) {
+      console.info(x)
+      if (x.status_realisasi === 'SUDAH') {
+        this.$swal({
+          title: 'Konfirmasi',
+          text: `${x.pegawai.nama} sudah melakukan Realisasi, apa anda yakin tetap menghapus ?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-danger ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.fake.susunan_tim.splice(i, 1)
+            this.showToast('success', 'top-center', 'Data berhasil di hapus')
+          }
+        })
+      } else {
+        this.fake.susunan_tim.splice(i, 1)
+        this.showToast('success', 'top-center', 'Data berhasil di hapus')
+      }
+    },
+    showToast(variant, position, text) {
+      this.$toast(
+        {
+          component: ToastificationContent,
+          props: {
+            title: 'Berhasil',
+            icon: 'CheckIcon',
+            text,
+            variant,
+          },
+        },
+        {
+          position,
+        },
+      )
     },
     dopGet,
     spdGet,
@@ -511,10 +555,34 @@ export default {
       this.edit = !this.edit
       this.fake = _.cloneDeep(this.form)
     },
+    editTim() {
+      if (this.fake.status_realisasi === 'SUDAH') {
+        this.$swal({
+          title: 'Kofirmasi?',
+          text: 'Perjadin sudah di REALISASI apakah akan tetap melakukan perubahan ?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-danger ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.edit = !this.edit
+          }
+        })
+      }
+    },
     ubah() {
+      let text = 'Data Tim dan Anggaran akan di ubah ?'
+      if (this.fake.status_realisasi === 'SUDAH') {
+        text = 'Mengubah data Tim dan Anggaran, saat Perjadin sudah dilakukan Input Realisasi akan menghapus Realisasi Eksisting, apa anda Yakin ?'
+      }
       this.$swal({
         title: 'Ubah Data ?',
-        text: 'Data Tim dan Anggaran akan di ubah ?',
+        text,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',

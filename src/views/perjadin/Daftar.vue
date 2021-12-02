@@ -96,7 +96,10 @@
             <template #cell(status)="data">
               <div class="text-nowrap">
                 <template>
-                  <b-badge pill variant="light-primary" v-if="data.item.status === 'RENCANA'"> {{ data.item.status }} </b-badge>
+                  <span v-if="data.item.status === 'RENCANA'">
+                    <b-badge class="mr-1" pill variant="light-primary"> {{ data.item.status }} </b-badge><br />
+                    <b-badge pill variant="light-success" v-if="data.item.status_realisasi === 'SUDAH' ? true : false"> Realisasi sudah di Input</b-badge>
+                  </span>
                   <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI KEUANGAN'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="warning" v-if="data.item.status === 'VERIFIKASI REALISASI'"> {{ data.item.status }}</b-badge>
                   <b-badge pill variant="light-danger" v-if="data.item.status === 'REVISI KEUANGAN'"> {{ data.item.status }}</b-badge>

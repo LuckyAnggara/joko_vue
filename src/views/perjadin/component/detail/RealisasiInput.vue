@@ -101,34 +101,20 @@
                       {{ formatRupiah(tim.representatif) }}
                     </template>
                     <template #cell(lampiran)>
-                      <ul>
-                        <li v-for="item in tim.lampiran" :key="item.id">
-                          {{ truncate(item.name, 15) }}
+                      <div v-for="item in tim.lampiran" :key="item.id">
+                        <li v-for="t in item" :key="t.id">
+                          {{ truncate(t.name, 15) }}
                         </li>
-                      </ul>
+                      </div>
                     </template>
                     <template #cell(total)>
                       {{ formatRupiah(tim.total) }}
                     </template>
 
-                    <template #cell(actions)="data">
-                      <b-dropdown boundary="window" variant="link" no-caret v-if="!proses">
-                        <template #button-content>
-                          <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-                        </template>
-                        <b-dropdown-item>
-                          <feather-icon icon="FileTextIcon" />
-                          <span class="align-middle ml-50">Tambah Lampiran</span>
-                        </b-dropdown-item>
-                        <b-dropdown-item :to="{ name: 'apps-users-view', params: { id: data.item.id } }">
-                          <feather-icon icon="PrinterIcon" />
-                          <span class="align-middle ml-50">Cetak RPD</span>
-                        </b-dropdown-item>
-                        <b-dropdown-item @click="deletePegawai(index)">
-                          <feather-icon icon="TrashIcon" />
-                          <span class="align-middle ml-50">Delete</span>
-                        </b-dropdown-item>
-                      </b-dropdown>
+                    <template #cell(actions)>
+                      <div class="text-nowrap" v-if="!proses">
+                        <feather-icon icon="TrashIcon" size="20" class="mx-1" @click="deletePegawai(index)" />
+                      </div>
                     </template>
                   </b-table>
                 </b-col>
@@ -143,6 +129,11 @@
                 ><em
                   >Created By {{ form.user.pegawai.nama }} - {{ form.bidang.nama }} at
                   <strong>{{ $moment(form.created_at).format('DD MMMM YYYY') }}</strong></em
+                ></small
+              >
+              <small
+                ><em
+                  >Updated at <strong>{{ $moment(form.updated_at).format('DD MMMM YYYY') }}</strong></em
                 ></small
               >
             </template>
@@ -218,7 +209,7 @@
                 Uang Harian
               </h5>
             </b-col>
-            <b-col cols="12">
+            <b-col cols="12" class="mb-2">
               <b-tabs>
                 <!-- Render Tabs, supply a unique `key` to each tab -->
                 <b-tab lazy v-for="(i, index) in realisasi.uang_harian" :key="'dyn-tab-' + index" :title="'Uang Harian ' + (index + 1)">
@@ -257,6 +248,22 @@
                   </div>
                 </template>
               </b-tabs>
+            </b-col>
+            <b-col cols="12" class="mb-2">
+              <b-form-group label="Lampiran / Bukti" label-cols-md="4">
+                <b-form-file
+                  @change="uploadLampiranHarian"
+                  placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                  drop-placeholder="Drop file disini..."
+                  multiple
+                  ref="file_input"
+                >
+                  <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="dark">{{ names[0] }}</b-badge>
+                    <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                  </template>
+                </b-form-file>
+              </b-form-group>
             </b-col>
           </b-row>
         </tab-content>
@@ -320,6 +327,22 @@
                 </template>
               </b-tabs>
             </b-col>
+            <b-col cols="12" class="mb-2">
+              <b-form-group label="Lampiran / Bukti" label-cols-md="4">
+                <b-form-file
+                  @change="uploadLampiranHotel"
+                  placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                  drop-placeholder="Drop file disini..."
+                  multiple
+                  ref="file_input"
+                >
+                  <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="dark">{{ names[0] }}</b-badge>
+                    <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                  </template>
+                </b-form-file>
+              </b-form-group>
+            </b-col>
           </b-row>
         </tab-content>
         <tab-content title="Transport">
@@ -366,6 +389,22 @@
                 </template>
               </b-tabs>
             </b-col>
+            <b-col cols="12" class="mb-2">
+              <b-form-group label="Lampiran / Bukti" label-cols-md="4">
+                <b-form-file
+                  @change="uploadLampiranTransport"
+                  placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                  drop-placeholder="Drop file disini..."
+                  multiple
+                  ref="file_input"
+                >
+                  <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="dark">{{ names[0] }}</b-badge>
+                    <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                  </template>
+                </b-form-file>
+              </b-form-group>
+            </b-col>
           </b-row>
         </tab-content>
         <tab-content title="Taksi">
@@ -395,6 +434,25 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <hr />
+          <b-row class="mb-2">
+            <b-col cols="12">
+              <b-form-group label="Lampiran / Bukti" label-cols-md="4">
+                <b-form-file
+                  @change="uploadLampiranTaksi"
+                  placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                  drop-placeholder="Drop file disini..."
+                  multiple
+                  ref="file_input"
+                >
+                  <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="dark">{{ names[0] }}</b-badge>
+                    <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                  </template>
+                </b-form-file>
+              </b-form-group>
+            </b-col>
+          </b-row>
         </tab-content>
         <tab-content title="Representatif">
           <b-row>
@@ -409,20 +467,39 @@
               </b-form-group>
             </b-col>
           </b-row>
+          <hr />
+          <b-row class="mb-2">
+            <b-col cols="12">
+              <b-form-group label="Lampiran / Bukti" label-cols-md="4">
+                <b-form-file
+                  @change="uploadLampiranRepresentatif"
+                  placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
+                  drop-placeholder="Drop file disini..."
+                  multiple
+                  ref="file_input"
+                >
+                  <template slot="file-name" slot-scope="{ names }">
+                    <b-badge variant="dark">{{ names[0] }}</b-badge>
+                    <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+                  </template>
+                </b-form-file>
+              </b-form-group>
+            </b-col>
+          </b-row>
         </tab-content>
 
-        <tab-content title="Lampiran">
+        <tab-content title="Lainnya">
           <b-row>
             <b-col cols="12" class="mb-2">
               <h5 class="mb-0">
-                Lampiran
+                Lampiran Lainnya
               </h5>
               <small class="text-muted">Pilih data atau Drag and Drop, bisa upload sekaligus</small>
             </b-col>
             <b-col cols="12">
               <b-form-group label="Lampiran / Bukti" label-cols-md="4">
                 <b-form-file
-                  @change="uploadLampiran"
+                  @change="uploadLampiranLainnya"
                   placeholder="Pilih data atau Drag and Drop di sini.. bisa Upload Sekaligus"
                   drop-placeholder="Drop file disini..."
                   multiple
@@ -451,8 +528,8 @@ import {
   BTab,
   BNavItem,
   BFormCheckbox,
-  BDropdown,
-  BDropdownItem,
+  // BDropdown,
+  // BDropdownItem,
   BOverlay,
   BFormDatepicker,
   BButton,
@@ -470,6 +547,7 @@ import {
 import Ripple from 'vue-ripple-directive'
 import { formatRupiah, truncate } from '@core/utils/filter'
 import vSelect from 'vue-select'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 
 export default {
   components: {
@@ -479,8 +557,8 @@ export default {
     BTab,
     BNavItem,
     BFormCheckbox,
-    BDropdown,
-    BDropdownItem,
+    // BDropdown,
+    // BDropdownItem,
     BOverlay,
     BFormDatepicker,
     BButton,
@@ -495,6 +573,8 @@ export default {
     BFormInput,
     BFormFile,
     vSelect,
+    // eslint-disable-next-line vue/no-unused-components
+    ToastificationContent,
   },
   directives: {
     Ripple,
@@ -552,7 +632,64 @@ export default {
   methods: {
     truncate,
     formatRupiah,
+    /* eslint-disable */
+    uploadLampiranHarian(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.realisasi.lampiran.harian.push(selectedFiles[i])
+      }
+      console.info(this.realisasi.lampiran.harian)
+    },
+    uploadLampiranHotel(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.realisasi.lampiran.hotel.push(selectedFiles[i])
+      }
+    },
+    uploadLampiranTransport(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.realisasi.lampiran.transport.push(selectedFiles[i])
+      }
+    },
+    uploadLampiranTaksi(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.realisasi.lampiran.taksi.push(selectedFiles[i])
+      }
+    },
+    uploadLampiranRepresentatif(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.realisasi.lampiran.representatif.push(selectedFiles[i])
+      }
+    },
 
+    uploadLampiranLainnya(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.realisasi.lampiran.lainnya.push(selectedFiles[i])
+      }
+    },
+    /* eslint-enable */
     closeTab(i, array) {
       array.splice(i, 1)
     },
@@ -629,13 +766,31 @@ export default {
             .dispatch('app-perjadin/storeRealisasi', this.data)
             .then(res => {
               if (res.status === 200) {
+                this.$store.commit('app-perjadin/UPDATE_STATUS_REALISASI', 'SUDAH')
                 this.titleLoading = 'Upload lampiran ...'
                 this.processing = !this.processing
                 res.data.forEach((y, index) => {
                   const file = new FormData()
-                  for (let i = 0; i < this.data.realisasi[index].lampiran.length; i += 1) {
-                    file.append('lampiran[]', this.data.realisasi[index].lampiran[i])
+                  for (let i = 0; i < this.data.realisasi[index].lampiran.harian.length; i += 1) {
+                    file.append('lampiran_harian[]', this.data.realisasi[index].lampiran.harian[i])
                   }
+                  for (let i = 0; i < this.data.realisasi[index].lampiran.hotel.length; i += 1) {
+                    file.append('lampiran_hotel[]', this.data.realisasi[index].lampiran.hotel[i])
+                  }
+                  for (let i = 0; i < this.data.realisasi[index].lampiran.transport.length; i += 1) {
+                    file.append('lampiran_transport[]', this.data.realisasi[index].lampiran.transport[i])
+                  }
+                  for (let i = 0; i < this.data.realisasi[index].lampiran.taksi.length; i += 1) {
+                    file.append('lampiran_taksi[]', this.data.realisasi[index].lampiran.taksi[i])
+                  }
+                  for (let i = 0; i < this.data.realisasi[index].lampiran.representatif.length; i += 1) {
+                    file.append('lampiran_representatif[]', this.data.realisasi[index].lampiran.representatif[i])
+                  }
+                  for (let i = 0; i < this.data.realisasi[index].lampiran.lainnya.length; i += 1) {
+                    file.append('lampiran_lainnya[]', this.data.realisasi[index].lampiran.lainnya[i])
+                  }
+
+                  file.append('user_id', this.userData.id)
                   file.append('id', y.id)
                   this.$store.dispatch('app-perjadin/storePerjadinRealisasiLampiran', file).then(
                     this.$swal({
@@ -646,17 +801,14 @@ export default {
                       },
                       buttonsStyling: false,
                     }),
-                    this.$store.commit('app-perjadin/UPDATE_STATUS_REALISASI', 'SUDAH'),
                   )
                 })
                 this.show = !this.show
-
                 this.proses = !this.proses
               }
             })
             .catch(err => {
               this.show = !this.show
-              this.file = new FormData()
               this.$swal({
                 title: 'Error!',
                 text: err.message,
@@ -670,7 +822,6 @@ export default {
         }
       })
     },
-
     showModal() {
       const b = this.data.realisasi.find(x => x.pegawai.id === this.selectedPegawai.id)
       if (b) {
@@ -728,7 +879,14 @@ export default {
       this.realisasi.total = 0
       this.jakarta_riil = false
       this.provinsi_riil = false
-      this.realisasi.lampiran = []
+      this.realisasi.lampiran = {
+        harian: [],
+        hotel: [],
+        transport: [],
+        taksi: [],
+        representatif: [],
+        lainnya: [],
+      }
     },
     tambahRealisasi() {
       if (this.realisasi.tanggal_berangkat === null || this.realisasi.tanggal_kembali === null) {
@@ -770,6 +928,23 @@ export default {
     },
     deletePegawai(i) {
       this.data.realisasi.splice(i, 1)
+      this.showToast('success', 'top-center', 'Data berhasil di hapus')
+    },
+    showToast(variant, position, text) {
+      this.$toast(
+        {
+          component: ToastificationContent,
+          props: {
+            title: 'Berhasil',
+            icon: 'CheckIcon',
+            text,
+            variant,
+          },
+        },
+        {
+          position,
+        },
+      )
     },
   },
   setup() {
@@ -827,7 +1002,14 @@ export default {
       taksi_provinsi: 0,
       representatif: 0,
       total: 0,
-      lampiran: [],
+      lampiran: {
+        harian: ref([]),
+        hotel: ref([]),
+        transport: ref([]),
+        taksi: ref([]),
+        representatif: ref([]),
+        lainnya: ref([]),
+      },
       jakarta_riil: false,
       provinsi_riil: false,
     })
@@ -841,7 +1023,10 @@ export default {
       { key: 'lampiran' },
       { key: 'actions' },
     ]
+    const userData = JSON.parse(localStorage.getItem('userData'))
+
     return {
+      userData,
       tabs,
       tabCounter,
       hotelOption,

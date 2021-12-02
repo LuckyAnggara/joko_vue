@@ -27,6 +27,7 @@ export default {
     },
     UPDATE_STATUS_REALISASI(state, x) {
       state.realisasiDone = x
+      state.detail.status_realisasi = x
     },
   },
   actions: {

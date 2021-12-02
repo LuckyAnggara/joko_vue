@@ -34,7 +34,7 @@
           <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'BELUM' ? true : false) : false">
             <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
             <b-button variant="outline-primary" class="ml-1" @click="realisasi()" v-if="!inputRealisasi"> Realisasi </b-button>
-            <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="realisasiDone"> Kirim </b-button>
+            <!-- <b-button variant="outline-primary" class="mr-1" @click="kirimKeuangan('VERIFIKASI REALISASI')" v-if="realisasiDone"> Kirim </b-button> -->
           </template>
           <template v-if="userData.role === 'USER' && data.status === 'PELAKSANAAN' ? (data.status_realisasi === 'SUDAH' ? true : false) : false">
             <b-button variant="danger" class="mr-1" @click="destroy()"> Delete </b-button>
@@ -61,7 +61,7 @@
         <!-- <b-tab title="Susunan Tim"><susunan-tim /></b-tab> -->
         <b-tab title="Susunan Tim dan Anggaran"><anggaran /></b-tab>
         <b-tab title="Realisasi" v-if="data.status_realisasi === 'SUDAH' ? true : false"><realisasi-view /></b-tab>
-        <b-tab title="Realisasi" v-if="inputRealisasi" active><realisasi-input /></b-tab>
+        <b-tab title="Realisasi" v-if="data.status_realisasi === 'BELUM' && inputRealisasi === true ? true : false" active><realisasi-input /></b-tab>
         <b-tab title="Lampiran"> <lampiran /></b-tab>
         <b-tab title="Log Timeline"> <timeline /></b-tab>
       </b-tabs>
@@ -91,14 +91,11 @@ export default {
   components: {
     BCol,
     BRow,
-
-    // BCard,
     BButton,
     BTab,
     BTabs,
     Umum,
     Mak,
-    // SusunanTim,
     Lampiran,
     Anggaran,
     RealisasiInput,

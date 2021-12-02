@@ -241,7 +241,6 @@ export default {
       if (this.upload.jenis !== null && this.upload.lampiran.length > 0) {
         this.$bvModal.hide('modal-lampiran')
         this.show = !this.show
-
         const file = new FormData()
         if (this.upload.jenis.key === 'LAINNYA') {
           for (let i = 0; i < this.upload.lampiran.length; i += 1) {
