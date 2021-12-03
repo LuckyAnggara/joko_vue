@@ -27,7 +27,7 @@
                 <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
               </b-col>
               <b-col cols="6" md="5">
-                <label class="mr-1">Filter Wilayah / Bagian</label>
+                <label class="mr-1">Filter Bidang</label>
                 <v-select v-model="bidangFilter" label="nama" :options="bidangOption" :clearable="false" />
               </b-col>
               <!-- Search -->
