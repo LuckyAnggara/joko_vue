@@ -10,9 +10,15 @@
       </b-row>
     </div>
     <b-row class="match-height">
-      <b-col lg="5" md="12">
+      <b-col lg="4" md="12">
         <penyerapan-anggaran :data="penyerapanAnggaran" />
       </b-col>
+      <b-col lg="8" md="12">
+        <montoring-rencana-penyerapan />
+        <!-- <penyelesaian-kegiatan :data="penyelesaianKegiatan" /> -->
+      </b-col>
+    </b-row>
+    <b-row class="match-height">
       <b-col lg="7" md="12">
         <penyelesaian-kegiatan :data="dataMak" />
         <!-- <penyelesaian-kegiatan :data="penyelesaianKegiatan" /> -->
@@ -48,6 +54,7 @@ import PenyerapanAnggaran from '../component/PenyerapanAnggaran.vue'
 import PenyelesaianKegiatan from '../component/PenyelesaianKegiatan.vue'
 import RincianPegawaiBidang from '../component/RincianPegawaiBidang.vue'
 import PegawaiDinas from '../component/PegawaiDinas.vue'
+import MontoringRencanaPenyerapan from '../component/MontoringRencanaPenyerapan.vue'
 // import Penyerapan from '../component/Penyerapan.vue'
 
 export default {
@@ -58,6 +65,7 @@ export default {
     PegawaiDinas,
     PenyelesaianKegiatan,
     RincianPegawaiBidang,
+    MontoringRencanaPenyerapan,
     // Penyerapan,
     vSelect,
   },
@@ -72,6 +80,7 @@ export default {
       this.loadPerjadin()
       this.loadPegawai()
       this.loadPenyerapanSemua()
+      this.loadMonitorRencanaRealiasasi()
     },
   },
   mounted() {
@@ -80,6 +89,7 @@ export default {
     this.loadPerjadin()
     this.loadPegawai()
     this.loadPenyerapanSemua()
+    this.loadMonitorRencanaRealiasasi()
   },
   computed: {
     penyerapanAnggaran() {
@@ -149,6 +159,16 @@ export default {
   methods: {
     formatRupiah,
     kFormatter,
+    loadMonitorRencanaRealiasasi() {
+      this.$store
+        .dispatch('app-mak/fetchMonitoringRencanaRealisasi', {
+          tahun_id: this.tahun.id,
+          bidang_id: this.userData.bidang_id,
+        })
+        .then(res => {
+          this.$store.commit('app-mak/SET_MONITORING_RENCANA_REALISASI', res.data)
+        })
+    },
     loadPerjadin() {
       this.$store
         .dispatch('app-perjadin/fetchPerjadin', {

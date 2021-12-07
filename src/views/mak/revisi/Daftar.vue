@@ -1,139 +1,240 @@
 <template>
   <section>
-    <b-row class="match-height">
-      <b-col lg="3">
-        <b-card>
-          <b-form-group label="Tahun Anggaran">
-            <v-select v-model="tahun" placeholder="Tahun Anggaran" label="nama" :options="tahunOption" />
+    <b-overlay :show="show" rounded="sm" variant="transparent" blur="5px" opacity="0.95">
+      <b-row class="match-height">
+        <b-col lg="12" cols="12">
+          <b-card>
+            <div class="mb-2" v-if="userData.role === 'ADMIN KEUANGAN'">
+              <!-- Table Top -->
+              <b-row>
+                <b-col cols="6" md="2" class="mb-2">
+                  <b-button variant="primary" class="btn-icon" size="md" @click="showModal"> <feather-icon icon="PlusIcon" /> Tambah Data </b-button>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="6" md="1">
+                  <label>Tampilkan</label>
+                  <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
+                </b-col>
+                <b-col cols="6" md="2">
+                  <label>Tahun</label>
+                  <v-select v-model="tahun" label="nama" :options="tahunOption" :clearable="false" />
+                </b-col>
+                <!-- Search -->
+                <b-col cols="6" md="6">
+                  <label class="mr-1">Cari Data</label>
+                  <b-form-input v-model="searchQuery" placeholder="Cari data... " />
+                </b-col>
+              </b-row>
+            </div>
+            <b-table
+              small
+              :busy="isBusy"
+              ref="refTable"
+              responsive
+              primary-key="id"
+              :fields="tableColumns"
+              :items="dataRevisi"
+              :current-page="currentPage"
+              :per-page="perPage"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="isSortDirDesc"
+              show-empty
+              empty-text="Tidak ada data"
+              class="position-relative"
+            >
+              <template #table-busy>
+                <div class="text-center text-danger my-2">
+                  <b-spinner class="align-middle"></b-spinner>
+                  <strong>Loading...</strong>
+                </div>
+              </template>
+              <template #cell(id)="data">
+                <span>
+                  {{ data.index + 1 }}
+                </span>
+              </template>
+              <template #cell(tanggal_mulai)="data">
+                <span>
+                  {{ $moment(data.item.tanggal_mulai).format('DD MMMM YYYY') }}
+                </span>
+              </template>
+
+              <template #cell(tanggal_akhir)="data">
+                <span>
+                  {{ $moment(data.item.tanggal_akhir).format('DD MMMM YYYY') }}
+                </span>
+              </template>
+              <template #cell(status)="data">
+                <div class="text-nowrap">
+                  <template>
+                    <b-badge pill variant="light-primary" v-if="data.item.status === 'BUKA'"> {{ data.item.status }} </b-badge>
+                    <b-badge pill variant="light-warning" v-if="data.item.status === 'VERIFIKASI'"> {{ data.item.status }}</b-badge>
+                    <b-badge pill variant="danger" v-if="data.item.status === 'TUTUP'"> {{ data.item.status }}</b-badge>
+                    <b-badge pill variant="success" v-if="data.item.status === 'SELESAI'"> {{ data.item.status }} </b-badge>
+                  </template>
+                </div>
+              </template>
+              <!-- Column: Actions -->
+              <template #cell(actions)="data">
+                <div class="text-nowrap">
+                  <feather-icon icon="EyeIcon" size="16" class="mx-1" v-if="userData.role === 'ADMIN KEUANGAN'" @click="detail(data.item.id)" />
+                  <feather-icon icon="EyeIcon" size="16" class="mx-1" v-if="userData.role === 'USER'" @click="detailUser(data.item.id)" />
+                  <b-dropdown variant="link" toggle-class="p-0" no-caret boundary="window" v-if="userData.role === 'ADMIN KEUANGAN'">
+                    <template #button-content>
+                      <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
+                    </template>
+                    <b-dropdown-item @click="delete_data(data.item.id)">
+                      <feather-icon icon="" />
+                      <span class="align-middle ml-50">Hapus</span>
+                    </b-dropdown-item>
+                  </b-dropdown>
+                </div>
+              </template>
+            </b-table>
+            <div class="mx-2 mb-2">
+              <b-row>
+                <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
+                  <span class="text-muted"> {{ dataMeta.from }} - {{ dataMeta.to }} dari {{ dataMeta.of }} data</span>
+                </b-col>
+                <!-- Pagination -->
+                <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalData"
+                    :per-page="perPage"
+                    first-number
+                    last-number
+                    class="mb-0 mt-1 mt-sm-0"
+                    prev-class="prev-item"
+                    next-class="next-item"
+                  >
+                    <template #prev-text>
+                      <feather-icon icon="ChevronLeftIcon" size="18" />
+                    </template>
+                    <template #next-text>
+                      <feather-icon icon="ChevronRightIcon" size="18" />
+                    </template>
+                  </b-pagination>
+                </b-col>
+              </b-row>
+            </div>
+          </b-card>
+        </b-col>
+      </b-row>
+      <template #overlay>
+        <div v-if="!processing" class="text-center">
+          <feather-icon icon="Edit3Icon" size="2x" />
+          <p>{{ title }}</p>
+        </div>
+        <div v-if="processing" class="text-center rounded">
+          <feather-icon icon="UploadIcon" size="2x" />
+          <p>{{ title }}</p>
+        </div>
+      </template>
+    </b-overlay>
+    <b-modal
+      id="modal-revisi-keuangan-tambah"
+      size="lg"
+      ok-only
+      no-close-on-backdrop
+      content-class="shadow"
+      title="Tambah Revisi Anggaran "
+      ok-variant="success"
+      ok-title="Submit"
+      @ok="submit"
+      @reset="resetModal"
+    >
+      <b-row>
+        <b-col cols="12">
+          <b-form-group label="Tahun Anggaran" label-cols-md="3">
+            <v-select v-model="form.tahun" label="nama" :options="tahunOption" :clearable="false" placeholder="Tahun Anggaran" />
           </b-form-group>
-        </b-card>
-      </b-col>
-      <b-col lg="12" cols="12">
-        <b-card v-if="!revisi">
-          <div class="mb-2">
-            <!-- Table Top -->
+        </b-col>
+        <b-col cols="12">
+          <b-form-group label="Keterangan" label-cols-md="3">
+            <b-form-textarea v-model="form.keterangan" type="text" placeholder="Keterangan" />
+          </b-form-group>
+        </b-col>
+        <b-col cols="12">
+          <b-form-group label="Tanggal" label-cols-md="3">
             <b-row>
-              <b-col cols="6" md="2" class="mb-2">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'mak-tambah' }"> <feather-icon icon="PlusIcon" /> Tambah Data </b-button>
+              <b-col md="6">
+                <b-form-group label="Tanggal Mulai">
+                  <b-form-datepicker
+                    locale="id"
+                    :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                    v-model="form.tanggal_mulai"
+                    :max="form.tanggal_akhir"
+                    placeholder="Tanggal Mulai"
+                  />
+                </b-form-group>
               </b-col>
-              <b-col cols="6" md="3" class="mb-2">
-                <b-button variant="primary" class="btn-icon" size="md" @click="revisi = !revisi"> Revisi Anggaran </b-button>
+              <b-col md="6">
+                <b-form-group label="Tanggal Akhir">
+                  <b-form-datepicker
+                    locale="id"
+                    :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                    :min="form.tanggal_mulai"
+                    v-model="form.tanggal_akhir"
+                    placeholder="Tanggal Akhir"
+                  />
+                </b-form-group>
               </b-col>
             </b-row>
+          </b-form-group>
+        </b-col>
+      </b-row>
 
-            <b-row>
-              <b-col cols="6" md="1">
-                <label>Tampilkan</label>
-                <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
-              </b-col>
-              <b-col cols="6" md="5">
-                <label class="mr-1">Filter Bidang</label>
-                <v-select v-model="bidangFilter" label="nama" :options="bidangOption" :clearable="false" />
-              </b-col>
-              <!-- Search -->
-              <b-col cols="6" md="6">
-                <label class="mr-1">Cari Data</label>
-                <b-form-input v-model="searchQuery" placeholder="Cari data... " />
-              </b-col>
-            </b-row>
-          </div>
-          <b-table
-            small
-            :busy="isBusy"
-            ref="refTable"
-            responsive
-            primary-key="id"
-            :fields="tableColumns"
-            :items="dataMak"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="isSortDirDesc"
-            show-empty
-            empty-text="Tidak ada data"
-            class="position-relative"
-          >
-            <template #table-busy>
-              <div class="text-center text-danger my-2">
-                <b-spinner class="align-middle"></b-spinner>
-                <strong>Loading...</strong>
-              </div>
-            </template>
-            <template #cell(id)="data">
-              <span>
-                {{ data.index + 1 }}
-              </span>
-            </template>
-            <template #cell(pagu)="data">
-              <span>
-                {{ formatRupiah(data.item.pagu) }}
-              </span>
-            </template>
-
-            <template #cell(bidang)="data">
-              <span>
-                {{ data.item.bidang.nama }}
-              </span>
-            </template>
-            <!-- Column: Actions -->
-            <template #cell(actions)="data">
-              <div class="text-nowrap">
-                <feather-icon icon="EyeIcon" size="16" class="mx-1" @click="detail(data.item.id)" />
-                <b-dropdown variant="link" toggle-class="p-0" no-caret>
-                  <template #button-content>
-                    <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
-                  </template>
-                  <b-dropdown-item @click="delete_data(data.item.id)">
-                    <feather-icon icon="" />
-                    <span class="align-middle ml-50">Hapus</span>
-                  </b-dropdown-item>
-                </b-dropdown>
-              </div>
-            </template>
-          </b-table>
-          <div class="mx-2 mb-2">
-            <b-row>
-              <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
-                <span class="text-muted"> {{ dataMeta.from }} - {{ dataMeta.to }} dari {{ dataMeta.of }} data</span>
-              </b-col>
-              <!-- Pagination -->
-              <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
-                <b-pagination
-                  v-model="currentPage"
-                  :total-rows="totalData"
-                  :per-page="perPage"
-                  first-number
-                  last-number
-                  class="mb-0 mt-1 mt-sm-0"
-                  prev-class="prev-item"
-                  next-class="next-item"
-                >
-                  <template #prev-text>
-                    <feather-icon icon="ChevronLeftIcon" size="18" />
-                  </template>
-                  <template #next-text>
-                    <feather-icon icon="ChevronRightIcon" size="18" />
-                  </template>
-                </b-pagination>
-              </b-col>
-            </b-row>
-          </div>
-        </b-card>
-        <!-- <revisi v-if="revisi" @reset="reset" @reload="reload" /> -->
-      </b-col>
-    </b-row>
+      <hr />
+      <b-row>
+        <b-col cols="12">
+          <b-form-group label="Lampiran" label-cols-md="3">
+            <b-form-file @change="uploadLampiran" placeholder="Pilih data atau Drag and Drop di sini." drop-placeholder="Drop file disini..." ref="file_input">
+              <template slot="file-name" slot-scope="{ names }">
+                <b-badge variant="dark">{{ names[0] }}</b-badge>
+                <b-badge v-if="names.length > 1" variant="dark" class="ml-1"> + {{ names.length - 1 }} More files </b-badge>
+              </template>
+            </b-form-file>
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </b-modal>
   </section>
 </template>
-
 <script>
 import { ref } from '@vue/composition-api'
-import { formatRupiah } from '@core/utils/filter'
-import { BFormGroup, BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination, BDropdown, BDropdownItem } from 'bootstrap-vue'
+import {
+  BOverlay,
+  BFormTextarea,
+  BFormDatepicker,
+  BFormFile,
+  BBadge,
+  BModal,
+  BFormGroup,
+  BButton,
+  BSpinner,
+  BCard,
+  BRow,
+  BCol,
+  BFormInput,
+  BTable,
+  BPagination,
+  BDropdown,
+  BDropdownItem,
+} from 'bootstrap-vue'
+
 import vSelect from 'vue-select'
-// import Revisi from './Revisi.vue'
 
 export default {
   components: {
+    BOverlay,
+    BFormTextarea,
+    BFormDatepicker,
+    BFormFile,
+    BBadge,
+    BModal,
     BFormGroup,
     BButton,
     BSpinner,
@@ -146,7 +247,6 @@ export default {
     BDropdown,
     BDropdownItem,
     vSelect,
-    // Revisi,
   },
   data() {
     return {}
@@ -155,27 +255,20 @@ export default {
     /* eslint-disable */
     searchQuery(query) {
       if (query === '') {
-        this.dataMak = this.dataTemp
+        this.dataRevisi = this.dataTemp
       } else {
-        this.dataMak = this.dataTemp.filter(
+        this.dataRevisi = this.dataTemp.filter(
           item =>
-            item.kegiatan.nama.toLowerCase().indexOf(query) > -1 ||
-            item.kegiatan.kode.toLowerCase().indexOf(query) > -1 ||
-            item.nominal == query ||
-            item.uraian.toLowerCase().indexOf(query) > -1,
+            item.keterangan.toLowerCase().indexOf(query) > -1 ||
+            item.tanggal_mulai.toLowerCase().indexOf(query) > -1 ||
+            item.tanggal_akhir.toLowerCase().indexOf(query) > -1,
         )
       }
     },
     /* eslint-enable */
-    bidangFilter(x) {
-      if (x.id === '' || x.id === null || x.id === 0) {
-        this.dataMak = this.dataTemp
-      } else {
-        this.dataMak = this.dataTemp.filter(item => item.bidang.id === x.id)
-      }
-    },
+
     tahun() {
-      this.loadMak()
+      this.loadRevisiAnggaran()
     },
   },
   computed: {
@@ -188,7 +281,7 @@ export default {
       }
     },
     totalData() {
-      return this.dataMak.length
+      return this.dataRevisi.length
     },
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
@@ -199,27 +292,38 @@ export default {
   },
 
   methods: {
-    formatRupiah,
-    loadMak() {
+    /* eslint-disable */
+    uploadLampiran(e) {
+      let selectedFiles = e.target.files
+      if (!selectedFiles.length) {
+        return false
+      }
+      for (let i = 0; i < selectedFiles.length; i++) {
+        this.lampiran.push(selectedFiles[i])
+      }
+    },
+    /* eslint-enable */
+    loadRevisiAnggaran(tahun = this.tahun) {
       this.isBusy = !this.isBusy
       this.$store
-        .dispatch('app-mak/fetchMak', {
-          tahun_id: this.tahun === null ? 1 : this.tahun.id,
-          bidang_id: 0, // ADMIN AKSES
+        .dispatch('app-mak/fetchRevisiAnggaran', {
+          tahun_id: tahun === null ? 1 : this.tahun.id,
         })
         .then(res => {
           this.isBusy = !this.isBusy
           this.dataTemp = res.data
-          this.dataMak = this.dataTemp
-          this.$store.commit('app-mak/SET_MAK', res.data)
-          this.$store.commit('app-mak/SET_PASSIVE_PAGU', res.data)
+          // if (this.userData.role === 'USER') {
+          //   this.dataTemp = res.data.filter(x => x.status === 'BUKA')
+          // }
+          this.dataRevisi = this.dataTemp
+
+          this.$store.commit('app-mak/SET_REVISI_ANGGARAN', res.data)
         })
     },
     delete_data(id) {
       this.$swal({
         title: 'Hapus data ?',
-        text: 'Menghapus MAK akan menghapus Data Realisasi!!',
-
+        text: 'Menghapus Revisi Anggaran akan menghapus Detail Data Revisi Anggaran, tetapi tidak akan mengubah Pagu yang sudah di Proses!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -232,12 +336,11 @@ export default {
         if (result.value) {
           this.isBusy = !this.isBusy
           this.$store
-            .dispatch('app-mak/deleteMAK', {
+            .dispatch('app-mak/deleteRevisiAnggaran', {
               id,
             })
             .then(x => {
               if (x.status === 200) {
-                this.loadMak()
                 this.$swal({
                   icon: 'success',
                   title: 'Data berhasil di hapus!',
@@ -260,9 +363,22 @@ export default {
       })
     },
     detail(id) {
-      const data = this.dataMak.find(x => x.id === id)
-      this.$store.commit('app-mak/SET_DETAIL', data.rincian)
-      this.$router.push({ name: 'mak-detail' })
+      const data = this.dataRevisi.find(x => x.id === id)
+      this.$store.commit('app-mak/SET_DETAIL_REVISI_ANGGARAN', data)
+      this.$router.push({ name: 'revisi-anggaran-detail' })
+    },
+    detailUser(id) {
+      const detail = this.dataRevisi.find(x => x.id === id)
+      const data = detail.detail.find(x => x.bidang_id === this.userData.bidang_id)
+      data.tahun = detail.tahun
+      data.keterangan = detail.keterangan
+      data.tanggal_mulai = detail.tanggal_mulai
+      data.tanggal_akhir = detail.tanggal_akhir
+      data.status_master = detail.status
+      data.file = detail.file
+      data.nama_file = detail.nama_file
+      this.$store.commit('app-mak/SET_DETAIL_REVISI_ANGGARAN_USER', data)
+      this.$router.push({ name: 'revisi-anggaran-detail-revisi' })
     },
     loadBidang() {
       this.$store.dispatch('app-general/fetchBidang').then(res => {
@@ -274,46 +390,130 @@ export default {
         this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
-    reset() {
-      this.loadMak()
-      this.revisi = !this.revisi
+    showModal() {
+      this.$bvModal.show('modal-revisi-keuangan-tambah')
     },
-    reload() {
-      this.loadMak()
-      this.revisi = !this.revisi
+    resetModal() {
+      this.form.tahun = null
+      this.form.tanggal_mulai = null
+      this.form.tanggal_akhir = null
+      this.form.keterangan = null
+    },
+    submit(bvModal) {
+      bvModal.preventDefault()
+      if (this.form.tahun === null || this.form.keterangan === null || this.form.tanggal_akhir === null || this.form.tanggal_mulai === null) {
+        this.$swal({
+          icon: 'error',
+          title: 'Oopps!!',
+          text: 'Data belum lengkap',
+          customClass: {
+            confirmButton: 'btn btn-success',
+          },
+        })
+      } else {
+        this.show = !this.show
+        this.$store
+          .dispatch('app-mak/storeRevisiAnggaran', this.form)
+          .then(res => {
+            if (res.status === 200) {
+              const file = new FormData()
+              for (let i = 0; i < this.lampiran.length; i += 1) {
+                file.append('lampiran[]', this.lampiran[i])
+              }
+              file.append('id', res.data.master.id)
+              this.title = 'Upload lampiran ...'
+              this.processing = !this.processing
+              this.$store.dispatch('app-mak/editLampiranRevisiAnggaran', file).then(x => {
+                this.processing = !this.processing
+                this.$swal({
+                  icon: 'success',
+                  title: `status :  ${x.status} - Data berhasil di buat!`,
+                  customClass: {
+                    confirmButton: 'btn btn-success',
+                  },
+                })
+              })
+              this.$bvModal.hide('modal-revisi-keuangan-tambah')
+
+              this.loadRevisiAnggaran(this.tahun)
+              this.show = !this.show
+              this.resetModal()
+            } else {
+              this.$swal({
+                icon: 'error',
+                title: 'Oopps!!',
+                text: res.data,
+                customClass: {
+                  confirmButton: 'btn btn-success',
+                },
+              })
+            }
+          })
+          .catch(err => {
+            this.$swal({
+              icon: 'error',
+              title: 'Oopps!!',
+              text: err,
+              customClass: {
+                confirmButton: 'btn btn-success',
+              },
+            })
+          })
+      }
     },
   },
   mounted() {
     this.loadBidang()
     this.loadTahun()
-    this.loadMak()
+    this.loadRevisiAnggaran()
   },
   setup() {
+    const title = ref('Membuat relisasi mak .... ')
+    const processing = ref(false)
+
+    const show = ref(false)
+    const lampiran = ref([])
+    const userData = JSON.parse(localStorage.getItem('userData'))
     const tahun = ref({
       id: 1,
       nama: '2021',
     })
-    const revisi = false
+    const form = ref({
+      tahun: null,
+      keterangan: null,
+      tanggal_akhir: null,
+      tanggal_mulai: null,
+      user_data: JSON.parse(localStorage.getItem('userData')),
+    })
     const isBusy = false
-    const dataMak = ref([])
+    const dataRevisi = ref([])
     const dataTemp = ref([])
-    const tableColumns = [{ key: 'id', label: '#' }, { key: 'kode' }, { key: 'nama' }, { key: 'bidang' }, { key: 'pagu' }, { key: 'actions' }]
+    const tableColumns = [
+      { key: 'id', label: '#' },
+      { key: 'keterangan' },
+      { key: 'tanggal_mulai' },
+      { key: 'tanggal_akhir' },
+      { key: 'status' },
+      { key: 'actions' },
+    ]
     const searchQuery = ref('')
     const perPage = ref(10)
     const currentPage = ref(1)
     const perPageOptions = [10, 25, 50, 100]
     const sortBy = ref('id')
     const isSortDirDesc = ref(true)
-    const bidangFilter = ref({
-      id: 0,
-      nama: 'SEMUA',
-    })
+
     return {
+      title,
+      processing,
+      show,
+      lampiran,
+      userData,
       tahun,
+      form,
       isBusy,
-      revisi,
       tableColumns,
-      dataMak,
+      dataRevisi,
       dataTemp,
       searchQuery,
       perPage,
@@ -321,7 +521,6 @@ export default {
       perPageOptions,
       sortBy,
       isSortDirDesc,
-      bidangFilter,
     }
   },
 }
@@ -343,8 +542,4 @@ export default {
     width: 100px;
   }
 }
-</style>
-
-<style lang="scss">
-@import '@core/scss/vue/libs/vue-select.scss';
 </style>

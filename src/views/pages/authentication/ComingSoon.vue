@@ -11,7 +11,7 @@
     <div class="misc-inner p-2 p-sm-3">
       <div class="w-100 text-center">
         <h2 class="mb-1">
-          Layanan akan segera haidr 🚀
+          Layanan akan segera hadir 🚀
         </h2>
         <p class="mb-3">
           Kami membuat sesuatu yang luar biasa, tunggu hingga layanan dapat di gunakan, mohon bersabar 😀
