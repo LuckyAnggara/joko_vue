@@ -51,6 +51,60 @@ export default [
     },
   },
   {
+    path: '/revisi-anggaran/daftar',
+    name: 'revisi-anggaran-daftar',
+    component: () => import('@/views/mak/revisi/Daftar.vue'),
+    meta: {
+      resource: 'revisi_anggaran',
+      pageTitle: 'Revisi Anggaran',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/revisi-anggaran/detail',
+    name: 'revisi-anggaran-detail',
+    component: () => import('@/views/mak/revisi/Detail.vue'),
+    meta: {
+      resource: 'revisi_anggaran',
+      pageTitle: 'Detail Revisi Anggaran',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/revisi-anggaran/detail/revisi',
+    name: 'revisi-anggaran-detail-revisi',
+    component: () => import('@/views/mak/revisi/DetailRevisi.vue'),
+    meta: {
+      resource: 'revisi_anggaran',
+      pageTitle: 'Detail Revisi Anggaran',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Detail',
+        },
+        {
+          text: 'Revisi',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/pegawai/daftar',
     name: 'pegawai-daftar',
     component: () => import('@/views/admin/pegawai/Daftar.vue'),
