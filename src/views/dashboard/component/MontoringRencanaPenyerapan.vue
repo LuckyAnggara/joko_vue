@@ -1,7 +1,7 @@
 <template>
   <b-card no-body>
     <b-card-header>
-      <b-card-title>Revenue</b-card-title>
+      <b-card-title>Monitoring Rencana dan Penyerapan Anggaran</b-card-title>
       <feather-icon icon="SettingsIcon" size="18" class="text-muted cursor-pointer" />
     </b-card-header>
 
@@ -16,6 +16,7 @@
 import { BCard, BCardHeader, BCardTitle, BCardBody } from 'bootstrap-vue'
 import VueApexCharts from 'vue-apexcharts'
 // import { $themeColors } from '@themeConfig'
+import { formatRupiah } from '@core/utils/filter'
 
 export default {
   components: {
@@ -70,9 +71,7 @@ export default {
                 colors: '#b9b9c3',
                 fontSize: '1rem',
               },
-              formatter(val) {
-                return val > 999 ? `${(val / 1000).toFixed(0)}Jt` : val
-              },
+              formatter: value => `Rp. ${(value / 1000).toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')} Jt`,
             },
           },
           grid: {
@@ -88,6 +87,9 @@ export default {
         },
       },
     }
+  },
+  methods: {
+    formatRupiah,
   },
   computed: {
     series() {

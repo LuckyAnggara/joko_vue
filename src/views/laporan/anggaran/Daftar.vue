@@ -158,7 +158,7 @@ export default {
     formatRupiah,
     detail(id) {
       const data = this.dataMak.find(x => x.id === id)
-      this.$store.commit('app-mak/SET_DETAIL', data.rincian)
+      this.$store.commit('app-mak/SET_DETAIL', data)
       this.$router.push({ name: 'laporan-anggaran-detail' })
     },
     loadMAK() {

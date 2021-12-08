@@ -6,18 +6,15 @@ export default [
   {
     title: 'Laporan',
     icon: 'ShieldIcon',
+    resource: 'user',
     children: [
       {
+        title: 'Anggaran',
+        icon: 'ShieldIcon',
+        route: 'laporan-anggaran-daftar',
         resource: 'user',
-        title: 'Realisasi Kegiatan',
-        route: 'laporan-rincian',
       },
     ],
-  },
-  {
-    title: 'DIPA',
-    icon: 'ShieldIcon',
-    route: 'dipa-daftar',
-    resource: 'mak',
+    route: 'laporan-rincian',
   },
 ]
