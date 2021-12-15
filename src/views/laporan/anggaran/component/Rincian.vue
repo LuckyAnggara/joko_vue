@@ -56,7 +56,6 @@ export default {
       let total = 0
       this.dataRincian.forEach(x => {
         total += x.total_realisasi
-        console.info(x)
       })
       return total
     },

@@ -476,7 +476,6 @@ export default {
       this.$bvModal.show('modal-tambah-tim')
     },
     hapusTim(x, i) {
-      console.info(x)
       if (x.status_realisasi === 'SUDAH') {
         this.$swal({
           title: 'Konfirmasi',

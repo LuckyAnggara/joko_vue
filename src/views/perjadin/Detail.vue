@@ -274,7 +274,6 @@ export default {
         },
         buttonsStyling: false,
       }).then(result => {
-        console.info(result)
         if (result.isConfirmed) {
           this.$store
             .dispatch('app-perjadin/statusPerjadin', {

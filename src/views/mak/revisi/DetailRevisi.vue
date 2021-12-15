@@ -253,7 +253,6 @@ export default {
       }
       /* eslint-enable */
       this.dataMak = this.dataTemp
-      console.info(this.dataMak)
     },
     confirm() {
       if (this.paguRealokasi > 0) {

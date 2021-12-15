@@ -398,7 +398,6 @@ export default {
     },
     submit(bvModalEvt) {
       bvModalEvt.preventDefault()
-      console.info(this.upload)
       if (this.upload.file.length > 0) {
         const file = new FormData()
         if (this.upload.jenis.key === 'HARIAN') {

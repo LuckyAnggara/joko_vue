@@ -243,7 +243,6 @@ export default {
       detail.status_master = this.data.status
       detail.file = this.data.file
       detail.nama_file = this.data.nama_file
-      console.info(detail)
       if (detail.detail.length > 0) {
         this.$store.commit('app-mak/SET_DETAIL_REVISI_ANGGARAN_USER', detail)
         this.$router.push({ name: 'revisi-anggaran-detail-revisi' })
