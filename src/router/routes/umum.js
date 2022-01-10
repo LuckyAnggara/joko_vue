@@ -153,6 +153,21 @@ export default [
     },
   },
   {
+    path: '/bmn/kendaraandinas/',
+    name: 'bmn-kendaraan-dinas',
+    component: () => import('@/views/bmn/kendaraandinas/Daftar.vue'),
+    meta: {
+      resource: 'admin_umum',
+      pageTitle: 'Kendaraan Dinas',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/service',
     name: 'service',
     component: () => import('@/views/pages/authentication/ComingSoon.vue'),

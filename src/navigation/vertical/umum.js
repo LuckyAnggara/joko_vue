@@ -20,6 +20,12 @@ export default [
     route: 'pembelian-tambah',
   },
   {
+    title: 'Kendaraan Dinas',
+    icon: 'ShieldIcon',
+    resource: 'admin_umum',
+    route: 'bmn-kendaraan-dinas',
+  },
+  {
     title: 'Persediaan',
     icon: 'ShieldIcon',
     resource: 'permintaan_persediaan',
