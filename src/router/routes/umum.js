@@ -168,6 +168,21 @@ export default [
     },
   },
   {
+    path: '/umum/perawatan/',
+    name: 'perawatan',
+    component: () => import('@/views/perawatan/Daftar.vue'),
+    meta: {
+      resource: 'user',
+      pageTitle: 'Perawatan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/service',
     name: 'service',
     component: () => import('@/views/pages/authentication/ComingSoon.vue'),

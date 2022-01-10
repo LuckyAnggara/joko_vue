@@ -8,12 +8,7 @@
             <b-row>
               <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
                 <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'barang-tambah' }">
-                  <feather-icon icon="PlusIcon" /> Tambah Barang
-                </b-button>
-              </b-col>
-              <b-col cols="6" md="2" class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
-                <b-button variant="primary" class="btn-icon" size="md" :to="{ name: 'pembelian-daftar' }">
-                  Pembelian
+                  <feather-icon icon="PlusIcon" /> Tambah Kendaraan
                 </b-button>
               </b-col>
             </b-row>
@@ -56,9 +51,9 @@
                 {{ data.index + 1 }}
               </span>
             </template>
-            <template #cell(saldo)="data">
+            <template #cell(tanggal_perolehan)="data">
               <span>
-                {{ data.item.saldo_akhir }}
+                {{ $moment(data.item.tanggal_perolehan).format('DD-MMM-YYYY') }}
               </span>
             </template>
 
@@ -182,7 +177,8 @@ export default {
       { key: 'nopol', label: 'NOMOR POLISI' },
       { key: 'pemilik' },
       { key: 'tanggal_perolehan' },
-      { key: 'tanggal_akhir_kontrak' },
+      { key: 'status' },
+      { key: 'actions' },
     ]
     const searchQuery = ref('')
     const perPage = ref(10)

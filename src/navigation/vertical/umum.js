@@ -35,7 +35,7 @@ export default [
     title: 'Perawatan',
     icon: 'ShieldIcon',
     resource: 'user',
-    route: 'service',
+    route: 'perawatan',
   },
   // {
   //   title: 'Servis Kendaraan',
