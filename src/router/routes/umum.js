@@ -183,6 +183,24 @@ export default [
     },
   },
   {
+    path: '/umum/perawatan/tambah',
+    name: 'perawatan-tambah',
+    component: () => import('@/views/perawatan/Tambah.vue'),
+    meta: {
+      resource: 'user',
+      pageTitle: 'Perawatan',
+      breadcrumb: [
+        {
+          text: 'Daftar',
+        },
+        {
+          text: 'Tambah',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
     path: '/service',
     name: 'service',
     component: () => import('@/views/pages/authentication/ComingSoon.vue'),

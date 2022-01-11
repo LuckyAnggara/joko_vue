@@ -4,7 +4,14 @@
       <b-row class="match-height">
         <b-col lg="12" cols="12">
           <b-card>
-            <div class="mb-2" v-if="userData.role === 'ADMIN UMUM'">
+            <div class="mb-2">
+              <b-row>
+                <b-col cols="2" md="6" class="mb-2 no-wrap">
+                  <b-button variant="primary" class="btn-icon mr-1" size="md" :to="{ name: 'perawatan-tambah' }">
+                    <feather-icon icon="PlusIcon" /> Tambah
+                  </b-button>
+                </b-col>
+              </b-row>
               <b-row>
                 <b-col cols="6" md="1">
                   <label>Tampilkan</label>
@@ -206,7 +213,7 @@ import {
   BBadge,
   BModal,
   BFormGroup,
-  // BButton,
+  BButton,
   BSpinner,
   BCard,
   BRow,
@@ -229,7 +236,7 @@ export default {
     BBadge,
     BModal,
     BFormGroup,
-    // BButton,
+    BButton,
     BSpinner,
     BCard,
     BRow,
