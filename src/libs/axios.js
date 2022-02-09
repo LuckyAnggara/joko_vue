@@ -7,6 +7,7 @@ const axiosIns = axios.create({
   // You can add your headers here
   // ================================
   baseURL: 'http://127.0.0.1:8000/api/',
+  // baseURL: 'https://api-katalis.itjenkumham.site/api/',
   // baseURL: 'http://192.168.16.122:8000/api/',
   // baseURL: 'http://103.131.116.141/api-katalis/public/api/',
   // timeout: 1000,
