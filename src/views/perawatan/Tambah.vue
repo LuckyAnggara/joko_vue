@@ -131,12 +131,10 @@ export default {
           this.$store.commit('app-bmn/SET_DETAIL_KENDARAAN_DINAS', res.data)
           this.data = res.data
           this.error = false
-          console.info(this.data)
         } else {
           this.data = null
           this.error = true
         }
-        console.info(res.status)
       })
     },
   },

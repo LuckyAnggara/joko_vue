@@ -66,11 +66,11 @@ export default {
       let totalPagu = 0
       let totalRealisasi = 0
       this.dataMak.forEach(x => {
-        totalPagu += x.pagu
+        totalPagu += parseFloat(x.pagu)
         x.rincian
           .filter(d => d.status === 'SELESAI')
           .forEach(y => {
-            totalRealisasi += y.total_realisasi
+            totalRealisasi += parseFloat(y.total_realisasi)
           })
       })
       const presentase = ((parseFloat(totalRealisasi) / parseFloat(totalPagu)) * 100).toFixed(2)

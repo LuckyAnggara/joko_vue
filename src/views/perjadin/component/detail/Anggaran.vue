@@ -408,7 +408,7 @@ export default {
     totalAnggaran() {
       let total = 0
       this.fake.susunan_tim.forEach(x => {
-        total += x.anggaran.total
+        total += parseFloat(x.anggaran.total)
       })
       return total
     },

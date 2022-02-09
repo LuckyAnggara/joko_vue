@@ -135,21 +135,21 @@ export default {
     totalPagu() {
       let total = 0
       this.dataMak.forEach(x => {
-        total += x.pagu
+        total += parseFloat(x.pagu)
       })
       return total
     },
     totalRealisasi() {
       let total = 0
       this.dataMak.forEach(x => {
-        total += x.realisasi
+        total += parseFloat(x.realisasi)
       })
       return total
     },
     totalUnrealisasi() {
       let total = 0
       this.dataMak.forEach(x => {
-        total += x.unrealisasi
+        total += parseFloat(x.unrealisasi)
       })
       return total
     },

@@ -54,14 +54,14 @@ export default {
     totalRealisasi() {
       let total = 0
       this.dataRincian.forEach(x => {
-        total += x.total_realisasi
+        total += parseFloat(x.total_realisasi)
       })
       return total
     },
     totalAnggaran() {
       let total = 0
       this.dataRincian.forEach(x => {
-        total += x.total_anggaran
+        total += parseFloat(x.total_anggaran)
       })
       return total
     },

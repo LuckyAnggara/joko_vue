@@ -115,14 +115,14 @@ export default {
     totalPagu() {
       let total = 0
       this.dataPenyarapanSemua.forEach(x => {
-        total += x.pagu
+        total += parseFloat(x.pagu)
       })
       return total
     },
     totalRealisasi() {
       let total = 0
       this.dataPenyarapanSemua.forEach(x => {
-        total += x.realisasi
+        total += parseFloat(x.realisasi)
       })
       return total
     },

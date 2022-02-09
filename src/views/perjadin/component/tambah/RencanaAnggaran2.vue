@@ -152,7 +152,7 @@ export default {
     grandTotal() {
       let total = 0
       this.form.rencana_anggaran.forEach(x => {
-        total += x.total
+        total += parseFloat(x.total)
       })
       return total
     },
