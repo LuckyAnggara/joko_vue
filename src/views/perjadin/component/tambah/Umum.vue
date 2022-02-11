@@ -13,13 +13,13 @@
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Nomor Surat Perintah" label-cols-md="3">
+              <b-form-group label="Nomor Surat Perintah / Surat Tugas" label-cols-md="3">
                 <b-form-input v-model="form.surat_perintah.nomor_surat" type="text" placeholder="Nomor Surat Perintah" required />
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Tanggal Surat Perintah" label-cols-md="3">
+              <b-form-group label="Tanggal Surat Perintah / Surat Tugas" label-cols-md="3">
                 <b-form-datepicker v-model="form.surat_perintah.tanggal_surat" locale="id" placeholder="Tanggal Surat Perintah" />
               </b-form-group>
             </b-col>
@@ -34,12 +34,13 @@
           <b-row>
             <b-col cols="12">
               <b-form-group label="Tujuan" label-cols-md="3">
-                <b-form-input v-model="form.umum.tujuan" type="text" placeholder="Tujuan Perjalanan Dinas" required />
+                <v-select v-model="form.umum.provinsi" placeholder="Provinsi Tujuan Perjalanan Dinas" label="nama" :options="provinsiOption" />
+                <!-- <b-form-input v-model="form.umum.tujuan" type="text" placeholder="Provinsi Tujuan" required /> -->
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Keberangkatan" label-cols-md="3">
+              <b-form-group label="Keberangkatan / Tempat Kedudukan" label-cols-md="3">
                 <b-form-input v-model="form.umum.keberangkatan" type="text" placeholder="Keberangkatan Perjalanan Dinas" required />
               </b-form-group>
             </b-col>
@@ -93,12 +94,12 @@
           <b-row>
             <b-col cols="12">
               <b-form-group label="Pejabat Pembuat Komitmen" label-cols-md="3">
-                <v-select v-model="form.umum.ppk" placeholder="Pejabat Pembuat Komitmen" label="nama" :options="pegawaiOption" />
+                <v-select v-model="form.umum.ppk" placeholder="Pejabat Pembuat Komitmen" label="nama" :options="pegawaiOption.filter(x => x.ppk === 1)" />
               </b-form-group>
             </b-col>
             <b-col cols="12">
               <b-form-group label="Bendahara" label-cols-md="3">
-                <v-select v-model="form.umum.bendahara" placeholder="Bendahara" label="nama" :options="pegawaiOption" />
+                <v-select v-model="form.umum.bendahara" placeholder="Bendahara" label="nama" :options="pegawaiOption.filter(x => x.bendahara === 1)" />
               </b-form-group>
             </b-col>
           </b-row>
@@ -135,6 +136,9 @@ export default {
   computed: {
     tahunOption() {
       return this.$store.getters['app-general/getTahun']
+    },
+    provinsiOption() {
+      return this.$store.getters['app-general/getProvinsi']
     },
     pegawaiOption() {
       return this.$store.getters['app-general/getPegawai']

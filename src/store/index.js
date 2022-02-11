@@ -12,7 +12,9 @@ import generalStoreModul from './app/generalStoreModul'
 import perjadinStoreModule from './app/perjadinStoreModule'
 import pegawaiStoreModule from './app/pegawaiStoreModule'
 import barangStoreModule from './app/barangStoreModule'
-import bmnStoreModule from './app/bmnStoreModile'
+import bmnStoreModule from './app/bmnStoreModule'
+import laporanStoreModule from './app/laporanStoreModule'
+import superuserStoreModule from './app/superuserStoreModule'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -28,6 +30,8 @@ export default new Vuex.Store({
     'app-pegawai': pegawaiStoreModule,
     'app-barang': barangStoreModule,
     'app-bmn': bmnStoreModule,
+    'app-laporan': laporanStoreModule,
+    'app-superuser': superuserStoreModule,
   },
   strict: process.env.DEV,
 })

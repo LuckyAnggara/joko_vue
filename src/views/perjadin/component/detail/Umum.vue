@@ -21,14 +21,14 @@
 
           <b-row>
             <b-col cols="12">
-              <b-form-group label="Nomor Surat Perintah" label-cols-md="3">
+              <b-form-group label="Nomor Surat Perintah / Surat Tugas" label-cols-md="3">
                 <b-form-input v-if="!edit" :value="fake.surat_perintah.nomor_surat" type="text" placeholder="-" readonly />
                 <b-form-input v-if="edit" v-model="fake.surat_perintah.nomor_surat" type="text" placeholder="-" />
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Tanggal Surat Perintah" label-cols-md="3">
+              <b-form-group label="Tanggal Surat Perintah / Surat Tugas" label-cols-md="3">
                 <b-form-input v-if="!edit" :value="$moment(fake.surat_perintah.tanggal_surat).format('DD MMMM YYYY')" placeholder="-" readonly />
                 <b-form-datepicker v-if="edit" v-model="fake.surat_perintah.tanggal_surat" locale="id" placeholder="Tanggal Surat Perintah" />
               </b-form-group>
@@ -45,8 +45,8 @@
           <b-row>
             <b-col cols="12">
               <b-form-group label="Tujuan" label-cols-md="3">
-                <b-form-input v-if="!edit" :value="fake.tujuan" type="text" placeholder="-" readonly />
-                <b-form-input v-if="edit" v-model="fake.tujuan" type="text" placeholder="-" />
+                <b-form-input v-if="!edit" :value="fake.provinsi.nama" type="text" placeholder="-" readonly />
+                <v-select v-if="edit" v-model="fake.provinsi" placeholder="Provinsi Tujuan Perjalanan Dinas" label="nama" :options="provinsiOption" />
               </b-form-group>
             </b-col>
 
@@ -229,6 +229,9 @@ export default {
   computed: {
     form() {
       return this.$store.getters['app-perjadin/getDetail']
+    },
+    provinsiOption() {
+      return this.$store.getters['app-general/getProvinsi']
     },
     lampiran_sp() {
       return this.form.lampiran.filter(x => x.jenis === 'SP')

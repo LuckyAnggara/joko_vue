@@ -2,7 +2,16 @@
   <b-card title="Penyerapan Anggaran">
     <b-row class="avg-sessions pt-50">
       <b-col cols="12">
-        <b-table responsive :fields="tableColumns" :items="dataPenyarapanSemua" foot-clone show-empty empty-text="Tidak ada data" class="position-relative">
+        <b-table
+          :busy="dataPenyarapanSemua.length === 0 ? true : false"
+          responsive
+          :fields="tableColumns"
+          :items="dataPenyarapanSemua"
+          foot-clone
+          show-empty
+          empty-text="Tidak ada data"
+          class="position-relative"
+        >
           <template #table-busy>
             <div class="text-center text-danger my-2">
               <b-spinner class="align-middle"></b-spinner>
@@ -63,7 +72,7 @@
 </template>
 
 <script>
-import { BTable, BRow, BCol, BCard } from 'bootstrap-vue'
+import { BTable, BRow, BCol, BCard, BSpinner } from 'bootstrap-vue'
 import { formatRupiah } from '@core/utils/filter'
 
 export default {
@@ -72,6 +81,7 @@ export default {
     BRow,
     BCol,
     BCard,
+    BSpinner,
   },
   computed: {
     dataPenyarapanSemua() {

@@ -4,6 +4,7 @@ export default {
   namespaced: true,
   state: {
     tahun: [],
+    provinsi: [],
     pegawai: [],
     bidang: [],
     bidangIlmu: [],
@@ -17,6 +18,7 @@ export default {
   },
   getters: {
     getTahun: state => state.tahun,
+    getProvinsi: state => state.provinsi,
     getPegawai: state => state.pegawai,
     getBidang: state => state.bidang,
     getBidangIlmu: state => state.bidangIlmu,
@@ -31,6 +33,9 @@ export default {
   mutations: {
     SET_TAHUN(state, data) {
       state.tahun = data
+    },
+    SET_PROVINSI(state, data) {
+      state.provinsi = data
     },
     SET_PEGAWAI(state, data) {
       state.pegawai = data
@@ -68,6 +73,16 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get(`${axios.defaults.baseURL}tahun/`, data)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
+    fetchProvinsi(ctx, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL}provinsi/`, data)
           .then(response => {
             resolve(response)
           })

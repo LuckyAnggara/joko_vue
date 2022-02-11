@@ -92,7 +92,7 @@ export default {
                     offsetY: 15,
                     label: 'Pegawai',
                     formatter() {
-                      return '53%'
+                      return '100%'
                     },
                   },
                 },

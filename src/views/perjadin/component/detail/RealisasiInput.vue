@@ -364,8 +364,57 @@
                   <b-form-group label="Jenis" label-cols-md="4">
                     <v-select v-model="i.jenis_transport" placeholder="Jenis Pengunaan Transport" :options="transportOption" :clearable="false" />
                   </b-form-group>
+                  <b-form-group label="Keterangan" label-cols-md="4">
+                    <b-form-input v-model="i.keterangan" type="text" placeholder="" />
+                  </b-form-group>
 
-                  <b-form-group label="Darat" label-cols-md="4">
+                  <b-form-group label="Tanggal" label-cols-md="4">
+                    <b-row>
+                      <b-col md="6">
+                        <b-form-group label="Tanggal">
+                          <b-form-datepicker
+                            locale="id"
+                            :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                            v-model="realisasi.tanggal_berangkat"
+                            placeholder="Tanggal Berangkat"
+                          />
+                        </b-form-group>
+                      </b-col>
+                      <b-col md="6">
+                        <b-form-group label="Jam">
+                          <b-form-timepicker v-model="i.jam" locale="id" />
+                        </b-form-group>
+                      </b-col>
+                    </b-row>
+                  </b-form-group>
+
+                  <b-form-group label="Nomor Tiket" label-cols-md="4">
+                    <b-form-input v-model="i.nomor_tiket" type="text" placeholder="" />
+                  </b-form-group>
+                  <b-form-group label="Nomor Flight" label-cols-md="4">
+                    <b-form-input v-model="i.nomor_flight" type="text" placeholder="" />
+                  </b-form-group>
+
+                  <b-form-group label="Nomor Tempat Duduk" label-cols-md="4">
+                    <b-form-input v-model="i.no_tempat_duduk" type="text" placeholder="" />
+                  </b-form-group>
+
+                  <b-form-group label="Kedudukan" label-cols-md="4">
+                    <b-row>
+                      <b-col md="6">
+                        <b-form-group label="Asal">
+                          <b-form-input v-model="i.asal" type="text" placeholder="" />
+                        </b-form-group>
+                      </b-col>
+                      <b-col md="6">
+                        <b-form-group label="Tujuan">
+                          <b-form-input v-model="i.tujuan" type="text" placeholder="" />
+                        </b-form-group>
+                      </b-col>
+                    </b-row>
+                  </b-form-group>
+
+                  <b-form-group label="Harga" label-cols-md="4">
                     <b-form-input v-model="i.total" type="number" placeholder="Rp. 0" />
                   </b-form-group>
                   <b-button size="sm" variant="danger" class="float-right" @click="closeTab(index, realisasi.transport)">
@@ -530,6 +579,7 @@ import {
   BFormCheckbox,
   // BDropdown,
   // BDropdownItem,
+  BFormTimepicker,
   BOverlay,
   BFormDatepicker,
   BButton,
@@ -559,6 +609,7 @@ export default {
     BFormCheckbox,
     // BDropdown,
     // BDropdownItem,
+    BFormTimepicker,
     BOverlay,
     BFormDatepicker,
     BButton,
@@ -641,7 +692,6 @@ export default {
       for (let i = 0; i < selectedFiles.length; i++) {
         this.realisasi.lampiran.harian.push(selectedFiles[i])
       }
-      console.info(this.realisasi.lampiran.harian)
     },
     uploadLampiranHotel(e) {
       let selectedFiles = e.target.files
@@ -718,6 +768,14 @@ export default {
           transport_riil: false,
           jenis_transport: 'UDARA',
           total: 0,
+          nomor_tiket: null,
+          nomor_flight: null,
+          jam: null,
+          no_tempat_duduk: null,
+          tanggal: null,
+          asal: null,
+          tujuan: null,
+          keterangan: null,
         }
         this.realisasi.transport.push(transport)
       }
@@ -760,13 +818,13 @@ export default {
       }).then(result => {
         if (result.value) {
           this.show = !this.show
-
           this.data.perjadin = this.form
           this.$store
             .dispatch('app-perjadin/storeRealisasi', this.data)
             .then(res => {
               if (res.status === 200) {
                 this.$store.commit('app-perjadin/UPDATE_STATUS_REALISASI', 'SUDAH')
+                this.$store.commit('app-perjadin/UPDATE_DATA_REALISASI', this.data)
                 this.titleLoading = 'Upload lampiran ...'
                 this.processing = !this.processing
                 res.data.forEach((y, index) => {
@@ -869,8 +927,16 @@ export default {
       this.realisasi.transport = [
         {
           jenis_transport: 'DARAT',
-          total: 0,
           transport_riil: false,
+          total: 0,
+          nomor_tiket: null,
+          nomor_flight: null,
+          jam: null,
+          no_tempat_duduk: null,
+          tanggal: null,
+          asal: null,
+          tujuan: null,
+          keterangan: null,
         },
       ]
       this.realisasi.taksi_jakarta = 0
@@ -996,6 +1062,14 @@ export default {
           jenis_transport: 'UDARA',
           total: 0,
           transport_riil: false,
+          nomor_tiket: null,
+          nomor_flight: null,
+          jam: null,
+          no_tempat_duduk: null,
+          tanggal: null,
+          asal: null,
+          tujuan: null,
+          keterangan: null,
         },
       ],
       taksi_jakarta: 0,

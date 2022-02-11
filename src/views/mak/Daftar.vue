@@ -289,9 +289,10 @@ export default {
     this.loadMak()
   },
   setup() {
+    const d = new Date()
     const tahun = ref({
       id: 1,
-      nama: '2021',
+      nama: d.getFullYear(),
     })
     const revisi = false
     const isBusy = false

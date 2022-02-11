@@ -28,6 +28,7 @@ export const getHomeRouteForLoggedInUser = userRole => {
   if (userRole === 'ADMIN') return { name: 'dashboard-user' }
   if (userRole === 'ADMIN UMUM') return { name: 'dashboard-umum' }
   if (userRole === 'ADMIN KEUANGAN') return { name: 'dashboard-keuangan' }
+  if (userRole === 'SUPERUSER') return { name: 'superuser-manajemen-user' }
   if (userRole === 'ADMIN KEPEGAWAIAN') return { name: 'pegawai-data' }
   if (userRole === 'BENDAHARA') return { name: 'dashboard-bendahara' }
   // if (userRole === 'client') return { name: 'access-control' }

@@ -140,6 +140,17 @@
               <h4>{{ formatRupiah(form.total_realisasi) }}</h4>
             </b-col>
           </b-row>
+
+          <hr />
+
+          <b-row class="mt-4">
+            <section v-if="fake.status === 'RENCANA'">
+              <b-button variant="outline-warning" class="ml-1" @click="editRealisasi()" v-if="!edit"> Edit </b-button>
+              <b-button variant="outline-danger" class="ml-1" @click="batal()" v-if="edit"> Batal </b-button>
+              <b-button variant="outline-primary" class="ml-1" v-if="edit" @click="ubah()"> Simpan </b-button>
+            </section>
+          </b-row>
+          <small v-if="fake.status_realisasi === 'SUDAH' ? true : false">Mengubah data Realisasi, akan menghapus semua Realisasi Eksisting.</small>
         </b-card-body>
         <template #footer>
           <small
@@ -320,6 +331,7 @@ import {
   BTable,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
+import _ from 'lodash'
 import { urlGet, formatRupiah, dprGet, sptjmGet, kuitansiGet } from '@core/utils/filter'
 import vSelect from 'vue-select'
 
@@ -347,7 +359,9 @@ export default {
   directives: {
     Ripple,
   },
-
+  mounted() {
+    this.fake = _.cloneDeep(this.form)
+  },
   computed: {
     form() {
       return this.$store.getters['app-perjadin/getDetail']
@@ -359,6 +373,35 @@ export default {
     kuitansiGet,
     sptjmGet,
     formatRupiah,
+    editRealisasi() {
+      console.info(this.form)
+      if (this.fake.status_realisasi === 'SUDAH') {
+        this.$swal({
+          title: 'Kofirmasi?',
+          text: 'Perjadin sudah di REALISASI, akan menghapus seluruh Realisasi Eksisting, apakah tetap akan melakukan perubahan ?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-danger ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          if (result.isConfirmed) {
+            this.$store.commit('app-perjadin/UPDATE_STATUS_REALISASI', 'BELUM')
+            this.$store.commit('app-perjadin/UPDATE_STATUS_INPUT_REALISASI', true)
+            this.edit = !this.edit
+          }
+        })
+      } else {
+        this.edit = !this.edit
+      }
+    },
+    batal() {
+      this.edit = !this.edit
+      this.fake = _.cloneDeep(this.form)
+    },
     reset() {
       this.tanggal = null
       this.tempat = null
@@ -459,6 +502,8 @@ export default {
     },
   },
   setup() {
+    const fake = ref(null)
+    const edit = ref(false)
     const userData = JSON.parse(localStorage.getItem('userData'))
     const index = ref(null)
     const idLampiran = ref(null)
@@ -489,8 +534,10 @@ export default {
       { key: 'actions' },
     ]
     return {
+      fake,
       userData,
       index,
+      edit,
       idLampiran,
       jenis,
       href,

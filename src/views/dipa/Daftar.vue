@@ -188,9 +188,10 @@ export default {
   setup() {
     const dataMak = ref([])
     const userData = JSON.parse(localStorage.getItem('userData'))
+    const d = new Date()
     const tahun = ref({
       id: 1,
-      nama: 2021,
+      nama: d.getFullYear(),
     })
     const isBusy = false
     const tableColumns = [

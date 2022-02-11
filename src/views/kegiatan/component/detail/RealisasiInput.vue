@@ -18,7 +18,8 @@
                 </b-col>
                 <b-col cols="12">
                   <b-form-group label="Total anggaran yang di gunakan" label-cols-md="3">
-                    <b-form-input v-model="realisasi.total_realisasi" type="number" placeholder="Rp. 0" />
+                    <b-form-input v-model="fakeRealisasi" type="number" placeholder="Rp. 0" />
+                    <small class="text-danger" v-if="realisasiAlert">Total Realiasi melebihi Total Anggaran yang di Rencanakan</small>
                   </b-form-group>
                 </b-col>
 
@@ -30,13 +31,13 @@
 
                 <b-col cols="12">
                   <b-form-group label="Pejabat Pembuat Komitmen" label-cols-md="3">
-                    <v-select v-model="realisasi.ppk" placeholder="Nama PPK" :options="pegawaiOption" label="nama" />
+                    <v-select v-model="realisasi.ppk" placeholder="Nama PPK" :options="pegawaiOption.filter(x => x.ppk === 1)" label="nama" />
                   </b-form-group>
                 </b-col>
 
                 <b-col cols="12">
                   <b-form-group label="Bendahara" label-cols-md="3">
-                    <v-select v-model="realisasi.bendahara" placeholder="Nama Bendahara" :options="pegawaiOption" label="nama" />
+                    <v-select v-model="realisasi.bendahara" placeholder="Nama Bendahara" :options="pegawaiOption.filter(x => x.bendahara === 1)" label="nama" />
                   </b-form-group>
                 </b-col>
 
@@ -116,6 +117,15 @@ export default {
       return this.$store.getters['app-perjadin/getRealisasi']
     },
   },
+  watch: {
+    fakeRealisasi() {
+      if (this.fakeRealisasi > this.data.total_anggaran) {
+        this.realisasiAlert = true
+      } else {
+        this.realisasiAlert = false
+      }
+    },
+  },
   methods: {
     truncate,
     formatRupiah,
@@ -150,8 +160,8 @@ export default {
         return
       }
       this.$swal({
-        title: 'Proses ?',
-        text: 'Apa anda yakin data Realisasi sudah sesuai ?',
+        title: 'Info !',
+        text: 'Total Realisasi melebihi Total Anggaran, lanjutkan ?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Ok!',
@@ -160,81 +170,97 @@ export default {
           cancelButton: 'btn btn-outline-danger ml-1',
         },
         buttonsStyling: false,
-      }).then(result => {
-        if (result.isConfirmed) {
-          this.realisasi.id = this.data.id
-          this.realisasi.user_data = this.userData
-          this.show = !this.show
-          this.$store
-            .dispatch('app-kegiatan/storeRealisasi', this.realisasi)
-            .then(res => {
-              if (res.status === 200) {
-                if (this.realisasi.lampiran.length > 0) {
-                  this.titleLoading = 'Upload lampiran ...'
-                  this.processing = !this.processing
-                  const file = new FormData()
-                  for (let i = 0; i < this.realisasi.lampiran.length; i += 1) {
-                    file.append('lampiran[]', this.realisasi.lampiran[i])
+      }).then(xx => {
+        if (xx.isConfirmed) {
+          this.$swal({
+            title: 'Proses ?',
+            text: 'Apa anda yakin data Realisasi sudah sesuai ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ok!',
+            customClass: {
+              confirmButton: 'btn btn-primary',
+              cancelButton: 'btn btn-outline-danger ml-1',
+            },
+            buttonsStyling: false,
+          }).then(result => {
+            if (result.isConfirmed) {
+              this.realisasi.id = this.data.id
+              this.realisasi.user_data = this.userData
+              this.show = !this.show
+              this.$store
+                .dispatch('app-kegiatan/storeRealisasi', this.realisasi)
+                .then(res => {
+                  if (res.status === 200) {
+                    if (this.realisasi.lampiran.length > 0) {
+                      this.titleLoading = 'Upload lampiran ...'
+                      this.processing = !this.processing
+                      const file = new FormData()
+                      for (let i = 0; i < this.realisasi.lampiran.length; i += 1) {
+                        file.append('lampiran[]', this.realisasi.lampiran[i])
+                      }
+                      file.append('id', this.realisasi.id)
+                      file.append('user_id', this.userData.id)
+                      this.$store.dispatch('app-kegiatan/storeLampiranKegiatan', file).then(x => {
+                        this.$swal({
+                          title: 'Sukses!',
+                          icon: 'success',
+                          customClass: {
+                            confirmButton: 'btn btn-primary',
+                          },
+                          buttonsStyling: false,
+                        })
+                        this.$store.commit('app-kegiatan/UPDATE_LAMPIRAN', x.data)
+                      })
+                    } else {
+                      this.$swal({
+                        title: 'Sukses!',
+                        icon: 'success',
+                        customClass: {
+                          confirmButton: 'btn btn-primary',
+                        },
+                        buttonsStyling: false,
+                      })
+                    }
+                    this.$store.commit('app-kegiatan/UPDATE_STATUS_REALISASI', 'SUDAH')
+                    this.$store.commit('app-kegiatan/UPDATE_DETAIL_DATA', this.realisasi)
+
+                    this.show = !this.show
+                    this.proses = !this.proses
                   }
-                  file.append('id', this.realisasi.id)
-                  file.append('user_id', this.userData.id)
-                  this.$store.dispatch('app-kegiatan/storeLampiranKegiatan', file).then(x => {
-                    this.$swal({
-                      title: 'Sukses!',
-                      icon: 'success',
-                      customClass: {
-                        confirmButton: 'btn btn-primary',
-                      },
-                      buttonsStyling: false,
-                    })
-                    this.$store.commit('app-kegiatan/UPDATE_LAMPIRAN', x.data)
-                  })
-                } else {
+                })
+                .catch(err => {
+                  this.show = !this.show
+                  this.file = new FormData()
                   this.$swal({
-                    title: 'Sukses!',
-                    icon: 'success',
+                    title: 'Error!',
+                    text: err.message,
+                    icon: 'error',
                     customClass: {
                       confirmButton: 'btn btn-primary',
                     },
                     buttonsStyling: false,
                   })
-                }
-                this.$store.commit('app-kegiatan/UPDATE_STATUS_REALISASI', 'SUDAH')
-                this.$store.commit('app-kegiatan/UPDATE_DETAIL_DATA', this.realisasi)
-
-                this.show = !this.show
-                this.proses = !this.proses
-              }
-            })
-            .catch(err => {
-              this.show = !this.show
-              this.file = new FormData()
-              this.$swal({
-                title: 'Error!',
-                text: err.message,
-                icon: 'error',
-                customClass: {
-                  confirmButton: 'btn btn-primary',
-                },
-                buttonsStyling: false,
-              })
-            })
+                })
+            }
+          })
         }
       })
     },
   },
   setup() {
     const userData = JSON.parse(localStorage.getItem('userData'))
-
+    const realisasiAlert = ref(false)
     const titleLoading = 'Proses realisasi ....'
     const processing = ref(false)
     const show = ref(false)
     const proses = ref(false)
+    const fakeRealisasi = ref()
     const realisasi = ref({
       id: null,
       user_data: null,
       tanggal_realisasi_kegiatan: null,
-      total_realisasi: null,
+      total_realisasi: fakeRealisasi,
       checker: null,
       ppk: null,
       bendahara: null,
@@ -242,6 +268,8 @@ export default {
     })
     return {
       userData,
+      realisasiAlert,
+      fakeRealisasi,
       realisasi,
       titleLoading,
       processing,

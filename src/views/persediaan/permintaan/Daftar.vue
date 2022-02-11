@@ -259,9 +259,10 @@ export default {
     this.loadBidang()
   },
   setup() {
+    const d = new Date()
     const tahun = ref({
       id: 1,
-      nama: 2021,
+      nama: d.getFullYear(),
     })
     const userData = JSON.parse(localStorage.getItem('userData'))
     const isBusy = false

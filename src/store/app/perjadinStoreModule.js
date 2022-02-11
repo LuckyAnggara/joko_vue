@@ -6,11 +6,13 @@ export default {
     detail: {},
     log: [],
     realisasiDone: false,
+    statusInputRealisasi: true,
   },
   getters: {
     getDetail: state => state.detail,
     getLog: state => state.log,
     getRealisasi: state => state.realisasiDone,
+    getStatusInputRealisasi: state => state.statusInputRealisasi,
   },
   mutations: {
     SET_DETAIL(state, data) {
@@ -28,6 +30,19 @@ export default {
     UPDATE_STATUS_REALISASI(state, x) {
       state.realisasiDone = x
       state.detail.status_realisasi = x
+    },
+    UPDATE_STATUS_INPUT_REALISASI(state, x) {
+      state.inputRealisasi = x
+    },
+    UPDATE_DATA_REALISASI(state, x) {
+      let total = 0
+      x.realisasi.forEach(d => {
+        const id = d.pegawai.susunan_tim_id
+        const index = state.detail.susunan_tim.findIndex(y => y.id === id)
+        state.detail.susunan_tim[index].realisasi = d
+        total += d.total
+      })
+      state.detail.total_realisasi = total
     },
   },
   actions: {

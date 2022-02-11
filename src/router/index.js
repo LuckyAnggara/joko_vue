@@ -13,6 +13,7 @@ import perjadin from './routes/perjadin'
 import kepegawaian from './routes/kepegawaian'
 import umum from './routes/umum'
 import auth from './routes/auth'
+import superuser from './routes/superuser'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,7 @@ const router = new VueRouter({
     ...perjadin,
     ...kepegawaian,
     ...umum,
+    ...superuser,
     {
       path: '*',
       redirect: 'error-404',

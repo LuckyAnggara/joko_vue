@@ -255,39 +255,35 @@ export default {
             file.append('lampiran_rab[]', this.upload.lampiran[i])
           }
         }
-
         file.append('id', this.form.id)
         file.append('user_id', this.userData.id)
-
-        this.$store
-          .dispatch('app-perjadin/storeLampiranPerjadin', file)
-          .then(x => {
-            if (x.status === 200) {
-              this.$swal({
-                title: 'Sukses!',
-                text: 'File berhasil di Upload!',
-                icon: 'success',
-                customClass: {
-                  confirmButton: 'btn btn-primary',
-                },
-                buttonsStyling: false,
-              })
-              this.show = !this.show
-              this.$store.commit('app-perjadin/UPDATE_LAMPIRAN', true)
-            }
-          })
-          .catch(err => {
+        this.$store.dispatch('app-perjadin/storeLampiranPerjadin', file).then(x => {
+          if (x.status === 200) {
+            this.$swal({
+              title: 'Sukses!',
+              text: 'File berhasil di Upload!',
+              icon: 'success',
+              customClass: {
+                confirmButton: 'btn btn-primary',
+              },
+              buttonsStyling: false,
+            })
+          } else {
             this.show = !this.show
             this.$swal({
               title: 'Error!',
-              text: err,
+              text: 'Oopss ada kesalahan!',
               icon: 'error',
               customClass: {
                 confirmButton: 'btn btn-primary',
               },
               buttonsStyling: false,
             })
-          })
+          }
+          this.show = !this.show
+          this.$bvModal.hide('modal-lampiran')
+          this.$store.commit('app-perjadin/UPDATE_LAMPIRAN', x.data)
+        })
       } else {
         this.$swal({
           title: 'Error!',

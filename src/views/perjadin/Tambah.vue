@@ -87,6 +87,7 @@ export default {
   }),
   mounted() {
     this.loadTahun()
+    this.loadProvinsi()
     this.loadPegawai()
     this.loadPeran()
     this.loadKanwil()
@@ -274,6 +275,11 @@ export default {
         this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
+    loadProvinsi() {
+      this.$store.dispatch('app-general/fetchProvinsi').then(res => {
+        this.$store.commit('app-general/SET_PROVINSI', res.data)
+      })
+    },
     loadPegawai() {
       this.$store.dispatch('app-general/fetchPegawai').then(res => {
         this.$store.commit('app-general/SET_PEGAWAI', res.data)
@@ -319,7 +325,7 @@ export default {
       tahun: null,
       umum: {
         mak: null,
-        tujuan: null,
+        provinsi: null,
         keberangkatan: 'Jakarta',
         tanggal_berangkat: null,
         tanggal_kembali: null,

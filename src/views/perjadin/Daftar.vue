@@ -88,6 +88,11 @@
                 {{ truncate(data.item.maksud, 30) }}
               </span>
             </template>
+            <template #cell(tujuan)="data">
+              <span>
+                {{ data.item.provinsi.nama }}
+              </span>
+            </template>
             <template #cell(maker)="data" v-if="userData.role !== 'USER' ? true : false">
               <span>
                 {{ data.item.bidang.nama }}
@@ -203,7 +208,7 @@ export default {
         this.dataPerjadin = this.dataTemp.filter(
           item =>
             item.surat_perintah.nomor_surat.toLowerCase().indexOf(query) > -1 ||
-            item.tujuan.toLowerCase().indexOf(query) > -1 ||
+            item.provinsi.nama.toLowerCase().indexOf(query) > -1 ||
             item.keberangkatan.toLowerCase().indexOf(query) > -1,
         )
       }
@@ -266,6 +271,11 @@ export default {
     log(data) {
       this.$store.commit('app-perjadin/SET_LOG', data)
       this.$bvModal.show('modal-log')
+    },
+    loadProvinsi() {
+      this.$store.dispatch('app-general/fetchProvinsi').then(res => {
+        this.$store.commit('app-general/SET_PROVINSI', res.data)
+      })
     },
     loadTahun() {
       this.$store.dispatch('app-general/fetchTahun').then(res => {
@@ -350,13 +360,15 @@ export default {
     this.loadKegiatan()
     this.loadTahun()
     this.loadBidang()
+    this.loadProvinsi()
   },
   setup() {
     const catatan = ref('aaa')
     const userData = JSON.parse(localStorage.getItem('userData'))
+    const d = new Date()
     const tahun = ref({
       id: 1,
-      nama: 2021,
+      nama: d.getFullYear(),
     })
     const isBusy = false
     const dataPerjadin = ref([])
@@ -380,7 +392,7 @@ export default {
     const isSortDirDesc = ref(true)
     const statusFilter = ref('SEMUA')
     const bidangFilter = ref({ nama: 'SEMUA', id: 0 })
-    const statusOption = ref(['SEMUA', 'RENCANA', 'REVISI', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'SELESAI'])
+    // const statusOption = ref(['SEMUA', 'RENCANA', 'REVISI', 'VERIFIKASI KEUANGAN', 'VERIFIKASI REALISASI', 'PELAKSANAAN', 'VERIFIKASI PPK', 'SELESAI'])
     return {
       catatan,
       userData,
@@ -397,7 +409,7 @@ export default {
       isSortDirDesc,
       statusFilter,
       bidangFilter,
-      statusOption,
+      // statusOption,
     }
   },
 }

@@ -47,4 +47,41 @@ export default [
       ],
     },
   },
+
+  {
+    path: '/laporan/kegiata/rencana/daftar',
+    name: 'laporan-kegiatan-rencana-daftar',
+    component: () => import('@/views/laporan/rencanakegiatan/Daftar.vue'),
+    meta: {
+      resource: 'user',
+      pageTitle: 'Laporan',
+      breadcrumb: [
+        {
+          text: 'Kegiatan',
+        },
+        {
+          text: 'Rencana',
+          active: true,
+        },
+      ],
+    },
+  },
+  {
+    path: '/laporan/kegiata/realisasi/daftar',
+    name: 'laporan-kegiatan-realisasi-daftar',
+    component: () => import('@/views/laporan/realisasikegiatan/Daftar.vue'),
+    meta: {
+      resource: 'user',
+      pageTitle: 'Laporan',
+      breadcrumb: [
+        {
+          text: 'Kegiatan',
+        },
+        {
+          text: 'Realisasi',
+          active: true,
+        },
+      ],
+    },
+  },
 ]

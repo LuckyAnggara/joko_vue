@@ -6,7 +6,7 @@
       </h4>
     </b-card-header>
 
-    <b-table small :items="data" responsive :fields="fields" class="mb-0">
+    <b-table small :items="data" responsive :fields="fields" show-empty empty-text="Tidak ada data" class="mb-0">
       <!-- Nomor -->
       <template #cell(no)="data">
         <div class="d-flex align-items-center">

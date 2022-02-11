@@ -149,10 +149,11 @@ export default {
     },
     dataPegawai() {
       const b = this.$store.getters['app-general/getPegawai']
-      const rincian = b.filter(x => x.bidang.id === this.userData.bidang_id)
+      const rincian = b.filter(x => x.bidang_id === this.userData.bidang_id)
+      console.info(rincian)
       return {
         rincian,
-        series: [53, 16, 1, 10, 10, 10],
+        series: [0, 0, 0, 0, 0, 0],
       }
     },
   },
@@ -213,13 +214,15 @@ export default {
     },
   },
   setup() {
+    const d = new Date()
+
     const userData = JSON.parse(localStorage.getItem('userData'))
     const dataMak = ref([])
     const dataPerjadin = ref([])
 
     const tahun = ref({
       id: 1,
-      nama: '2021',
+      nama: d.getFullYear(),
     })
     return {
       userData,

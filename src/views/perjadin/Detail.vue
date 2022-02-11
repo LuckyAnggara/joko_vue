@@ -61,7 +61,7 @@
         <!-- <b-tab title="Susunan Tim"><susunan-tim /></b-tab> -->
         <b-tab title="Susunan Tim dan Anggaran"><anggaran /></b-tab>
         <b-tab title="Realisasi" v-if="data.status_realisasi === 'SUDAH' ? true : false"><realisasi-view /></b-tab>
-        <b-tab title="Realisasi" v-if="data.status_realisasi === 'BELUM' && inputRealisasi === true ? true : false" active><realisasi-input /></b-tab>
+        <b-tab title="Realisasi" v-if="data.status_realisasi === 'BELUM' && statusInputRealisasi === true ? true : false" active><realisasi-input /></b-tab>
         <b-tab title="Lampiran"> <lampiran /></b-tab>
         <b-tab title="Log Timeline"> <timeline /></b-tab>
       </b-tabs>
@@ -103,6 +103,9 @@ export default {
     Timeline,
   },
   computed: {
+    statusInputRealisasi() {
+      return this.$store.getters['app-perjadin/getStatusInputRealisasi']
+    },
     data() {
       return this.$store.getters['app-perjadin/getDetail']
     },
@@ -143,6 +146,7 @@ export default {
   methods: {
     realisasi() {
       this.inputRealisasi = !this.inputRealisasi
+      this.$store.commit('app-perjadin/UPDATE_STATUS_INPUT_REALISASI', this.inputRealisasi)
       // eslint-disable-next-line
       setTimeout(() => (this.index = 3), 200)
       // eslint-enable-next-line
@@ -534,6 +538,7 @@ export default {
     this.loadUrusan()
     this.loadKanwil()
     this.loadPeran()
+    console.info(this.data)
   },
   setup() {
     const index = 0

@@ -52,26 +52,30 @@
                 </template>
                 <template #cell(actions)="data">
                   <div class="text-nowrap">
-                    <b-link @click="showModal(data.item.id)" class="font-weight-bold">
-                      <feather-icon icon="PrinterIcon" size="24" class="mx-1" />
-                    </b-link>
                     <b-dropdown variant="link" toggle-class="p-0" no-caret boundary="window">
                       <template #button-content>
                         <feather-icon icon="MoreVerticalIcon" size="16" class="align-middle text-body" />
                       </template>
-                      <b-dropdown-item v-if="edit" @click="editModal(tim, index)" class="font-weight-bold">
-                        <feather-icon icon="" />
-                        <span class="align-middle ml-50">Edit</span>
-                      </b-dropdown-item>
-                      <b-dropdown-item v-if="edit" @click="hapusTim(tim, index)" class="font-weight-bold">
-                        <feather-icon icon="" />
-                        <span class="align-middle ml-50">Hapus</span>
-                      </b-dropdown-item>
-                      <b-dropdown-divider />
-                      <b-dropdown-item :href="dopGet('print')" class="font-weight-bold" target="_blank">
-                        <feather-icon icon="" />
-                        <span class="align-middle ml-50">Download DOP</span>
-                      </b-dropdown-item>
+                      <template v-if="edit">
+                        <b-dropdown-item @click="editModal(tim, index)" class="font-weight-bold">
+                          <feather-icon icon="" />
+                          <span class="align-middle ml-50">Edit</span>
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="hapusTim(tim, index)" class="font-weight-bold">
+                          <feather-icon icon="" />
+                          <span class="align-middle ml-50">Hapus</span>
+                        </b-dropdown-item>
+                      </template>
+                      <template v-if="!edit">
+                        <b-dropdown-item :href="dopGet('print')" class="font-weight-bold" target="_blank">
+                          <feather-icon icon="" />
+                          <span class="align-middle ml-50">Download DOP</span>
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="showModal(data.item.id)" class="font-weight-bold" target="_blank">
+                          <feather-icon icon="" />
+                          <span class="align-middle ml-50">Print SPPD</span>
+                        </b-dropdown-item>
+                      </template>
                     </b-dropdown>
                   </div>
                 </template>
@@ -345,8 +349,8 @@ import { ref } from '@vue/composition-api'
 import {
   BDropdown,
   BDropdownItem,
-  BDropdownDivider,
-  BLink,
+  // BDropdownDivider,
+  // BLink,
   BModal,
   BFormDatepicker,
   BFormGroup,
@@ -369,9 +373,9 @@ export default {
   components: {
     BDropdown,
     BDropdownItem,
-    BDropdownDivider,
+    // BDropdownDivider,
 
-    BLink,
+    // BLink,
     BModal,
     BFormDatepicker,
     BFormGroup,
@@ -555,6 +559,7 @@ export default {
       this.fake = _.cloneDeep(this.form)
     },
     editTim() {
+      console.info(this.fake.status_realisasi)
       if (this.fake.status_realisasi === 'SUDAH') {
         this.$swal({
           title: 'Kofirmasi?',
@@ -572,6 +577,8 @@ export default {
             this.edit = !this.edit
           }
         })
+      } else {
+        this.edit = !this.edit
       }
     },
     ubah() {
@@ -605,6 +612,7 @@ export default {
                 },
                 buttonsStyling: false,
               })
+              this.$store.commit('app-perjadin/UPDATE_STATUS_REALISASI', 'BELUM')
               this.edit = !this.edit
             }
           })

@@ -186,9 +186,10 @@ export default {
     const dataPerjadin = ref([])
     const dataPegawaiBelumRealisasi = ref([])
 
+    const d = new Date()
     const tahun = ref({
       id: 1,
-      nama: '2021',
+      nama: d.getFullYear(),
     })
     return {
       userData,
