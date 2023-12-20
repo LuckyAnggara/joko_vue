@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
+import { createPinia, PiniaVuePlugin } from 'pinia'
 
 // import i18n from '@/libs/i18n'
 import router from './router'
@@ -16,7 +17,6 @@ import '@core/scss/vue/libs/vue-sweetalert.scss'
 import './global-components'
 
 // 3rd party plugins
-import '@axios'
 import '@/libs/acl'
 import '@/libs/portal-vue'
 import '@/libs/clipboard'
@@ -28,6 +28,9 @@ import '@/libs/tour'
 // Axios Mock Adapter
 import '@/@fake-db/db'
 
+const pinia = createPinia()
+
+Vue.use(PiniaVuePlugin)
 // BSV Plugin Registration
 Vue.use(ToastPlugin)
 Vue.use(ModalPlugin)
@@ -50,6 +53,7 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
+  pinia,
   // i18n,
   render: h => h(App),
 }).$mount('#app')

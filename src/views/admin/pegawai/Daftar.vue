@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <section>
     <b-row class="match-height">
@@ -15,7 +16,7 @@
             <b-row>
               <b-col cols="6" md="1">
                 <label>Tampilkan</label>
-                <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
+                <v-select v-model="pegawaiStore.currentLimit" :options="perPageOptions" :clearable="false" />
               </b-col>
               <b-col cols="6" md="5" v-if="userData.role === 'ADMIN KEPEGAWAIAN'">
                 <label class="mr-1">Filter Bidang</label>
@@ -32,14 +33,11 @@
             ref="refTable"
             small
             :striped="true"
-            :busy="isBusy"
+            :busy="pegawaiStore.isLoading"
             responsive
             :fields="tableColumns"
-            :items="dataPegawai"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="isSortDirDesc"
+            :items="pegawaiStore.items"
+            :current-page="pegawaiStore.currentPage"
             show-empty
             empty-text="Tidak ada data"
             class="position-relative"
@@ -52,26 +50,16 @@
             </template>
             <template #cell(id)="data">
               <span>
-                {{ data.index + 1 }}
-              </span>
-            </template>
-            <template #cell(pangkat)="data">
-              <span>
-                {{ data.item.golongan.golongan }}
+                {{ pegawaiStore.from + data.index }}
               </span>
             </template>
 
             <template #cell(jabatan)="data">
               <span>
-                {{ data.item.jabatan.nama }}
+                {{ data.item }}
               </span>
             </template>
 
-            <template #cell(bidang)="data">
-              <span>
-                {{ data.item.bidang.nama }}
-              </span>
-            </template>
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="text-nowrap">
@@ -82,14 +70,14 @@
           <div class="mx-2 mb-2">
             <b-row>
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
-                <span class="text-muted"> {{ dataMeta.from }} - {{ dataMeta.to }} dari {{ dataMeta.of }} data</span>
+                <span class="text-muted"> {{ pegawaiStore.from }} - {{ pegawaiStore.to }} dari {{ pegawaiStore.total }} data</span>
               </b-col>
               <!-- Pagination -->
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
                 <b-pagination
-                  v-model="currentPage"
-                  :total-rows="totalData"
-                  :per-page="perPage"
+                  v-model="pegawaiStore.page"
+                  :total-rows="pegawaiStore.total"
+                  :per-page="pegawaiStore.currentLimit"
                   first-number
                   last-number
                   class="mb-0 mt-1 mt-sm-0"
@@ -113,9 +101,10 @@
 </template>
 
 <script>
-import { ref } from '@vue/composition-api'
+import { ref, watch } from '@vue/composition-api'
 import { BButton, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
 import vSelect from 'vue-select'
+import usePegawaiStore from '@/store/pinia/pegawaiStore'
 
 export default {
   components: {
@@ -131,27 +120,6 @@ export default {
   },
   data() {
     return {}
-  },
-  watch: {
-    /* eslint-disable */
-    searchQuery(query) {
-      if (query === '') {
-        this.dataPegawai = this.dataTemp
-      } else {
-        this.dataPegawai = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
-      }
-    },
-    /* eslint-enable */
-    bidangFilter(x) {
-      if (x.id === '' || x.id === null || x.id === 0) {
-        this.dataPegawai = this.dataTemp
-      } else {
-        this.dataPegawai = this.dataTemp.filter(item => item.bidang.id === x.id)
-      }
-    },
-    tahun() {
-      this.loadMak()
-    },
   },
   computed: {
     dataMeta() {
@@ -169,61 +137,83 @@ export default {
       return [{ id: 0, nama: 'SEMUA' }, ...this.$store.getters['app-general/getBidang']]
     },
   },
+  watch: {
+    /* eslint-disable */
+    // searchQuery(query) {
+    //   if (query === '') {
+    //     this.dataPegawai = this.dataTemp
+    //   } else {
+    //     this.dataPegawai = this.dataTemp.filter(item => item.nama.toLowerCase().indexOf(query) > -1 || item.bidang.nama.toLowerCase().indexOf(query) > -1)
+    //   }
+    // },
+    // /* eslint-enable */
+    // bidangFilter(x) {
+    //   if (x.id === '' || x.id === null || x.id === 0) {
+    //     this.dataPegawai = this.dataTemp
+    //   } else {
+    //     this.dataPegawai = this.dataTemp.filter(item => item.bidang.id === x.id)
+    //   }
+    // },
+    tahun() {
+      this.loadMak()
+    },
+  },
   methods: {
-    loadPegawai() {
-      this.$store.dispatch('app-general/fetchPegawai').then(res => {
-        this.$store.commit('app-general/SET_PEGAWAI', res.data)
-        if (this.userData.role === 'USER') {
-          this.dataTemp = res.data.filter(x => x.bidang_id === this.userData.bidang_id)
-        } else {
-          this.dataTemp = res.data
-        }
-        this.dataPegawai = this.dataTemp
-      })
-    },
-    loadBidang() {
-      this.$store.dispatch('app-general/fetchBidang').then(res => {
-        this.$store.commit('app-general/SET_BIDANG', res.data)
-      })
-    },
-
-    loadTahun() {
-      this.$store.dispatch('app-general/fetchTahun').then(res => {
-        this.$store.commit('app-general/SET_TAHUN', res.data)
-      })
-    },
-    loadJabatan() {
-      this.$store.dispatch('app-general/fetchJabatan').then(res => {
-        this.$store.commit('app-general/SET_JABATAN', res.data)
-      })
-    },
-    loadGolongan() {
-      this.$store.dispatch('app-general/fetchGolongan').then(res => {
-        this.$store.commit('app-general/SET_GOLONGAN', res.data)
-      })
-    },
-    detail(id) {
-      const data = this.dataTemp.find(x => x.id === id)
-      this.$store.commit('app-pegawai/SET_DETAIL', data)
-      this.$router.push({ name: 'pegawai-detail' })
-    },
+    // loadPegawai() {
+    //   this.$store.dispatch('app-general/fetchPegawai').then(res => {
+    //     this.$store.commit('app-general/SET_PEGAWAI', res.data)
+    //     if (this.userData.role === 'USER') {
+    //       this.dataTemp = res.data.filter(x => x.bidang_id === this.userData.bidang_id)
+    //     } else {
+    //       this.dataTemp = res.data
+    //     }
+    //     this.dataPegawai = this.dataTemp
+    //   })
+    // },
+    // loadBidang() {
+    //   this.$store.dispatch('app-general/fetchBidang').then(res => {
+    //     this.$store.commit('app-general/SET_BIDANG', res.data)
+    //   })
+    // },
+    // loadTahun() {
+    //   this.$store.dispatch('app-general/fetchTahun').then(res => {
+    //     this.$store.commit('app-general/SET_TAHUN', res.data)
+    //   })
+    // },
+    // loadJabatan() {
+    //   this.$store.dispatch('app-general/fetchJabatan').then(res => {
+    //     this.$store.commit('app-general/SET_JABATAN', res.data)
+    //   })
+    // },
+    // loadGolongan() {
+    //   this.$store.dispatch('app-general/fetchGolongan').then(res => {
+    //     this.$store.commit('app-general/SET_GOLONGAN', res.data)
+    //   })
+    // },
+    // detail(id) {
+    //   const data = this.dataTemp.find(x => x.id === id)
+    //   this.$store.commit('app-pegawai/SET_DETAIL', data)
+    //   this.$router.push({ name: 'pegawai-detail' })
+    // },
   },
   mounted() {
-    this.loadPegawai()
-    this.loadBidang()
-    this.loadTahun()
-    this.loadGolongan()
-    this.loadJabatan()
+    this.pegawaiStore.getData()
+    // this.loadPegawai()
+    // this.loadBidang()
+    // this.loadTahun()
+    // this.loadGolongan()
+    // this.loadJabatan()
   },
   setup() {
+    const pegawaiStore = usePegawaiStore()
+
     const userData = JSON.parse(localStorage.getItem('userData'))
     const isBusy = false
     const dataPegawai = ref([])
     const dataTemp = ref([])
     const tableColumns = [
       { key: 'id', label: '#' },
-      { key: 'nama' },
-      { key: 'pangkat' },
+      { key: 'name', label: 'Nama' },
       { key: 'jabatan' },
       {
         key: 'bidang',
@@ -243,7 +233,23 @@ export default {
       id: 0,
       nama: 'SEMUA',
     })
+
+    watch(
+      () => pegawaiStore.currentLimit,
+      () => {
+        pegawaiStore.getData()
+      },
+    )
+
+    watch(
+      () => pegawaiStore.page,
+      () => {
+        pegawaiStore.getData()
+      },
+    )
+
     return {
+      pegawaiStore,
       userData,
       isBusy,
       tableColumns,

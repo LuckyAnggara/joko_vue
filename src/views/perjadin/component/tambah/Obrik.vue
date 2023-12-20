@@ -6,7 +6,7 @@
         <b-row>
           <b-col cols="12" sm="12">
             <b-form-group label="Kantor Wilayah">
-              <v-select v-model="form.obrik.kanwil" placeholder="Pilih Kantor Wilayah" label="nama" :options="kanwilOption" />
+              <v-select v-model="perjadinStore.form.obrik.kanwil" placeholder="Pilih Kantor Wilayah" label="nama" :options="kanwilOption" />
             </b-form-group>
           </b-col>
           <b-col cols="12" sm="12">
@@ -27,7 +27,7 @@
       <b-col lg="7" sm="12">
         <b-col cols="12">
           <p>Daftar Objek Pemeriksaan</p>
-          <b-table small :fields="tableRAB" :items="form.obrik.detail" responsive class="mt-1">
+          <b-table small :fields="tableRAB" :items="perjadinStore.form.obrik.detail" responsive class="mt-1">
             <template #cell(no)="data">
               {{ data.index + 1 }}
             </template>
@@ -52,6 +52,9 @@
 <script>
 import { ref } from '@vue/composition-api'
 import { BCardBody, BRow, BFormInput, BCol, BTable, BFormGroup, BButton } from 'bootstrap-vue'
+
+import usePerjadinStore from '@/store/pinia/perjadinStore'
+
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 
@@ -69,15 +72,12 @@ export default {
   directives: {
     Ripple,
   },
-  props: {
-    form: Object,
-  },
   watch: {
     form: {
       deep: true,
       handler() {
-        if (this.form.obrik.kanwil !== null) {
-          this.satkerOption = this.kanwilOption.find(x => x.id === this.form.obrik.kanwil.id).satker
+        if (this.perjadinStore.form.obrik.kanwil !== null) {
+          this.satkerOption = this.kanwilOption.find(x => x.id === this.perjadinStore.form.obrik.kanwil.id).satker
         }
       },
     },
@@ -97,7 +97,7 @@ export default {
           satker: this.chooseSatker,
           urusan: this.chooseUrusan,
         }
-        this.form.obrik.detail.push(dataObrik)
+        this.perjadinStore.form.obrik.detail.push(dataObrik)
 
         // eslint-disable-next-line
         setTimeout(() => {
@@ -118,15 +118,17 @@ export default {
       }
     },
     deleteObrik(i) {
-      this.form.obrik.detail.splice(i, 1)
+      this.perjadinStore.form.obrik.detail.splice(i, 1)
     },
   },
   setup() {
+    const perjadinStore = usePerjadinStore()
     const satkerOption = ref([])
     const chooseSatker = ref(null)
     const chooseUrusan = ref(null)
     const tableRAB = [{ key: 'no' }, { key: 'nama_satker' }, { key: 'urusan' }, { key: 'action' }]
     return {
+      perjadinStore,
       chooseSatker,
       chooseUrusan,
       satkerOption,

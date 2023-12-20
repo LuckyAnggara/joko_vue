@@ -169,9 +169,6 @@ export default {
       return a - this.grandTotal
     },
   },
-  props: {
-    form: Object,
-  },
   directives: {
     Ripple,
   },

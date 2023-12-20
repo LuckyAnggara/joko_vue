@@ -29,6 +29,16 @@ export default {
     },
   },
   actions: {
+    getData() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${axios.defaults.baseURL2}`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
+      })
+    },
     fetchPegawai(ctx, data) {
       return new Promise((resolve, reject) => {
         axios

@@ -34,22 +34,29 @@
           </b-row>
         </ul>
         <hr />
-        <ul style="list-style-type: none;" v-for="(tim, index) in form.susunan_tim" :key="tim.id">
+        <ul style="list-style-type: none;" v-for="(tim, index) in perjadinStore.form.susunan_tim" :key="tim.id">
           <b-row>
             <b-col lg="1">
               <b-form-input plaintext :value="index + 1" />
             </b-col>
             <b-col lg="2">
-              <b-form-input plaintext :value="form.susunan_tim[index].pegawai.nip" />
+              <b-form-input plaintext :value="perjadinStore.form.susunan_tim[index].pegawai.nip" />
             </b-col>
             <b-col lg="3">
-              <v-select v-model="form.susunan_tim[index].pegawai" placeholder="Nama Pegawai" label="nama" :options="pegawaiOption" />
+              <v-select
+                @search="searchPegawai"
+                v-model="perjadinStore.form.susunan_tim[index].pegawai"
+                placeholder="Nama Pegawai"
+                label="name"
+                :options="pegawaiStore.items"
+                :loading="pegawaiStore.isLoading"
+              />
             </b-col>
             <b-col lg="3">
-              <b-form-input plaintext :value="form.susunan_tim[index].pegawai.jabatan.nama" />
+              <b-form-input plaintext :value="perjadinStore.form.susunan_tim[index].pegawai?.jabatan?.name" />
             </b-col>
             <b-col lg="2">
-              <v-select v-model="form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
+              <v-select v-model="perjadinStore.form.susunan_tim[index].peran" placeholder="Peran" label="nama" :options="peranOption" />
             </b-col>
             <b-col lg="1">
               <b-button v-ripple.400="'rgba(113, 102, 240, 0.15)'" variant="outline-danger" class="btn-icon rounded-circle" @click="deletePegawai(index)">
@@ -66,6 +73,9 @@
 
 <script>
 import { BCardBody, BRow, BCol, BButton, BFormInput } from 'bootstrap-vue'
+import usePerjadinStore from '@/store/pinia/perjadinStore'
+import usePegawaiStore from '@/store/pinia/pegawaiStore'
+
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 
@@ -80,9 +90,6 @@ export default {
   },
   directives: {
     Ripple,
-  },
-  props: {
-    form: Object,
   },
   computed: {
     pegawaiOption() {
@@ -105,9 +112,9 @@ export default {
         peran: null,
       }
       const dataRab = {
-        tanggal_berangkat: this.form.umum.tanggal_berangkat,
-        tanggal_kembali: this.form.umum.tanggal_kembali,
-        jumlah_hari: this.form.umum.jumlah_hari,
+        tanggal_berangkat: this.perjadinStore.form.umum.tanggal_berangkat,
+        tanggal_kembali: this.perjadinStore.form.umum.tanggal_kembali,
+        jumlah_hari: this.perjadinStore.form.umum.jumlah_hari,
         uang_harian: 0,
         jumlah_malam: 0,
         uang_hotel: 0,
@@ -119,13 +126,26 @@ export default {
         representatif: 0,
         total: 0,
       }
-      this.form.susunan_tim.push(dataPegawai)
-      this.form.rencana_anggaran.push(dataRab)
+      this.perjadinStore.form.susunan_tim.push(dataPegawai)
+      this.perjadinStore.form.rencana_anggaran.push(dataRab)
     },
     deletePegawai(i) {
-      this.form.susunan_tim.splice(i, 1)
-      this.form.rencana_anggaran.splice(i, 1)
+      this.perjadinStore.form.susunan_tim.splice(i, 1)
+      this.perjadinStore.form.rencana_anggaran.splice(i, 1)
     },
+    searchPegawai(search) {
+      this.pegawaiStore.searchName = search
+      this.pegawaiStore.getData()
+    },
+  },
+  setup() {
+    const perjadinStore = usePerjadinStore()
+    const pegawaiStore = usePegawaiStore()
+
+    return {
+      pegawaiStore,
+      perjadinStore,
+    }
   },
 }
 </script>

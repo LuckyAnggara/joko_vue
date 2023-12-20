@@ -61,6 +61,7 @@
 <script>
 import { BCardBody, BBadge, BFormFile, BRow, BCol, BFormGroup } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
+import usePerjadinStore from '@/store/pinia/perjadinStore'
 
 export default {
   components: {
@@ -85,7 +86,7 @@ export default {
         return false
       }
       for (let i = 0; i < selectedFiles.length; i++) {
-        this.form.lampiran.surat_perintah.push(selectedFiles[i])
+        this.perjadinStore.form.lampiran.surat_perintah.push(selectedFiles[i])
       }
     },
     uploadFilesRab(e) {
@@ -94,7 +95,7 @@ export default {
         return false
       }
       for (let i = 0; i < selectedFiles.length; i++) {
-        this.form.lampiran.rab.push(selectedFiles[i])
+        this.perjadinStore.form.lampiran.rab.push(selectedFiles[i])
       }
     },
     UploadFilesLainnya(e) {
@@ -103,12 +104,18 @@ export default {
         return false
       }
       for (let i = 0; i < selectedFiles.length; i++) {
-        this.form.lampiran.lainnya.push(selectedFiles[i])
+        this.perjadinStore.form.lampiran.lainnya.push(selectedFiles[i])
       }
     },
     /* eslint-enable */
   },
-  setup() {},
+  setup() {
+    const perjadinStore = usePerjadinStore()
+
+    return {
+      perjadinStore,
+    }
+  },
 }
 </script>
 

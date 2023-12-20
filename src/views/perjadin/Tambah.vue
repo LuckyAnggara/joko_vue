@@ -6,23 +6,23 @@
           <b-tab title="Umum" active>
             <template #title> Umum </template>
             <hr />
-            <umum :form="form" @load-mak="loadMak()" />
+            <umum @load-mak="loadMak()" />
           </b-tab>
           <b-tab title="Susunan Tim" :title-item-class="{ disabledTab: tabIndex < 1 }">
             <hr />
-            <susunan-tim :form="form"
+            <susunan-tim
           /></b-tab>
           <b-tab title="Rencana Anggaran" :title-item-class="{ disabledTab: tabIndex < 2 }">
             <hr />
-            <rencana-anggaran :form="form"
+            <rencana-anggaran
           /></b-tab>
           <b-tab title="Objek Pemeriksaan" :title-item-class="{ disabledTab: tabIndex < 3 }"
             ><hr />
-            <obrik :form="form" />
+            <obrik />
           </b-tab>
           <b-tab title="Lampiran"
             ><hr />
-            <lampiran :form="form" />
+            <lampiran />
           </b-tab>
         </b-tabs>
 
@@ -58,6 +58,10 @@
 <script>
 import { ref } from '@vue/composition-api'
 import { BOverlay, BButtonGroup, BButton, BCard, BTab, BTabs } from 'bootstrap-vue'
+import useProvinsiStore from '@/store/pinia/provinsiStore'
+import usePegawaiStore from '@/store/pinia/pegawaiStore'
+import usePerjadinStore from '@/store/pinia/perjadinStore'
+
 import Ripple from 'vue-ripple-directive'
 import Umum from './component/tambah/Umum.vue'
 import SusunanTim from './component/tambah/SusunanTim.vue'
@@ -86,9 +90,10 @@ export default {
     tabIndex: 1,
   }),
   mounted() {
+    this.pegawaiStore.currentLimit = 5
+    this.provinsiStore.getData()
+    this.pegawaiStore.getData()
     this.loadTahun()
-    this.loadProvinsi()
-    this.loadPegawai()
     this.loadPeran()
     this.loadKanwil()
     this.loadUrusan()
@@ -110,17 +115,17 @@ export default {
         if (result.isConfirmed) {
           this.show = !this.show
           this.$store
-            .dispatch('app-perjadin/storePerjadin', this.form)
+            .dispatch('app-perjadin/storePerjadin', this.perjadinStore.form)
             .then(res => {
               if (res.status === 200) {
-                for (let i = 0; i < this.form.lampiran.surat_perintah.length; i += 1) {
-                  this.file.append('lampiran_sp[]', this.form.lampiran.surat_perintah[i])
+                for (let i = 0; i < this.perjadinStore.form.lampiran.surat_perintah.length; i += 1) {
+                  this.file.append('lampiran_sp[]', this.perjadinStore.form.lampiran.surat_perintah[i])
                 }
-                for (let i = 0; i < this.form.lampiran.rab.length; i += 1) {
-                  this.file.append('lampiran_rab[]', this.form.lampiran.rab[i])
+                for (let i = 0; i < this.perjadinStore.form.lampiran.rab.length; i += 1) {
+                  this.file.append('lampiran_rab[]', this.perjadinStore.form.lampiran.rab[i])
                 }
-                for (let i = 0; i < this.form.lampiran.lainnya.length; i += 1) {
-                  this.file.append('lampiran_lainnya[]', this.form.lampiran.lainnya[i])
+                for (let i = 0; i < this.perjadinStore.form.lampiran.lainnya.length; i += 1) {
+                  this.file.append('lampiran_lainnya[]', this.perjadinStore.form.lampiran.lainnya[i])
                 }
                 this.file.append('id', res.data.id)
                 this.file.append('user_id', this.userData.id)
@@ -176,7 +181,7 @@ export default {
       })
     },
     next() {
-      const a = this.form
+      const a = this.perjadinStore.form
       if (this.tabIndex === 0) {
         if (
           a.tahun === null ||
@@ -275,16 +280,6 @@ export default {
         this.$store.commit('app-general/SET_TAHUN', res.data)
       })
     },
-    loadProvinsi() {
-      this.$store.dispatch('app-general/fetchProvinsi').then(res => {
-        this.$store.commit('app-general/SET_PROVINSI', res.data)
-      })
-    },
-    loadPegawai() {
-      this.$store.dispatch('app-general/fetchPegawai').then(res => {
-        this.$store.commit('app-general/SET_PEGAWAI', res.data)
-      })
-    },
     loadPeran() {
       this.$store.dispatch('app-general/fetchPeran').then(res => {
         this.$store.commit('app-general/SET_PERAN', res.data)
@@ -296,18 +291,18 @@ export default {
       })
     },
     loadKanwil() {
-      if (this.form.tahun !== null || this.form.tahun !== '') {
+      if (this.perjadinStore.form.tahun !== null || this.perjadinStore.form.tahun !== '') {
         this.$store.dispatch('app-general/fetchKanwil').then(res => {
           this.$store.commit('app-general/SET_KANWIL', res.data)
         })
       }
     },
     loadMak() {
-      if (this.form.tahun !== null || this.form.tahun !== '') {
+      if (this.perjadinStore.form.tahun !== null || this.perjadinStore.form.tahun !== '') {
         this.$store
           .dispatch('app-general/fetchMak', {
             bidang_id: this.userData.bidang_id,
-            tahun_id: this.form.tahun === null ? 0 : this.form.tahun.id,
+            tahun_id: this.perjadinStore.form.tahun === null ? 0 : this.perjadinStore.form.tahun.id,
           })
           .then(res => {
             this.$store.commit('app-general/SET_MAK', res.data)
@@ -316,50 +311,24 @@ export default {
     },
   },
   setup() {
+    const pegawaiStore = usePegawaiStore()
+    const perjadinStore = usePerjadinStore()
+    const provinsiStore = useProvinsiStore()
     const userData = JSON.parse(localStorage.getItem('userData'))
     const titleLoading = 'Pembuatan Data Perjalanan Dinas ...'
     const processing = ref(false)
     const file = new FormData()
     const show = ref(false)
-    const form = ref({
-      tahun: null,
-      umum: {
-        mak: null,
-        provinsi: null,
-        keberangkatan: 'Jakarta',
-        tanggal_berangkat: null,
-        tanggal_kembali: null,
-        jumlah_hari: 0,
-        maksud: null,
-        output: null,
-        ppk: null,
-        bendahara: null,
-      },
-      surat_perintah: {
-        nomor_surat: null,
-        tanggal_surat: null,
-        perihal: null,
-      },
-      susunan_tim: [],
-      rencana_anggaran: [],
-      obrik: {
-        kanwil: null,
-        detail: [],
-      },
-      lampiran: {
-        surat_perintah: ref([]),
-        rab: ref([]),
-        lainnya: ref([]),
-      },
-      user_data: JSON.parse(localStorage.getItem('userData')),
-    })
+
     return {
+      pegawaiStore,
+      provinsiStore,
+      perjadinStore,
       file,
       processing,
       show,
       titleLoading,
       userData,
-      form,
     }
   },
 }

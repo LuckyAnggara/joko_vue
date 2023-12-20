@@ -1,12 +1,12 @@
 export default [
   {
-    header: 'Persediaan',
+    header: 'Admin',
     resource: 'admin_umum',
   },
-  {
-    header: 'Layanan Umum',
-    resource: 'user',
-  },
+  // {
+  //   header: 'Layanan Umum',
+  //   resource: 'user',
+  // },
   {
     title: 'Barang',
     icon: 'ShieldIcon',
@@ -25,21 +25,16 @@ export default [
     resource: 'admin_umum',
     route: 'bmn-kendaraan-dinas',
   },
-  {
-    title: 'Persediaan',
-    icon: 'ShieldIcon',
-    resource: 'permintaan_persediaan',
-    route: 'permintaan-persediaan-daftar',
-  },
-  {
-    title: 'Perawatan',
-    icon: 'ShieldIcon',
-    resource: 'user',
-    route: 'perawatan',
-  },
   // {
-  //   title: 'Servis Kendaraan',
+  //   title: 'Persediaan',
   //   icon: 'ShieldIcon',
-  //   // route: 'pegawai-daftar',
+  //   resource: 'permintaan_persediaan',
+  //   route: 'permintaan-persediaan-daftar',
+  // },
+  // {
+  //   title: 'Perawatan',
+  //   icon: 'ShieldIcon',
+  //   resource: 'user',
+  //   route: 'perawatan',
   // },
 ]

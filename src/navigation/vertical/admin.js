@@ -1,6 +1,6 @@
 export default [
   {
-    header: 'Admin',
+    header: 'Admin Keuangan',
   },
   {
     title: 'Anggaran',

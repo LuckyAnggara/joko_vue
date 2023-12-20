@@ -1,8 +1,8 @@
 export default [
-  {
-    header: 'Layanan Kepegawaian',
-    resource: 'user',
-  },
+  // {
+  //   header: 'Layanan Kepegawaian',
+  //   resource: 'user',
+  // },
   {
     header: 'Kepegawaian',
     resource: 'admin_kepegawaian',

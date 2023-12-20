@@ -12,6 +12,15 @@ module.exports = {
     },
   },
   configureWebpack: {
+    module: {
+      rules: [
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: 'javascript/auto',
+        },
+      ],
+    },
     resolve: {
       alias: {
         '@themeConfig': path.resolve(__dirname, 'themeConfig.js'),
@@ -26,8 +35,11 @@ module.exports = {
       .rule('vue')
       .use('vue-loader')
       .loader('vue-loader')
+
       .tap(options => {
         // eslint-disable-next-line no-param-reassign
+        options.compiler = require('vue-template-babel-compiler')
+
         options.transformAssetUrls = {
           img: 'src',
           image: 'xlink:href',
