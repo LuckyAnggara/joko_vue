@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axiosIns from '@/libs/axiosExt'
+import axiosIns from '@/libs/axios'
 
 const usePerjadinStore = defineStore('perjadin', {
   state: () => ({

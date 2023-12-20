@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { defineStore, getActivePinia } from 'pinia'
-import axiosIns from '@/services/axios'
-import { useMenuStore } from './menu'
+import axiosIns from '@/libs/axios'
 import { useStorage } from '@vueuse/core'
 
 export const useAuthStore = defineStore('auth', {
@@ -17,18 +16,6 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     user(state) {
       return state.userData
-    },
-    unitID(state) {
-      return state.userData.user?.unit_id
-    },
-    groupID(state) {
-      return state.userData.user?.unit.group_id
-    },
-    isAdmin(state) {
-      if (state.userData.user?.role.id == 2) {
-        return true
-      }
-      return false
     },
   },
   actions: {
@@ -46,9 +33,6 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('userData', JSON.stringify(payload))
 
         this.userData = payload.user
-
-        const menuStore = useMenuStore()
-        menuStore.updateMenu(this.userData.unit_id)
 
         if (response.status == 200) {
           return true

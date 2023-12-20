@@ -4,10 +4,14 @@ module.exports = {
     node: false,
   },
   extends: [
-    'plugin:vue/recommended',
+    // 'plugin:vue/recommended',
+    'plugin:vue/base',
     // 'plugin:vue/essential',
   ],
-  parser: '@babel/eslint-parser',
+  parserOptions: {
+    parser: 'babel-eslint',
+    ecmaVersion: 8,
+  },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',

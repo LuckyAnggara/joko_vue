@@ -32,7 +32,7 @@
           <b-form class="auth-login-form mt-2" @submit.prevent>
             <!-- email -->
             <b-form-group label="Nomor Induk Pegawai" label-for="login-email">
-              <b-form-input id="login-email" v-model="form.username" type="number" name="login-email" placeholder="Nomor Induk Pegawai" />
+              <b-form-input id="login-email" v-model="authStore.form.username" type="number" name="login-email" placeholder="Nomor Induk Pegawai" />
             </b-form-group>
 
             <!-- forgot password -->
@@ -43,7 +43,7 @@
               <b-input-group class="input-group-merge">
                 <b-form-input
                   id="login-password"
-                  v-model="form.password"
+                  v-model="authStore.form.password"
                   :type="passwordFieldType"
                   class="form-control-merge"
                   name="login-password"
@@ -57,14 +57,15 @@
 
             <!-- checkbox -->
             <!-- <b-form-group>
-              <b-form-checkbox id="remember-me" v-model="form.status" name="checkbox-1">
+              <b-form-checkbox id="remember-me" v-model="authStore.form.status" name="checkbox-1">
                 Ingat saya
               </b-form-checkbox>
             </b-form-group> -->
 
             <!-- submit buttons -->
-            <b-button type="submit" variant="primary" block @click="login">
-              Sign in
+            <b-button :disabled="authStore.isLoading" type="submit" variant="primary" block @click="authStore.login">
+              <b-spinner v-if="authStore.isLoading" variant="success" label="Spinning">Processing</b-spinner>
+              <span v-else>Login</span>
             </b-button>
           </b-form>
 
@@ -84,7 +85,7 @@
 import axios from '@axios'
 import { getHomeRouteForLoggedInUser } from '@/auth/utils'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
-
+import { useAuthStore } from '@/store/pinia/authStore'
 // import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
   BRow,
@@ -94,6 +95,7 @@ import {
   BFormInput,
   BInputGroupAppend,
   BInputGroup,
+  BSpinner,
   // BFormCheckbox,
   BCardText,
   BCardTitle,
@@ -114,6 +116,7 @@ export default {
     BFormInput,
     BInputGroupAppend,
     BInputGroup,
+    BSpinner,
     // BFormCheckbox,
     BCardText,
     BCardTitle,
@@ -189,6 +192,13 @@ export default {
         loader.hide()
       })
     },
+  },
+  setup() {
+    const authStore = useAuthStore()
+
+    return {
+      authStore,
+    }
   },
 }
 </script>

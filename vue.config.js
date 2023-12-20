@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  publicPath: '/katalis',
+  publicPath: '/',
   css: {
     loaderOptions: {
       sass: {
