@@ -3,7 +3,7 @@
     <template #button-content>
       <div class="d-sm-flex d-none user-nav">
         <p class="user-name font-weight-bolder mb-0">
-          {{ userData.fullName || userData.pegawai.nama }}
+          {{ userData.nama }}
         </p>
         <span class="user-status">{{ userData.role }}</span>
       </div>
@@ -70,9 +70,13 @@ export default {
   },
   data() {
     return {
-      userData: JSON.parse(localStorage.getItem('userData')),
       avatarText,
     }
+  },
+  computed: {
+    userData() {
+      return JSON.parse(localStorage.getItem('userData'))
+    },
   },
   methods: {
     logout() {

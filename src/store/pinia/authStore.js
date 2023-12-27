@@ -11,29 +11,27 @@ export const useAuthStore = defineStore('auth', {
       password: null,
     },
     isLoading: false,
-    userData: JSON.parse(localStorage.getItem('userDataLawas')),
+    userData: JSON.parse(localStorage.getItem('userData')),
   }),
   getters: {
     user(state) {
-      return state.userData
+      return JSON.parse(localStorage.getItem('userData'))
     },
   },
   actions: {
-    async login2() {
+    async login() {
       this.isLoading = true
       try {
-        const response = await axiosIns.post(`/login`, {
+        const response = await axiosIns.post(`/auth/login`, {
           username: this.form.username,
           password: this.form.password,
         })
-        const payload = response.data.data
-        sessionStorage.setItem('userData', JSON.stringify(payload))
+        const payload = response.data
+        this.userData = payload.data
+        sessionStorage.setItem('userData', JSON.stringify(payload.data))
         localStorage.removeItem('userData')
         localStorage.setItem('token', JSON.stringify(payload.token))
-        localStorage.setItem('userData', JSON.stringify(payload))
-
-        this.userData = payload.user
-
+        localStorage.setItem('userData', JSON.stringify(payload.data))
         if (response.status == 200) {
           return true
         }
@@ -75,7 +73,7 @@ export const useAuthStore = defineStore('auth', {
         this.isLoading = false
       }
     },
-    login() {
+    login2() {
       this.isLoading = true
       const data = this.form
       axios.post(`${axios.defaults.baseURL}auth/login`, data).then(res => {

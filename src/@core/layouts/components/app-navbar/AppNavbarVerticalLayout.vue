@@ -10,7 +10,7 @@
     </ul>
 
     <b-navbar-nav class="nav align-items-center">
-      <p class="ml-2 user-name font-weight-bolder mb-0">Selamat Datang {{ userData.role !== 'USER' ? '' : 'di ' + userData.bidang.nama }}</p>
+      <!-- <p class="ml-2 user-name font-weight-bolder mb-0">Selamat Datang {{ userData.role !== 'USER' ? '' : 'di ' + userData.bidang.nama }}</p> -->
     </b-navbar-nav>
     <b-navbar-nav class="nav align-items-center ml-auto">
       <!-- <locale /> -->
@@ -25,26 +25,14 @@
 
 <script>
 import { BLink, BNavbarNav } from 'bootstrap-vue'
-// import Bookmarks from './components/Bookmarks.vue'
-// import Locale from './components/Locale.vue'
-// import SearchBar from './components/SearchBar.vue'
 import DarkToggler from './components/DarkToggler.vue'
-// import CartDropdown from './components/CartDropdown.vue'
-// import NotificationDropdown from './components/NotificationDropdown.vue'
 import UserDropdown from './components/UserDropdown.vue'
 
 export default {
   components: {
     BLink,
-
-    // Navbar Components
     BNavbarNav,
-    // Bookmarks,
-    // Locale,
-    // SearchBar,
     DarkToggler,
-    // CartDropdown,
-    // NotificationDropdown,
     UserDropdown,
   },
   props: {
@@ -53,11 +41,10 @@ export default {
       default: () => {},
     },
   },
-  setup() {
-    const userData = JSON.parse(localStorage.getItem('userData'))
-    return {
-      userData,
-    }
+  computed: {
+    userData() {
+      return JSON.parse(localStorage.getItem('userData'))
+    },
   },
 }
 </script>
