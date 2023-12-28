@@ -15,6 +15,13 @@ const axiosIns = axios.create({
   // headers: {'X-Custom-Header': 'foobar'}
 })
 
-Vue.prototype.$http = axiosIns
+axiosIns.interceptors.request.use(config => {
+  const token = JSON.parse(localStorage.getItem('token'))
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+    config.headers['Content-Type'] = 'application/json'
+  }
+  return config
+})
 
 export default axiosIns

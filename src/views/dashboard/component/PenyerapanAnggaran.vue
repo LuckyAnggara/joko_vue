@@ -51,6 +51,11 @@ export default {
       default: () => {},
     },
   },
+  computed: {
+    userData() {
+      return JSON.parse(localStorage.getItem('userData'))
+    },
+  },
   data() {
     return {
       goalOverviewRadialBar: {
@@ -116,11 +121,6 @@ export default {
         },
       },
     }
-  },
-  setup() {
-    const userData = JSON.parse(localStorage.getItem('userData'))
-
-    return { userData }
   },
 }
 </script>
