@@ -85,6 +85,7 @@ import RealisasiInput from './component/detail/RealisasiInput.vue'
 import RealisasiView from './component/detail/RealisasiView.vue'
 import Lampiran from './component/detail/Lampiran.vue'
 import Timeline from './component/detail/Timeline.vue'
+import { useKegiatanStore } from '@/store/pinia/kegiatanStore.js'
 
 export default {
   components: {
@@ -150,9 +151,13 @@ export default {
     realisasiDone() {
       return this.$store.getters['app-kegiatan/getRealisasi']
     },
+    id() {
+      return this.$route.params.id ?? null
+    },
   },
   mounted() {
     this.loadPegawai()
+    this.kegiatanStore.show(this.id)
   },
   methods: {
     realisasi() {
@@ -507,11 +512,13 @@ export default {
   },
 
   setup() {
+    const kegiatanStore = useKegiatanStore()
     const index = 0
     const inputRealisasi = false
     const userData = JSON.parse(localStorage.getItem('userData'))
     return {
       index,
+      kegiatanStore,
       inputRealisasi,
       userData,
     }

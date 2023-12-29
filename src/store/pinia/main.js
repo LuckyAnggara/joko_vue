@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useMainStore = defineStore('main', {
   state: () => ({
-    limitDataOptions: [5, 50, 100, 100000],
+    limitDataOptions: [10, 25, 50, 100, 'SEMUA'],
     tahunOptions: [2023, 2024, 2025],
     bulanOptions: [
       { id: 1, label: 'Januari' },
@@ -19,6 +19,7 @@ export const useMainStore = defineStore('main', {
       { id: 12, label: 'Desember' },
     ],
     jenisKegiatanOptions: [
+      'BELANJA',
       'RAPAT INTERNAL',
       'RAPAT EKSTERNAL',
       'FORUM GROUP DISCUSION',

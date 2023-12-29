@@ -55,7 +55,7 @@ export default [
     },
   },
   {
-    path: '/kegiatan/detail',
+    path: '/kegiatan/:id/detail/',
     name: 'kegiatan-detail',
     component: () => import('@/views/kegiatan/Detail.vue'),
     meta: {

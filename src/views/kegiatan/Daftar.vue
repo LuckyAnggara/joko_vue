@@ -15,15 +15,15 @@
             <b-row>
               <b-col cols="6" md="2" sm="3" lg="2">
                 <label>Tahun Data</label>
-                <v-select v-model="tahun" label="nama" :options="tahunOption" :clearable="false" />
+                <v-select v-model="kegiatanStore.filter.tahun" label="nama" :options="mainStore.tahunOptions" :clearable="false" @input="filter()" />
               </b-col>
               <b-col cols="6" lg="1" md="2" sm="3">
                 <label>Tampilkan</label>
-                <v-select v-model="perPage" :options="perPageOptions" :clearable="false" />
+                <v-select v-model="kegiatanStore.filter.currentLimit" :options="mainStore.limitDataOptions" :clearable="false" @input="filter()" />
               </b-col>
               <b-col cols="6" lg="3" md="3" sm="3">
                 <label class="mr-1">Filter Status</label>
-                <v-select v-model="statusFilter" :options="statusOption" :clearable="false" />
+                <v-select v-model="kegiatanStore.filter.status" :options="statusOption" :clearable="false" @input="filter()" />
               </b-col>
               <b-col cols="6" lg="3" md="3" sm="3" v-if="userData.role !== 'USER' ? true : false">
                 <label class="mr-1">Bagian / Wilayah</label>
@@ -31,23 +31,20 @@
               </b-col>
               <b-col cols="6" lg="3" md="5" sm="12">
                 <label class="mr-1">Cari Data</label>
-                <b-form-input v-model="searchQuery" placeholder="Cari data... " />
+                <b-form-input v-model="kegiatanStore.filter.searchQuery" placeholder="Cari data... " @keyup="search" />
               </b-col>
             </b-row>
           </div>
           <b-table
             small
             bordered
-            :busy="isBusy"
+            :busy="kegiatanStore.isLoading"
             ref="refTable"
             responsive
             primary-key="id"
             :fields="tableColumns"
-            :items="dataKegiatan"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="isSortDirDesc"
+            :items="kegiatanStore.items"
+            :current-page="kegiatanStore.currentPage"
             show-empty
             empty-text="Tidak ada data"
             class="position-relative"
@@ -60,7 +57,7 @@
             </template>
             <template #cell(id)="data">
               <span>
-                {{ data.index + 1 }}
+                {{ kegiatanStore.from + data.index }}
               </span>
             </template>
             <template #cell(tanggal_kegiatan)="data">
@@ -70,7 +67,7 @@
             </template>
             <template #cell(jenis)="data">
               <span>
-                {{ data.item.jenis_kegiatan.nama }}
+                {{ data.item.kegiatan.nama }}
               </span>
             </template>
             <template #cell(kode_mak)="data">
@@ -124,14 +121,14 @@
           <div class="mx-2 mb-2">
             <b-row>
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-start">
-                <span class="text-muted"> {{ dataMeta.from }} - {{ dataMeta.to }} dari {{ dataMeta.of }} data</span>
+                <span class="text-muted"> {{ kegiatanStore.from }} - {{ kegiatanStore.to }} dari {{ kegiatanStore.total }} data</span>
               </b-col>
               <!-- Pagination -->
               <b-col cols="12" sm="6" class="d-flex align-items-center justify-content-center justify-content-sm-end">
                 <b-pagination
-                  v-model="currentPage"
-                  :total-rows="totalData"
-                  :per-page="perPage"
+                  v-model="kegiatanStore.page"
+                  :total-rows="kegiatanStore.total"
+                  :per-page="kegiatanStore.currentLimit"
                   first-number
                   last-number
                   class="mb-0 mt-1 mt-sm-0"
@@ -159,6 +156,9 @@ import { ref } from '@vue/composition-api'
 import { formatRupiah, truncate } from '@core/utils/filter'
 import { BTooltip, BButton, BBadge, BSpinner, BCard, BRow, BCol, BFormInput, BTable, BPagination } from 'bootstrap-vue'
 import vSelect from 'vue-select'
+import { useKegiatanStore } from '@/store/pinia/kegiatanStore.js'
+import { useMainStore } from '@/store/pinia/main'
+import { useDebounceFn } from '@vueuse/core'
 
 export default {
   components: {
@@ -177,55 +177,7 @@ export default {
   data() {
     return {}
   },
-  watch: {
-    tahun() {
-      this.loadKegiatan()
-    },
-    /* eslint-disable */
-    searchQuery(query) {
-      if (query === '') {
-        this.dataKegiatan = this.dataTemp
-      } else {
-        this.dataKegiatan = this.dataTemp.filter(
-          item =>
-            item.mak.nama.toLowerCase().indexOf(query) > -1 ||
-            item.mak.kode.toLowerCase().indexOf(query) > -1 ||
-            item.nominal == query ||
-            item.uraian.toLowerCase().indexOf(query) > -1,
-        )
-      }
-    },
-    bidangFilter(x) {
-      if (x.nama === '' || x.id === null || x.id === 0) {
-        this.dataKegiatan = this.dataTemp
-      } else {
-        this.dataKegiatan = this.dataTemp.filter(item => item.bidang.id === x.id)
-      }
-    },
-    /* eslint-enable */
-    statusFilter(x) {
-      if (x === 'SEMUA' || x === null) {
-        this.dataKegiatan = this.dataTemp
-      } else {
-        this.dataKegiatan = this.dataTemp.filter(item => item.status === x)
-      }
-    },
-  },
   computed: {
-    dataMeta() {
-      const localItemsCount = this.$refs.refTable ? this.$refs.refTable.computedItems.length : 0
-      return {
-        from: this.perPage * (this.currentPage - 1) + (localItemsCount ? 1 : 0),
-        to: this.perPage * (this.currentPage - 1) + localItemsCount,
-        of: this.totalData,
-      }
-    },
-    totalData() {
-      return this.dataKegiatan.length
-    },
-    tahunOption() {
-      return this.$store.getters['app-general/getTahun']
-    },
     bidangOption() {
       return [
         {
@@ -239,31 +191,13 @@ export default {
   methods: {
     truncate,
     formatRupiah,
-    detail(id) {
-      const data = this.dataTemp.find(x => x.id === id)
-      this.$store.commit('app-kegiatan/SET_DETAIL', data)
-      this.$router.push({ name: 'kegiatan-detail' })
+    filter() {
+      this.kegiatanStore.getData()
     },
-    loadKegiatan() {
-      this.isBusy = !this.isBusy
-      this.$store
-        .dispatch('app-kegiatan/fetchRencanaKegiatan', {
-          tahun_id: this.tahun.id,
-          bidang_id: this.userData.role === 'USER' ? this.userData.bidang_id : 0,
-        })
-        .then(res => {
-          this.isBusy = !this.isBusy
-          if (this.userData.role === 'USER') {
-            this.dataTemp = res.data
-          } else if (this.userData.role === 'PPK') {
-            this.dataTemp = res.data.filter(x => x.status !== 'RENCANA')
-          } else if (this.userData.role === 'ADMIN KEUANGAN') {
-            this.dataTemp = res.data.filter(x => x.status !== 'RENCANA')
-          } else if (this.userData.role === 'BENDAHARA') {
-            this.dataTemp = res.data.filter(x => x.status === 'VERIFIED PPK')
-          }
-          this.dataKegiatan = this.dataTemp
-        })
+    detail(id) {
+      // const data = this.dataTemp.find(x => x.id === id)
+      // this.$store.commit('app-kegiatan/SET_DETAIL', data)
+      this.$router.push({ name: 'kegiatan-detail', params: { id: id } })
     },
     loadTahun() {
       this.$store.dispatch('app-general/fetchTahun').then(res => {
@@ -277,20 +211,19 @@ export default {
     },
   },
   mounted() {
+    this.kegiatanStore.getData()
     this.loadTahun()
-    this.loadKegiatan()
     this.loadBidang()
   },
   setup() {
+    const kegiatanStore = useKegiatanStore()
+    const mainStore = useMainStore()
     const userData = JSON.parse(localStorage.getItem('userData'))
-    const d = new Date()
-    const tahun = ref({
-      id: 1,
-      nama: d.getFullYear(),
-    })
-    const isBusy = false
-    const dataKegiatan = ref([])
-    const dataTemp = ref([])
+
+    const search = useDebounceFn(() => {
+      kegiatanStore.getData()
+    }, 500)
+
     const tableColumns = [
       { key: 'id', label: '#' },
       { key: 'nomor_kwitansi' },
@@ -298,20 +231,13 @@ export default {
       { key: 'uraian', label: 'Uraian Kegiatan' },
       { key: 'jenis', label: 'Jenis Kegiatan' },
       { key: 'kode_mak' },
-      { key: 'total_anggaran' },
-      { key: 'total_realisasi' },
+      { key: 'total_anggaran', label: 'Anggaran' },
+      { key: 'total_realisasi', label: 'Realisasi' },
       { key: 'maker', thClass: userData.role !== 'USER' ? '' : 'd-none', tdClass: userData.role !== 'USER' ? '' : 'd-none' },
       { key: 'status' },
       { key: 'actions' },
     ]
-    const searchQuery = ref('')
-    const perPage = ref(10)
-    const currentPage = ref(1)
-    const perPageOptions = [10, 25, 50, 100]
-    const sortBy = ref('id')
-    const isSortDirDesc = ref(true)
-    const bidangFilter = ref({ nama: 'SEMUA', id: 0 })
-    const statusFilter = ref('SEMUA')
+
     const statusOption = ref([
       'SEMUA',
       'RENCANA',
@@ -325,19 +251,12 @@ export default {
     ])
     return {
       userData,
-      tahun,
-      isBusy,
+      kegiatanStore,
+      search,
+      mainStore,
+
       tableColumns,
-      dataKegiatan,
-      dataTemp,
-      searchQuery,
-      perPage,
-      currentPage,
-      perPageOptions,
-      sortBy,
-      isSortDirDesc,
-      bidangFilter,
-      statusFilter,
+
       statusOption,
     }
   },

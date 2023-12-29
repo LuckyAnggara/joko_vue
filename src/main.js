@@ -2,7 +2,6 @@ import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
 import { createPinia, PiniaVuePlugin } from 'pinia'
-
 // import i18n from '@/libs/i18n'
 import router from './router'
 import store from './store'
